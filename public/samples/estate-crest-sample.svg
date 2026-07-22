@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <g fill="none" stroke="#1C1917" stroke-width="2.5">
+    <path d="M 400 150 C 500 150 600 200 600 350 C 600 550 400 680 400 680 C 400 680 200 550 200 350 C 200 200 300 150 400 150 Z" stroke-width="2"/>
+    <path d="M 400 170 C 480 170 580 215 580 350 C 580 530 400 650 400 650 C 400 650 220 530 220 350 C 220 215 320 170 400 170 Z" stroke-dasharray="4 4" stroke-width="1"/>
+    <!-- Crest Ribbon / Flourish Top -->
+    <path d="M 330 140 Q 400 110 470 140" stroke-width="1.5"/>
+  </g>
+</svg>

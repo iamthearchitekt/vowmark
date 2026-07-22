@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200" width="1000" height="200">
+  <g fill="none" stroke="#1C1917" stroke-width="1.5">
+    <line x1="50" y1="100" x2="420" y2="100"/>
+    <line x1="580" y1="100" x2="950" y2="100"/>
+    <!-- Center Olive sprig flourish -->
+    <path d="M 450 100 Q 500 70 550 100" stroke-width="2"/>
+    <path d="M 470 90 Q 460 75 480 75 Z" fill="#1C1917"/>
+    <path d="M 530 90 Q 540 75 520 75 Z" fill="#1C1917"/>
+    <path d="M 500 85 Q 500 65 500 55 Z" stroke-width="1"/>
+    <circle cx="500" cy="52" r="3" fill="#1C1917"/>
+  </g>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 240" width="1150" height="240">
+  <g fill="#0F172A">
+    <!-- Letter V -->
+    <path d="M 40 45 L 80 45 L 125 175 L 170 45 L 210 45 L 140 195 L 110 195 Z" />
+
+    <!-- Letter O: Diamond Engagement Ring Icon -->
+    <g transform="translate(225, 20)">
+      <!-- Ring Band -->
+      <circle cx="70" cy="105" r="62" fill="none" stroke="#0F172A" stroke-width="12" />
+      <circle cx="70" cy="105" r="52" fill="none" stroke="#FFFFFF" stroke-width="3" />
+      <!-- Diamond Setting & Prongs -->
+      <path d="M 54 40 L 61 22 L 79 22 L 86 40 Z" fill="#0F172A" />
+      <!-- Diamond Solitaire Facets with Gold Sparkle -->
+      <polygon points="70,5 50,22 90,22" fill="#C9A251" stroke="#FFFFFF" stroke-width="1.5" />
+      <polygon points="50,22 70,38 90,22" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.5" />
+      <line x1="70" y1="5" x2="70" y2="38" stroke="#FFFFFF" stroke-width="1.5" />
+      <line x1="60" y1="5" x2="60" y2="22" stroke="#FFFFFF" stroke-width="1" />
+      <line x1="80" y1="5" x2="80" y2="22" stroke="#FFFFFF" stroke-width="1" />
+    </g>
+
+    <!-- Letter W -->
+    <path d="M 380 45 L 415 45 L 445 160 L 475 45 L 505 45 L 535 160 L 565 45 L 600 45 L 555 195 L 520 195 L 490 95 L 460 195 L 425 195 Z" />
+
+    <!-- Letter M -->
+    <path d="M 615 45 L 650 45 L 695 155 L 740 45 L 775 45 L 775 195 L 745 195 L 745 90 L 705 195 L 685 195 L 645 90 L 645 195 L 615 195 Z" />
+
+    <!-- Letter A -->
+    <path d="M 785 195 L 830 45 L 865 45 L 910 195 L 875 195 L 864 150 L 831 150 L 820 195 Z M 837 125 L 858 125 L 848 80 Z" />
+
+    <!-- Letter R -->
+    <path d="M 920 45 L 975 45 C 1005 45 1020 58 1020 82 C 1020 102 1005 115 980 120 L 1025 195 L 990 195 L 950 125 L 950 195 L 920 195 Z M 950 72 L 950 102 L 972 102 C 986 102 992 95 992 87 C 992 78 986 72 972 72 Z" />
+
+    <!-- Letter K -->
+    <path d="M 1035 45 L 1065 45 L 1065 105 L 1105 45 L 1140 45 L 1090 115 L 1145 195 L 1110 195 L 1065 125 L 1065 195 L 1035 195 Z" />
+  </g>
+</svg>

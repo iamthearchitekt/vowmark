@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <g fill="#0F172A">
+    <!-- Ring Band Outer & Inner -->
+    <circle cx="90" cy="105" r="65" fill="none" stroke="#0F172A" stroke-width="12" />
+    <circle cx="90" cy="105" r="54" fill="none" stroke="#FFFFFF" stroke-width="3" />
+    <!-- Diamond Setting Prongs -->
+    <path d="M 74 40 L 81 22 L 99 22 L 106 40 Z" fill="#0F172A" />
+    <!-- Diamond Facets -->
+    <polygon points="90,5 70,22 110,22" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.5" />
+    <polygon points="70,22 90,38 110,22" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.5" />
+    <line x1="90" y1="5" x2="90" y2="38" stroke="#FFFFFF" stroke-width="1.5" />
+    <line x1="80" y1="5" x2="80" y2="22" stroke="#FFFFFF" stroke-width="1" />
+    <line x1="100" y1="5" x2="100" y2="22" stroke="#FFFFFF" stroke-width="1" />
+  </g>
+</svg>

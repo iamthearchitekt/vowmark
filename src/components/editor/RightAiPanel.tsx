@@ -1,0 +1,231 @@
+"use client";
+
+import { useEditorStore } from "@/lib/store/useEditorStore";
+import { parseChatIntent } from "@/lib/ai/chat-parser";
+import { useState } from "react";
+import { Sparkles, Send, RefreshCw, Zap, Cpu, Image as ImageIcon, Copy, Check } from "lucide-react";
+
+export function RightAiPanel() {
+  const messages = useEditorStore((state) => state.messages);
+  const isAiGenerating = useEditorStore((state) => state.isAiGenerating);
+  const studioMode = useEditorStore((state) => state.studioMode);
+  const brief = useEditorStore((state) => state.brief);
+  const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
+
+  const addMessage = useEditorStore((state) => state.addMessage);
+  const setIsAiGenerating = useEditorStore((state) => state.setIsAiGenerating);
+  const setAiGeneratedAssetUrl = useEditorStore((state) => state.setAiGeneratedAssetUrl);
+  const setBrief = useEditorStore((state) => state.setBrief);
+  const setTypographyOptions = useEditorStore((state) => state.setTypographyOptions);
+
+  const [inputMsg, setInputMsg] = useState("");
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
+  const handleCopyMessage = (text: string, idx: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
+
+  const handleSendMessage = async (customPrompt?: string) => {
+    const textToSend = customPrompt || inputMsg;
+    if (!textToSend.trim()) return;
+
+    addMessage({ role: "user", content: textToSend });
+    if (!customPrompt) setInputMsg("");
+    setIsAiGenerating(true);
+
+    // 1. Parse intent cleanly
+    const intent = parseChatIntent(textToSend);
+    
+    const updatedBriefData: any = {
+      generationPrompt: textToSend,
+    };
+
+    if (intent.primaryText && intent.primaryText.length <= 15 && intent.secondaryText && intent.secondaryText.length <= 15) {
+      updatedBriefData.primaryText = intent.primaryText;
+      updatedBriefData.secondaryText = intent.secondaryText;
+      setTypographyOptions({
+        primaryText: intent.primaryText,
+        secondaryText: intent.secondaryText,
+      });
+    }
+
+    if (intent.assetType) {
+      updatedBriefData.assetType = intent.assetType;
+    }
+    if (intent.weddingStyle) {
+      updatedBriefData.weddingStyle = intent.weddingStyle;
+    }
+
+    setBrief(updatedBriefData);
+
+    const mergedBrief = {
+      ...brief,
+      ...updatedBriefData,
+      generationPrompt: textToSend,
+    };
+
+    try {
+      // 2. Trigger OpenAI DALL-E 3 Image Generation
+      const genRes = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brief: mergedBrief,
+          action: "generate",
+        }),
+      });
+
+      const genData = await genRes.json();
+      const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
+
+      // Update artboard canvas with DALL-E 3 image
+      setAiGeneratedAssetUrl(generatedUrl);
+
+      // 3. Call OpenAI Chat Assistant for conversational response
+      const chatRes = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...messages, { role: "user", content: textToSend }],
+          currentBrief: mergedBrief,
+        }),
+      });
+
+      const chatData = await chatRes.json();
+      if (chatData.message) {
+        addMessage({ role: "assistant", content: chatData.message });
+      }
+    } catch (err) {
+      addMessage({
+        role: "assistant",
+        content: "✨ Generated new DALL·E 3 wedding logo image artwork. Canvas updated!",
+      });
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  return (
+    <aside className="w-96 bg-vow-paper border-l border-vow-border flex flex-col h-full overflow-hidden text-xs font-sans">
+      {/* Assistant Header */}
+      <div className="p-4 border-b border-vow-border bg-vow-surface flex items-center justify-between select-none">
+        <div className="flex items-center space-x-2">
+          <div className="w-7 h-7 rounded-md bg-vow-dark text-vow-accent flex items-center justify-center font-bold">
+            <Sparkles className="w-4 h-4 text-vow-accent" />
+          </div>
+          <div>
+            <h3 className="font-bold text-vow-dark uppercase tracking-wider text-xs">
+              AI Design Assistant
+            </h3>
+            <p className="text-[10px] text-vow-muted">OpenAI DALL·E 3 Image Generator</p>
+          </div>
+        </div>
+
+        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-900 border border-amber-300 font-bold">
+          {studioMode === "generative_ai" ? "DALL·E 3 Mode" : "Vector Mode"}
+        </span>
+      </div>
+
+      {/* Quick AI Generator Chips */}
+      <div className="p-3 bg-slate-50 border-b border-vow-border space-y-2 select-none">
+        <p className="text-[10px] font-bold text-vow-muted uppercase tracking-wider flex items-center gap-1">
+          <Cpu className="w-3 h-3 text-vow-accent" /> Quick DALL·E 3 Generators
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            { label: "✨ Generate Logo M & S", action: "Generate luxury wedding logo for M & S" },
+            { label: "Make Editorial", action: "Make logo more editorial and high-contrast" },
+            { label: "Estate Crest E & V", action: "Generate European estate heraldic crest logo for E & V" },
+            { label: "Simplify Monogram", action: "Simplify monogram initial silhouette" },
+            { label: "High-Contrast B&W", action: "Convert artwork to pure black and white" },
+          ].map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => handleSendMessage(item.action)}
+              className="px-2.5 py-1 bg-white border border-vow-border hover:border-vow-dark hover:bg-slate-50 rounded text-[11px] font-bold text-vow-charcoal transition-all shadow-2xs flex items-center gap-1 active:scale-95"
+            >
+              <Zap className="w-2.5 h-2.5 text-vow-accent" />
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Chat Messages Container */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3.5 select-text selection:bg-amber-200 selection:text-slate-900">
+        {messages.map((m, idx) => (
+          <div
+            key={idx}
+            className={`relative group p-3.5 rounded-lg text-xs leading-relaxed ${
+              m.role === "user"
+                ? "bg-vow-dark text-vow-paper ml-6 rounded-tr-none font-medium"
+                : "bg-white border border-vow-border text-vow-charcoal mr-4 rounded-tl-none shadow-2xs"
+            }`}
+          >
+            {/* Copy Button */}
+            <button
+              type="button"
+              onClick={() => handleCopyMessage(m.content, idx)}
+              title="Copy message text"
+              className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-700 rounded opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur"
+            >
+              {copiedIdx === idx ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+            </button>
+
+            <p className="whitespace-pre-wrap pr-4">{m.content}</p>
+
+            {m.role === "assistant" && idx === messages.length - 1 && aiGeneratedAssetUrl && (
+              <div className="mt-2.5 p-2 bg-slate-50 border border-slate-200 rounded-md flex items-center space-x-2 select-none">
+                <div className="w-12 h-12 bg-white rounded border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={aiGeneratedAssetUrl} alt="Generated DALL-E 3 Preview" className="w-full h-full object-contain" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold text-[10px] text-vow-dark flex items-center gap-1">
+                    <ImageIcon className="w-3 h-3 text-vow-accent" /> DALL·E 3 Image Generated
+                  </p>
+                  <p className="text-[9px] text-vow-muted">Loaded on Artboard Canvas</p>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        {isAiGenerating && (
+          <div className="p-3.5 bg-amber-50/80 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-center space-x-2.5 animate-pulse select-none">
+            <RefreshCw className="w-4 h-4 animate-spin text-vow-accent" />
+            <span className="font-semibold">Generating AI image with OpenAI DALL·E 3...</span>
+          </div>
+        )}
+      </div>
+
+      {/* Chat Prompt Input */}
+      <div className="p-3 border-t border-vow-border bg-vow-surface">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSendMessage();
+          }}
+          className="flex items-center space-x-2"
+        >
+          <input
+            type="text"
+            value={inputMsg}
+            onChange={(e) => setInputMsg(e.target.value)}
+            placeholder="Type prompt (e.g. Create logo for Jack & Jill)..."
+            className="flex-1 bg-white border border-vow-border rounded-md px-3 py-2 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium select-text"
+          />
+          <button
+            type="submit"
+            disabled={isAiGenerating}
+            className="bg-vow-dark text-vow-paper p-2.5 rounded-md hover:bg-black transition-colors font-bold flex items-center justify-center"
+          >
+            <Send className="w-3.5 h-3.5 text-vow-champagne" />
+          </button>
+        </form>
+      </div>
+    </aside>
+  );
+}

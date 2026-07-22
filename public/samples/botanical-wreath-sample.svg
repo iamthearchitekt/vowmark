@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <g fill="none" stroke="#1C1917" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="400" cy="400" r="280" stroke-dasharray="8 6" opacity="0.4"/>
+    <path d="M 400 120 C 240 120 120 240 120 400 C 120 560 240 680 400 680 C 560 680 680 560 680 400 C 680 240 560 120 400 120 Z" stroke-width="1.5"/>
+    <!-- Leaves and botanical flourishes around wreath -->
+    <path d="M 220 220 Q 200 180 230 160 Q 250 190 220 220 Z" fill="#1C1917"/>
+    <path d="M 580 220 Q 600 180 570 160 Q 550 190 580 220 Z" fill="#1C1917"/>
+    <path d="M 220 580 Q 200 620 230 640 Q 250 610 220 580 Z" fill="#1C1917"/>
+    <path d="M 580 580 Q 600 620 570 640 Q 550 610 580 580 Z" fill="#1C1917"/>
+    <path d="M 400 100 Q 380 70 400 50 Q 420 70 400 100 Z" fill="#1C1917"/>
+  </g>
+</svg>

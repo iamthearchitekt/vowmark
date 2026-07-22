@@ -1,0 +1,330 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  name               String?
+  role               String              @default("USER") // USER, ADMIN
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  projects           Project[]
+  subscriptions      Subscription[]
+  creditTransactions CreditTransaction[]
+  feedback           Feedback[]
+  fontUsages         FontUsageRecord[]
+}
+
+model Project {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String
+  assetType        String           // couple_logo, wordmark, monogram, wreath, crest, etc.
+  status           String           @default("DRAFT")
+  currentVersionId String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  versions         ProjectVersion[]
+  referenceImages  ReferenceImage[]
+  conversations    Conversation[]
+  exports          Export[]
+}
+
+model ProjectVersion {
+  id              String           @id @default(uuid())
+  projectId       String
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  versionNumber   Int
+  name            String?
+  briefData       String?          // JSON string of DesignBrief
+  artboardState   String           // JSON string of Canvas Layers & Settings
+  previewUrl      String?
+  createdAt       DateTime         @default(now())
+  generatedAssets GeneratedAsset[]
+}
+
+model ReferenceImage {
+  id            String   @id @default(uuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url           String
+  type          String   // typography, layout, floral, ornament, color, style, existing
+  notes         String?
+  strength      String   @default("moderate") // loose, moderate, strong
+  createdAt     DateTime @default(now())
+}
+
+model GenerationRequest {
+  id              String           @id @default(uuid())
+  provider        String           // gemini, openai, mock
+  model           String
+  prompt          String
+  negativePrompt  String?
+  structuredBrief String?          // JSON
+  referenceImages String?          // JSON array
+  status          String           @default("PENDING") // PENDING, SUCCESS, FAILED
+  error           String?
+  duration        Float?           // seconds
+  estimatedCost   Float?           // USD
+  createdAt       DateTime         @default(now())
+  generatedAssets GeneratedAsset[]
+}
+
+model GeneratedAsset {
+  id                  String             @id @default(uuid())
+  projectVersionId    String?
+  version             ProjectVersion?    @relation(fields: [projectVersionId], references: [id])
+  generationRequestId String?
+  request             GenerationRequest? @relation(fields: [generationRequestId], references: [id])
+  originalFile        String
+  processedFile       String
+  thumbnail           String
+  mimeType            String             @default("image/png")
+  width               Int                @default(1024)
+  height              Int                @default(1024)
+  backgroundType      String             @default("transparent") // transparent, white, dark
+  isVector            Boolean            @default(false)
+  metadata            String?            // JSON
+  createdAt           DateTime           @default(now())
+}
+
+model Conversation {
+  id        String                @id @default(uuid())
+  projectId String
+  project   Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime              @default(now())
+  messages  ConversationMessage[]
+}
+
+model ConversationMessage {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String       // user, assistant, system
+  content        String
+  structuredBrief String?     // JSON string if brief updated
+  createdAt      DateTime     @default(now())
+}
+
+model DesignBrief {
+  id                    String   @id @default(uuid())
+  assetType             String
+  primaryText           String
+  secondaryText         String?
+  initials              String?  // comma separated or JSON
+  surname               String?
+  date                  String?
+  location              String?
+  layout                String
+  typographyCategory    String
+  weddingStyle          String
+  styleKeywords         String   // JSON array
+  colorMode             String
+  background            String
+  ornamentType          String
+  floralType            String
+  referenceInstructions String?  // JSON
+  generationPrompt      String
+  negativePrompt        String   // JSON array
+  outputMode            String   // hybrid, vector, ai
+  aspectRatio           String
+  recommendedFonts      String?  // JSON array
+  productionNotes       String?  // JSON array
+  createdAt             DateTime @default(now())
+}
+
+model Export {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  format    String   // png, transparent_png, svg, jpeg, pdf
+  fileUrl   String
+  width     Int
+  height    Int
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id                   String   @id @default(uuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeSubscriptionId String?
+  status               String   @default("ACTIVE") // ACTIVE, CANCELED, PAST_DUE
+  plan                 String   @default("PRO")
+  currentPeriodEnd     DateTime
+  createdAt            DateTime @default(now())
+}
+
+model CreditTransaction {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int      // +N or -N
+  description String
+  createdAt   DateTime @default(now())
+}
+
+model PromptTemplate {
+  id             String   @id @default(uuid())
+  name           String
+  assetType      String
+  weddingStyle   String
+  typographyCat  String
+  basePrompt     String
+  negativePrompt String
+  requiredFields String   // JSON array
+  optionalFields String   // JSON array
+  version        Int      @default(1)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+}
+
+model Feedback {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eleganceRating     Int
+  typographyRating   Int
+  fontSuitability    Int
+  nameAccuracy       Int
+  layoutBalance      Int
+  comments           String?
+  createdAt          DateTime @default(now())
+}
+
+model DesignReferenceLicense {
+  id                     String            @id @default(uuid())
+  licenseName            String
+  licenseText            String?
+  licenseUrl             String?
+  commercialUseAllowed   Boolean           @default(true)
+  redistributionAllowed Boolean           @default(false)
+  notes                  String?
+  verifiedAt             DateTime          @default(now())
+  references             DesignReference[]
+}
+
+model DesignReference {
+  id                 String                 @id @default(uuid())
+  title              String
+  source             String
+  sourceUrl          String?
+  licenseId          String
+  license            DesignReferenceLicense @relation(fields: [licenseId], references: [id])
+  assetType          String
+  weddingStyle       String
+  typographyCategory String
+  layout             String
+  colorPalette       String
+  floralType         String
+  ornamentType       String
+  formality          String
+  complexity         String
+  era                String?
+  intendedUse        String?
+  tags               String                 // JSON array
+  visualDescription  String
+  designNotes        String?
+  thumbnail          String
+  originalFile       String
+  active             Boolean                @default(true)
+  createdAt          DateTime               @default(now())
+}
+
+model FontLicense {
+  id                    String       @id @default(uuid())
+  licenseName           String
+  licenseText           String?
+  licenseUrl            String?
+  commercialUseAllowed  Boolean      @default(true)
+  webEmbeddingAllowed   Boolean      @default(true)
+  editableExportAllowed Boolean      @default(true)
+  redistributionAllowed Boolean      @default(false)
+  modificationAllowed   Boolean      @default(false)
+  attributionRequired   Boolean      @default(false)
+  notes                 String?
+  verifiedAt            DateTime     @default(now())
+  fontFamilies          FontFamily[]
+}
+
+model FontFamily {
+  id                         String               @id @default(uuid())
+  familyName                 String               @unique
+  provider                   String               @default("google") // google, local, custom
+  providerFontId             String?
+  designer                   String?
+  foundry                    String?
+  classification             String               // serif, sans, script, decorative
+  subclassification          String?              // didone, old-style, copperplate, etc.
+  description                String?
+  supportedWeights           String               // JSON array
+  supportedStyles            String               // JSON array
+  supportedScripts           String               // JSON array
+  sourceUrl                  String?
+  previewImage               String?
+  active                     Boolean              @default(true)
+  approvedForCommercialUse   Boolean              @default(true)
+  approvedForEmbedding       Boolean              @default(true)
+  approvedForExport          Boolean              @default(true)
+  licenseId                  String?
+  license                    FontLicense?         @relation(fields: [licenseId], references: [id])
+  variants                   FontVariant[]
+  tags                       FontTag[]
+  pairingPrimary             FontPairing[]        @relation("PrimaryFont")
+  pairingSecondary           FontPairing[]        @relation("SecondaryFont")
+  recommendations            FontRecommendation[]
+  fontUsages                 FontUsageRecord[]
+}
+
+model FontVariant {
+  id           String     @id @default(uuid())
+  fontFamilyId String
+  fontFamily   FontFamily @relation(fields: [fontFamilyId], references: [id], onDelete: Cascade)
+  weight       String     // 400, 700, etc.
+  style        String     // normal, italic
+  fontFileUrl  String
+}
+
+model FontTag {
+  id           String     @id @default(uuid())
+  fontFamilyId String
+  fontFamily   FontFamily @relation(fields: [fontFamilyId], references: [id], onDelete: Cascade)
+  tag          String     // elegant, formal, best_for_monograms, high_contrast, etc.
+}
+
+model FontPairing {
+  id              String     @id @default(uuid())
+  primaryFontId   String
+  primaryFont     FontFamily @relation("PrimaryFont", fields: [primaryFontId], references: [id])
+  secondaryFontId String
+  secondaryFont   FontFamily @relation("SecondaryFont", fields: [secondaryFontId], references: [id])
+  intendedUse     String
+  weddingStyle    String
+  rationale       String
+}
+
+model FontRecommendation {
+  id           String     @id @default(uuid())
+  fontFamilyId String
+  fontFamily   FontFamily @relation(fields: [fontFamilyId], references: [id])
+  assetType    String
+  weddingStyle String
+  reason       String
+  confidence   Float
+}
+
+model FontUsageRecord {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  fontFamilyId String
+  fontFamily   FontFamily @relation(fields: [fontFamilyId], references: [id])
+  usedAt       DateTime   @default(now())
+}

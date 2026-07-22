@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <!-- Solid Background depending on contrast -->
+  <g fill="none" stroke="#0F172A" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Outer Shield / Diamond Frame -->
+    <path d="M 500 120 L 850 470 L 500 820 L 150 470 Z" stroke-width="2.5" opacity="0.85" />
+    <path d="M 500 140 L 830 470 L 500 800 L 170 470 Z" stroke-width="1" stroke-dasharray="6 6" opacity="0.4" />
+    
+    <!-- Central Interlocking Initials & Monogram Silhouette -->
+    <g fill="#0F172A" stroke="none">
+      <!-- Letter E -->
+      <path d="M 360 360 L 460 360 L 460 395 L 400 395 L 400 455 L 450 455 L 450 490 L 400 490 L 400 555 L 465 555 L 465 590 L 360 590 Z" />
+      <!-- Letter V -->
+      <path d="M 520 360 L 560 360 L 600 540 L 640 360 L 680 360 L 620 590 L 580 590 Z" />
+      <!-- Small Ampersand Accent -->
+      <text x="500" y="490" font-family="Georgia, serif" font-size="44" font-style="italic" fill="#C9A251" text-anchor="middle" dominant-baseline="middle">&amp;</text>
+    </g>
+
+    <!-- Subtitle / Date Rule -->
+    <line x1="320" y1="670" x2="680" y2="670" stroke-width="1" opacity="0.6" />
+    <text x="500" y="710" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="8" fill="#0F172A" text-anchor="middle" stroke="none">ESTATE IDENTITY</text>
+  </g>
+</svg>

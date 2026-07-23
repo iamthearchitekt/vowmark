@@ -5,7 +5,6 @@ import { TypographyEngine } from "@/lib/typography/engine";
 import { resolveFontConfig } from "@/lib/typography/font-resolver";
 import { useEffect, useState, useMemo } from "react";
 import {
-  Camera,
   ArrowUpDown,
   MoveHorizontal,
   Maximize2,
@@ -180,7 +179,9 @@ export function ArtboardCanvas() {
   // Active Frame Overlay URL Resolution
   let activeFrameOverlayUrl = photoboothFrameUrl;
   if (!activeFrameOverlayUrl) {
-    if (canvasFormat === "4_x_6") {
+    if (canvasFormat === "2_x_6") {
+      activeFrameOverlayUrl = "/photobooth-2x6-frame.png";
+    } else if (canvasFormat === "4_x_6") {
       activeFrameOverlayUrl = "/photobooth-frames/frame-4x6-portrait.png";
     } else if (canvasFormat === "6_x_4") {
       activeFrameOverlayUrl = `/photobooth-frames/frame-6x4-${photoboothMode6x4}.png`;
@@ -216,31 +217,10 @@ export function ArtboardCanvas() {
         )}
 
         {/* ======================================================== */}
-        {/* 2x6 PHOTOBOOTH STRIP OVERLAY (Rendered matching user reference image 100%) */}
+        {/* PHOTOBOOTH STRIP & FRAME OVERLAY (2x6, 4x6, 6x4 Formats) */}
+        {/* Authentic PNG Frame Overlay */}
         {/* ======================================================== */}
-        {is2x6Format && photoboothMode && (
-          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col items-center pt-6 px-3.5 space-y-3">
-            {/* Photo Box 1 */}
-            <div className="w-full h-[164px] bg-[#383838] flex items-center justify-center rounded-xs shadow-2xs">
-              <Camera className="w-12 h-12 text-[#242424]" strokeWidth={1.5} />
-            </div>
-
-            {/* Photo Box 2 */}
-            <div className="w-full h-[164px] bg-[#383838] flex items-center justify-center rounded-xs shadow-2xs">
-              <Camera className="w-12 h-12 text-[#242424]" strokeWidth={1.5} />
-            </div>
-
-            {/* Photo Box 3 */}
-            <div className="w-full h-[164px] bg-[#383838] flex items-center justify-center rounded-xs shadow-2xs">
-              <Camera className="w-12 h-12 text-[#242424]" strokeWidth={1.5} />
-            </div>
-          </div>
-        )}
-
-        {/* ======================================================== */}
-        {/* PHOTOBOOTH STRIP & FRAME OVERLAY (4x6 and 6x4 Formats) */}
-        {/* ======================================================== */}
-        {!is2x6Format && isNonSquare && photoboothMode && activeFrameOverlayUrl && (
+        {isNonSquare && photoboothMode && activeFrameOverlayUrl && (
           <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -256,12 +236,11 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
-        {/* For 2x6: Anchored precisely in bottom white area under the 3 photo boxes */}
         {/* ======================================================== */}
         <div
           className={`absolute z-20 flex items-center justify-center transition-all ${
             is2x6Format
-              ? "bottom-0 left-0 right-0 h-[26%] p-3"
+              ? "bottom-0 left-0 right-0 h-[28%] p-3"
               : "inset-0 p-6 w-full h-full"
           }`}
           style={{
@@ -343,8 +322,8 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal / Vertical Flip Controls (Disabled for 2x6) */}
-          {!is2x6Format && photoboothMode && (
+          {/* Horizontal / Vertical Flip Controls */}
+          {photoboothMode && (
             <>
               <div className="flex items-center space-x-1">
                 <button
@@ -380,52 +359,48 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal X-Position Slider (Disabled for 2x6) */}
-          {!is2x6Format && (
-            <>
-              <div className="flex items-center space-x-1.5">
-                <MoveHorizontal className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
-                <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">X:</span>
-                <button
-                  type="button"
-                  onClick={() => setPhotoboothOffsetX(photoboothOffsetX - 2)}
-                  className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
-                  title="Nudge left (-2px)"
-                >
-                  -
-                </button>
-                <input
-                  type="range"
-                  min="-400"
-                  max="400"
-                  step="1"
-                  value={photoboothOffsetX}
-                  onChange={(e) => setPhotoboothOffsetX(Number(e.target.value))}
-                  className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
-                  title="Adjust horizontal X position"
-                />
-                <button
-                  type="button"
-                  onClick={() => setPhotoboothOffsetX(photoboothOffsetX + 2)}
-                  className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
-                  title="Nudge right (+2px)"
-                >
-                  +
-                </button>
-                <input
-                  type="number"
-                  min="-400"
-                  max="400"
-                  value={photoboothOffsetX}
-                  onChange={(e) => setPhotoboothOffsetX(Number(e.target.value) || 0)}
-                  className="w-12 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
-                  title="Type exact X position"
-                />
-              </div>
+          {/* Horizontal X-Position Slider */}
+          <div className="flex items-center space-x-1.5">
+            <MoveHorizontal className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">X:</span>
+            <button
+              type="button"
+              onClick={() => setPhotoboothOffsetX(photoboothOffsetX - 2)}
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
+              title="Nudge left (-2px)"
+            >
+              -
+            </button>
+            <input
+              type="range"
+              min="-400"
+              max="400"
+              step="1"
+              value={photoboothOffsetX}
+              onChange={(e) => setPhotoboothOffsetX(Number(e.target.value))}
+              className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+              title="Adjust horizontal X position"
+            />
+            <button
+              type="button"
+              onClick={() => setPhotoboothOffsetX(photoboothOffsetX + 2)}
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
+              title="Nudge right (+2px)"
+            >
+              +
+            </button>
+            <input
+              type="number"
+              min="-400"
+              max="400"
+              value={photoboothOffsetX}
+              onChange={(e) => setPhotoboothOffsetX(Number(e.target.value) || 0)}
+              className="w-12 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
+              title="Type exact X position"
+            />
+          </div>
 
-              <div className="h-3.5 w-px bg-slate-200" />
-            </>
-          )}
+          <div className="h-3.5 w-px bg-slate-200" />
 
           {/* Vertical Y-Position Slider */}
           <div className="flex items-center space-x-1.5">

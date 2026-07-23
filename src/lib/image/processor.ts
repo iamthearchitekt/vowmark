@@ -25,10 +25,13 @@ export class ImageProcessor {
     const currentWidth = metadata.width || 1024;
     const currentHeight = metadata.height || 1024;
 
+    // If transparent PNG requested, ensure resize uses transparent background fill
     if (options.width || options.height) {
       pipeline = pipeline.resize(options.width || currentWidth, options.height || currentHeight, {
         fit: "contain",
-        background: { r: 255, g: 255, b: 255, alpha: options.makeTransparent ? 0 : 1 },
+        background: options.makeTransparent
+          ? { r: 0, g: 0, b: 0, alpha: 0 }
+          : { r: 255, g: 255, b: 255, alpha: 1 },
       });
     }
 
@@ -39,6 +42,39 @@ export class ImageProcessor {
 
     if (options.invertColors) {
       pipeline = pipeline.negate({ alpha: false });
+    }
+
+    // Transparent Background White Keying for Raster Images
+    if (options.makeTransparent) {
+      const isSvg = inputBuffer.toString("utf-8").trim().startsWith("<svg");
+      if (!isSvg) {
+        // Extract raw RGBA pixels from pipeline
+        const { data, info } = await pipeline
+          .ensureAlpha()
+          .raw()
+          .toBuffer({ resolveWithObject: true });
+
+        const threshold = options.nearWhiteThreshold || 238;
+        const pixelData = new Uint8Array(data);
+
+        // Loop over RGBA pixels and convert near-white pixels to transparent alpha (0)
+        for (let i = 0; i < pixelData.length; i += 4) {
+          const r = pixelData[i];
+          const g = pixelData[i + 1];
+          const b = pixelData[i + 2];
+          if (r >= threshold && g >= threshold && b >= threshold) {
+            pixelData[i + 3] = 0; // Alpha transparent
+          }
+        }
+
+        pipeline = sharp(Buffer.from(pixelData.buffer), {
+          raw: {
+            width: info.width,
+            height: info.height,
+            channels: 4,
+          },
+        });
+      }
     }
 
     const { data, info } = await pipeline

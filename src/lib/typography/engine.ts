@@ -28,6 +28,7 @@ export interface TypographyOptions {
   colorMode: "black_on_white" | "white_on_black" | "champagne_on_paper" | "custom";
   textColor?: string;
   backgroundColor?: string;
+  isTransparent?: boolean;
   canvasWidth?: number;
   canvasHeight?: number;
 }
@@ -59,6 +60,10 @@ export class TypographyEngine {
     } else if (options.colorMode === "champagne_on_paper") {
       fill = "#C9A251";
       bgFill = "#FFFFFF";
+    }
+
+    if (options.isTransparent) {
+      bgFill = "transparent";
     }
 
     const transformText = (txt: string) => {

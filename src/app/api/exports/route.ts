@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { format, studioMode, aiGeneratedAssetUrl, typographyOptions, isTransparent, pureBlackAndWhite } = body;
+    const shouldBeTransparent = format === "transparent_png" || isTransparent === true;
 
     let inputBuffer: Buffer;
 
@@ -28,18 +29,27 @@ export async function POST(req: NextRequest) {
             inputBuffer = fs.readFileSync(localPath);
           } else {
             // Fallback to SVG render
-            const svgResult = TypographyEngine.renderSvg(typographyOptions);
+            const svgResult = TypographyEngine.renderSvg({
+              ...typographyOptions,
+              isTransparent: shouldBeTransparent,
+            });
             inputBuffer = Buffer.from(svgResult.svg);
           }
         }
       } catch (err) {
         console.warn("Failed to fetch AI generated asset buffer, falling back to SVG render:", err);
-        const svgResult = TypographyEngine.renderSvg(typographyOptions);
+        const svgResult = TypographyEngine.renderSvg({
+          ...typographyOptions,
+          isTransparent: shouldBeTransparent,
+        });
         inputBuffer = Buffer.from(svgResult.svg);
       }
     } else {
-      // Vector Mode SVG
-      const svgResult = TypographyEngine.renderSvg(typographyOptions);
+      // Vector Mode SVG with transparency option
+      const svgResult = TypographyEngine.renderSvg({
+        ...typographyOptions,
+        isTransparent: shouldBeTransparent,
+      });
       inputBuffer = Buffer.from(svgResult.svg);
     }
 
@@ -57,9 +67,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Convert via Sharp ImageProcessor to guaranteed 100% Photoshop-compliant 24-bit PNG or JPEG
+    // Convert via Sharp ImageProcessor to guaranteed 100% Photoshop-compliant PNG or JPEG with alpha transparency keying
     const processed = await ImageProcessor.processImage(inputBuffer, {
-      makeTransparent: isTransparent || format === "transparent_png",
+      makeTransparent: shouldBeTransparent,
       pureBlackAndWhite,
       width: 2048,
       height: 2048,

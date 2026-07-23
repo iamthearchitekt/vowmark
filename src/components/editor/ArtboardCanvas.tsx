@@ -259,32 +259,7 @@ export function ArtboardCanvas() {
   return (
     <div className="relative flex-1 flex flex-col items-center justify-start pt-16 pb-24 bg-stone-100/90 overflow-y-auto overflow-x-hidden select-none font-sans">
       {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Top of Work Window) */}
-      <div className="absolute top-3 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-4 py-1.5 flex items-center space-x-3 text-xs font-sans animate-fadeIn">
-          {/* Quick Save Project Button in Floating Bar */}
-          <button
-            type="button"
-            onClick={handleSaveProject}
-            className={`px-3.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
-              isSaved
-                ? "bg-vow-dark text-vow-accent border border-vow-dark"
-                : "bg-vow-accent text-vow-dark hover:brightness-105 border border-vow-accent"
-            }`}
-            title="Save project design to Client Projects"
-          >
-            {isSaved ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-vow-accent" />
-                <span>Project Saved!</span>
-              </>
-            ) : (
-              <>
-                <Save className="w-3.5 h-3.5 text-vow-dark" />
-                <span>Save Project</span>
-              </>
-            )}
-          </button>
-
-          <div className="h-3.5 w-px bg-stone-200" />
+      <div className="sticky top-3 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-4 py-1.5 flex items-center space-x-3 text-xs font-sans max-w-[95%] overflow-x-auto shrink-0 animate-fadeIn">
           {/* 6x4 Mode Selector — mode1 = 3 Boxes, mode2 = 1 Box */}
           {is6x4Format && photoboothMode && (
             <>

@@ -297,7 +297,6 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setCanvasFormat: (format) => {
     const dims = getFormatDimensions(format);
-    const autoZoom = format === "6_x_4" ? 150 : 100;
     set((state) => {
       const matchingSuiteUrl = state.backgroundSuite ? state.backgroundSuite[format] : null;
       return {
@@ -307,7 +306,7 @@ export const useEditorStore = create<EditorState>((set) => ({
         photoboothOffsetX: 0,
         photoboothOffsetY: 0,
         photoboothScale: 100,
-        zoomLevel: autoZoom,
+        zoomLevel: 100,
         brief: {
           ...state.brief,
           canvasFormat: format,

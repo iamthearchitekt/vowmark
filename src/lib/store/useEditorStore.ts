@@ -151,7 +151,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // Always flat white
   previewMode: "white",
-  zoomLevel: 100,
+  zoomLevel: 150,
 
   messages: [
     {

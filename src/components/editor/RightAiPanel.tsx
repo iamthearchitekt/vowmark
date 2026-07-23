@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditorStore, ReferenceImage } from "@/lib/store/useEditorStore";
+import { useEditorStore, ReferenceImage, TextBlendMode } from "@/lib/store/useEditorStore";
 import { parseChatIntent } from "@/lib/ai/chat-parser";
 import { PromptGuidanceModal } from "./PromptGuidanceModal";
 import { useState, useRef } from "react";
@@ -21,6 +21,7 @@ import {
   Type,
   Layers,
   Trash2,
+  Blend,
 } from "lucide-react";
 
 function isImageGenerationTrigger(text: string): boolean {
@@ -57,8 +58,10 @@ export function RightAiPanel() {
   // 2-Layer Composition State
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
   const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
+  const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const setBackgroundPatternAssetUrl = useEditorStore((state) => state.setBackgroundPatternAssetUrl);
   const setTextLogoAssetUrl = useEditorStore((state) => state.setTextLogoAssetUrl);
+  const setTextLayerBlendMode = useEditorStore((state) => state.setTextLayerBlendMode);
 
   const aiGenerationType = useEditorStore((state) => state.aiGenerationType);
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
@@ -375,8 +378,8 @@ export function RightAiPanel() {
           </div>
         </div>
 
-        {/* 2-LAYER INDEPENDENT COMPOSITION WIDGET */}
-        <div className="p-3 bg-slate-100/90 border-b border-vow-border space-y-2">
+        {/* 2-LAYER INDEPENDENT COMPOSITION WIDGET WITH BLENDING MODES */}
+        <div className="p-3.5 bg-slate-100/90 border-b border-vow-border space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
               <Layers className="w-3.5 h-3.5 text-vow-accent" />
@@ -437,6 +440,30 @@ export function RightAiPanel() {
                   <span className="text-[9px] text-slate-400 italic">Vector Engine Overlay</span>
                 )}
               </div>
+            </div>
+          </div>
+
+          {/* Layer 2 Blending Mode Selector (Normal | Multiply | Overlay) */}
+          <div className="flex items-center justify-between pt-1 text-[10px] font-sans">
+            <span className="font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1">
+              <Blend className="w-3 h-3 text-vow-accent" />
+              Layer 2 Blend Mode:
+            </span>
+            <div className="flex space-x-1 bg-slate-200/80 p-0.5 rounded-md border border-slate-300">
+              {(["normal", "multiply", "overlay"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setTextLayerBlendMode(mode)}
+                  className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase transition-all ${
+                    textLayerBlendMode === mode
+                      ? "bg-vow-dark text-white shadow-2xs font-extrabold"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  {mode}
+                </button>
+              ))}
             </div>
           </div>
         </div>

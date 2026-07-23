@@ -6,6 +6,7 @@ import { AiGenerationType, PromptGuidanceConfig, DEFAULT_PROMPT_GUIDANCE } from 
 
 export type CanvasFormat = "2_x_6" | "4_x_6" | "6_x_4" | "square";
 export type StudioMode = "generative_ai" | "deterministic_vector";
+export type TextBlendMode = "normal" | "multiply" | "overlay";
 
 export interface ReferenceImage {
   id: string;
@@ -26,6 +27,8 @@ export interface EditorState {
   // 2-Layer Composition System
   backgroundPatternAssetUrl: string | null; // Layer 1: Background & Pattern
   textLogoAssetUrl: string | null;          // Layer 2: Text & Monogram Logo
+  textLayerBlendMode: TextBlendMode;         // Layer 2 Blend Mode: normal | multiply | overlay
+  vectorOverlayEnabled: boolean;            // Enable Vector Typography overlay over AI backgrounds
 
   aiPrompt: string;
 
@@ -62,6 +65,8 @@ export interface EditorState {
   setAiGeneratedAssetUrl: (url: string | null) => void;
   setBackgroundPatternAssetUrl: (url: string | null) => void;
   setTextLogoAssetUrl: (url: string | null) => void;
+  setTextLayerBlendMode: (mode: TextBlendMode) => void;
+  setVectorOverlayEnabled: (enabled: boolean) => void;
   setAiGenerationType: (type: AiGenerationType) => void;
   setPromptGuidanceConfig: (config: Partial<PromptGuidanceConfig>) => void;
   setIsPromptGuidanceModalOpen: (open: boolean) => void;
@@ -151,9 +156,11 @@ export const useEditorStore = create<EditorState>((set) => ({
   studioMode: "generative_ai",
   aiGeneratedAssetUrl: null,
 
-  // 2-Layer Composition System defaults
+  // 2-Layer Composition System defaults with blend mode
   backgroundPatternAssetUrl: null,
   textLogoAssetUrl: null,
+  textLayerBlendMode: "multiply", // Default to multiply for seamless print blending
+  vectorOverlayEnabled: true,     // Vector text overlay on top of AI backgrounds enabled by default
 
   aiPrompt: "",
 
@@ -193,6 +200,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   setAiGeneratedAssetUrl: (url) => set({ aiGeneratedAssetUrl: url, textLogoAssetUrl: url }),
   setBackgroundPatternAssetUrl: (url) => set({ backgroundPatternAssetUrl: url }),
   setTextLogoAssetUrl: (url) => set({ textLogoAssetUrl: url, aiGeneratedAssetUrl: url }),
+  setTextLayerBlendMode: (mode) => set({ textLayerBlendMode: mode }),
+  setVectorOverlayEnabled: (enabled) => set({ vectorOverlayEnabled: enabled }),
   setAiGenerationType: (type) => set({ aiGenerationType: type }),
   setPromptGuidanceConfig: (config) =>
     set((state) => ({ promptGuidanceConfig: { ...state.promptGuidanceConfig, ...config } })),
@@ -266,6 +275,8 @@ export const useEditorStore = create<EditorState>((set) => ({
       aiGeneratedAssetUrl: null,
       backgroundPatternAssetUrl: null,
       textLogoAssetUrl: null,
+      textLayerBlendMode: "multiply",
+      vectorOverlayEnabled: true,
       ornamentUrl: null,
       referenceImages: [],
       photoboothMode: true,

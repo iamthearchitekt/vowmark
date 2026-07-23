@@ -17,6 +17,7 @@ export function ArtboardCanvas() {
   const studioMode = useEditorStore((state) => state.studioMode);
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
   const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
+  const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
 
   const photoboothMode = useEditorStore((state) => state.photoboothMode);
@@ -190,7 +191,7 @@ export function ArtboardCanvas() {
         )}
 
         {/* ======================================================== */}
-        {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER */}
+        {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES */}
         {/* ======================================================== */}
         <div
           className={`absolute z-20 flex items-center justify-center transition-all ${
@@ -203,34 +204,18 @@ export function ArtboardCanvas() {
               is2x6Format && photoboothMode
                 ? `translateY(${photoboothOffsetY}px) scale(${photoboothScale / 100})`
                 : undefined,
+            mixBlendMode: textLayerBlendMode,
           }}
         >
-          {studioMode === "generative_ai" ? (
-            activeLogoAsset ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={activeLogoAsset}
-                alt="Layer 2 AI Text & Monogram Logo Artwork"
-                className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
-              />
-            ) : (
-              /* Blank Canvas Indicator when no text logo asset is loaded yet */
-              !backgroundPatternAssetUrl && (
-                <div className="text-center text-vow-muted p-4 flex flex-col items-center justify-center space-y-1.5 border-2 border-dashed border-slate-200/80 rounded-xl max-w-xs bg-white/90 backdrop-blur-2xs shadow-2xs">
-                  <div className="w-8 h-8 rounded-full bg-slate-100 text-vow-accent flex items-center justify-center">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                  <h4 className="font-bold text-[11px] text-vow-dark uppercase tracking-wider">
-                    Monogram Zone
-                  </h4>
-                  <p className="text-[9px] leading-relaxed text-slate-500 font-sans">
-                    Type in AI Assistant to render logo artwork in this branding zone.
-                  </p>
-                </div>
-              )
-            )
+          {studioMode === "generative_ai" && activeLogoAsset ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={activeLogoAsset}
+              alt="Layer 2 AI Text & Monogram Logo Artwork"
+              className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
+            />
           ) : (
-            /* Deterministic Vector Mode Typography Overlay */
+            /* Deterministic Vector Mode Typography Overlay (Can overlay on top of AI backgrounds!) */
             <>
               {ornamentUrl && (
                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-85">

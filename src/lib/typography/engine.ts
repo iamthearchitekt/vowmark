@@ -11,6 +11,7 @@ export interface TypographyOptions {
   hashtagText?: string;
   hashtagFontFamily?: string;
   hashtagFontSize?: number;
+  hashtagLetterSpacing?: number;
   locationText?: string;
   fontFamily: string;
   fontSize: number; // e.g. 150
@@ -97,6 +98,7 @@ export class TypographyEngine {
     const hFontSize = options.hashtagFontSize !== undefined ? options.hashtagFontSize : Math.round(pFontSize * 0.24);
 
     const dLetterSpacing = options.dateLetterSpacing !== undefined ? options.dateLetterSpacing : 4;
+    const hLetterSpacing = options.hashtagLetterSpacing !== undefined ? options.hashtagLetterSpacing : 4;
     const letterSpacing = options.letterSpacing || 6;
     const ampScale = options.ampersandScale || 0.6;
     const ampFontSize = pFontSize * ampScale;
@@ -149,7 +151,7 @@ export class TypographyEngine {
       if (hashtagStr) {
         const hashtagY = botY + sFontSize * (dateStr ? 1.35 : 0.9);
         elementsSvg += `
-          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" font-weight="400" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" font-weight="400" letter-spacing="${hLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
         `;
       }
     } else if (options.layout === "horizontal") {
@@ -166,7 +168,7 @@ export class TypographyEngine {
       if (hashtagStr) {
         const hashtagY = centerY + pFontSize * (dateStr ? 1.25 : 0.8);
         elementsSvg += `
-          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="${hLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
         `;
       }
     } else if (options.layout === "interlocking") {
@@ -192,7 +194,7 @@ export class TypographyEngine {
       if (hashtagStr) {
         const hashtagY = centerY + monoSize * (dateStr ? 0.82 : 0.65);
         elementsSvg += `
-          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="${hLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
         `;
       }
     } else {

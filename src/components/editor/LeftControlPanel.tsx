@@ -41,6 +41,7 @@ export function LeftControlPanel() {
   const hashtagFontSize = useEditorStore((state) => state.typographyOptions.hashtagFontSize || 36);
   const letterSpacing = useEditorStore((state) => state.typographyOptions.letterSpacing);
   const dateLetterSpacing = useEditorStore((state) => state.typographyOptions.dateLetterSpacing ?? 4);
+  const hashtagLetterSpacing = useEditorStore((state) => state.typographyOptions.hashtagLetterSpacing ?? 4);
   const nameGap = useEditorStore((state) => state.typographyOptions.nameGap);
   const ampersandScale = useEditorStore((state) => state.typographyOptions.ampersandScale);
   const ampersandText = useEditorStore((state) => state.typographyOptions.ampersandText);
@@ -318,6 +319,37 @@ export function LeftControlPanel() {
               onChange={(e) => setTypographyOptions({ hashtagFontSize: Number(e.target.value) })}
               className="w-full accent-vow-dark cursor-pointer"
             />
+
+            {/* Dedicated Hashtag Letter Spacing Slider & Input */}
+            <div className="pt-2 border-t border-stone-200/80 space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-sans font-bold text-vow-muted uppercase tracking-wider">
+                  Hashtag Letter Spacing
+                </label>
+                <div className="flex items-center space-x-1">
+                  <input
+                    type="number"
+                    min="-4"
+                    max="120"
+                    value={hashtagLetterSpacing}
+                    onChange={(e) => {
+                      const val = Math.max(-4, Math.min(120, Number(e.target.value) || 0));
+                      setTypographyOptions({ hashtagLetterSpacing: val });
+                    }}
+                    className="w-12 bg-stone-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  />
+                  <span className="text-[10px] text-vow-muted font-bold">px</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min="-4"
+                max="100"
+                value={hashtagLetterSpacing}
+                onChange={(e) => setTypographyOptions({ hashtagLetterSpacing: Number(e.target.value) })}
+                className="w-full accent-vow-dark cursor-pointer"
+              />
+            </div>
           </div>
 
           <div>

@@ -172,6 +172,7 @@ const defaultTypography: TypographyOptions = {
   dateFontSize: 42,
   dateLetterSpacing: 4,
   hashtagFontSize: 36,
+  hashtagLetterSpacing: 4,
   fontWeight: 400,
   letterSpacing: -1, // Set to -1px default
   lineHeight: 1.15,

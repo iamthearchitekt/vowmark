@@ -58,6 +58,7 @@ export function ArtboardCanvas() {
   const hashtagText = useEditorStore((state) => state.typographyOptions.hashtagText);
   const hashtagFontFamily = useEditorStore((state) => state.typographyOptions.hashtagFontFamily);
   const hashtagFontSize = useEditorStore((state) => state.typographyOptions.hashtagFontSize);
+  const hashtagLetterSpacing = useEditorStore((state) => state.typographyOptions.hashtagLetterSpacing);
   const fontFamily = useEditorStore((state) => state.typographyOptions.fontFamily);
   const fontSize = useEditorStore((state) => state.typographyOptions.fontSize);
   const primaryFontSize = useEditorStore((state) => state.typographyOptions.primaryFontSize);
@@ -105,6 +106,7 @@ export function ArtboardCanvas() {
       hashtagText,
       hashtagFontFamily,
       hashtagFontSize,
+      hashtagLetterSpacing,
       fontFamily,
       fontSize,
       primaryFontSize,
@@ -130,6 +132,7 @@ export function ArtboardCanvas() {
     hashtagText,
     hashtagFontFamily,
     hashtagFontSize,
+    hashtagLetterSpacing,
     fontFamily,
     fontSize,
     primaryFontSize,

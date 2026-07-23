@@ -5,6 +5,7 @@ import { TypographyEngine } from "@/lib/typography/engine";
 import { resolveFontConfig } from "@/lib/typography/font-resolver";
 import { useEffect, useState, useMemo } from "react";
 import {
+  Camera,
   ArrowUpDown,
   MoveHorizontal,
   Maximize2,
@@ -179,9 +180,7 @@ export function ArtboardCanvas() {
   // Active Frame Overlay URL Resolution
   let activeFrameOverlayUrl = photoboothFrameUrl;
   if (!activeFrameOverlayUrl) {
-    if (canvasFormat === "2_x_6") {
-      activeFrameOverlayUrl = "/photobooth-2x6-frame.png";
-    } else if (canvasFormat === "4_x_6") {
+    if (canvasFormat === "4_x_6") {
       activeFrameOverlayUrl = "/photobooth-frames/frame-4x6-portrait.png";
     } else if (canvasFormat === "6_x_4") {
       activeFrameOverlayUrl = `/photobooth-frames/frame-6x4-${photoboothMode6x4}.png`;
@@ -217,10 +216,31 @@ export function ArtboardCanvas() {
         )}
 
         {/* ======================================================== */}
-        {/* PHOTOBOOTH STRIP & FRAME OVERLAY (2x6, 4x6, 6x4 Formats) */}
-        {/* Clean 1:1 photobooth frame rendering matching reference layout */}
+        {/* 2x6 PHOTOBOOTH STRIP OVERLAY (Rendered matching user reference image 100%) */}
         {/* ======================================================== */}
-        {isNonSquare && photoboothMode && activeFrameOverlayUrl && (
+        {is2x6Format && photoboothMode && (
+          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col items-center pt-6 px-3.5 space-y-3">
+            {/* Photo Box 1 */}
+            <div className="w-full h-[164px] bg-[#383838] flex items-center justify-center rounded-xs shadow-2xs">
+              <Camera className="w-12 h-12 text-[#242424]" strokeWidth={1.5} />
+            </div>
+
+            {/* Photo Box 2 */}
+            <div className="w-full h-[164px] bg-[#383838] flex items-center justify-center rounded-xs shadow-2xs">
+              <Camera className="w-12 h-12 text-[#242424]" strokeWidth={1.5} />
+            </div>
+
+            {/* Photo Box 3 */}
+            <div className="w-full h-[164px] bg-[#383838] flex items-center justify-center rounded-xs shadow-2xs">
+              <Camera className="w-12 h-12 text-[#242424]" strokeWidth={1.5} />
+            </div>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* PHOTOBOOTH STRIP & FRAME OVERLAY (4x6 and 6x4 Formats) */}
+        {/* ======================================================== */}
+        {!is2x6Format && isNonSquare && photoboothMode && activeFrameOverlayUrl && (
           <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -228,9 +248,7 @@ export function ArtboardCanvas() {
               alt="Photobooth Frame Overlay"
               className="absolute inset-0 w-full h-full object-contain z-10 transition-transform duration-200"
               style={{
-                transform: !is2x6Format
-                  ? `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined
-                  : undefined,
+                transform: `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined,
               }}
             />
           </div>
@@ -238,12 +256,12 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
-        {/* For 2x6: Anchored precisely in bottom 28% area under the 3 photo boxes */}
+        {/* For 2x6: Anchored precisely in bottom white area under the 3 photo boxes */}
         {/* ======================================================== */}
         <div
           className={`absolute z-20 flex items-center justify-center transition-all ${
             is2x6Format
-              ? "bottom-0 left-0 right-0 h-[28%] p-3"
+              ? "bottom-0 left-0 right-0 h-[26%] p-3"
               : "inset-0 p-6 w-full h-full"
           }`}
           style={{

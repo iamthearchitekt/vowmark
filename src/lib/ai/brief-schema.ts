@@ -88,6 +88,7 @@ export const DesignBriefSchema = z.object({
   canvasFormat: z.string().optional(),
   generationType: z.string().optional(),
   guidanceConfig: z.any().optional(),
+  hasActiveBackground: z.boolean().optional().default(false),
   recommendedFonts: z.array(z.string()).default([]),
   productionNotes: z.array(z.string()).default([]),
 });

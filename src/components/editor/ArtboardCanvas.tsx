@@ -199,7 +199,7 @@ export function ArtboardCanvas() {
   return (
     <div className="relative flex-1 flex flex-col items-center justify-start pt-16 pb-24 bg-stone-100/90 overflow-y-auto overflow-x-hidden select-none font-sans">
       {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Top of Work Window) */}
-      {isNonSquare && (
+      {(isNonSquare || !!activeLogoAsset) && (
         <div className="absolute top-3 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-3.5 text-xs font-sans animate-fadeIn">
           {/* 6x4 Mode Selector — mode1 = 3 Boxes, mode2 = 1 Box */}
           {is6x4Format && photoboothMode && (
@@ -450,15 +450,13 @@ export function ArtboardCanvas() {
           </div>
         )}
 
-        {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
-        {/* ======================================================== */}
         {layer2Visible && (
           <div
             className="absolute z-20 flex items-center justify-center transition-all inset-0 p-6 w-full h-full"
             style={{
               transform:
-                isNonSquare && !is2x6Format
+                photoboothOffsetX !== 0 || photoboothOffsetY !== 0 || photoboothScale !== 100
                   ? `translate(${photoboothOffsetX}px, ${photoboothOffsetY}px) scale(${photoboothScale / 100})`
                   : undefined,
               mixBlendMode: textLayerBlendMode,

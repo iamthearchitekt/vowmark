@@ -153,6 +153,7 @@ export function RightAiPanel() {
       generationType: aiGenerationType,
       canvasFormat: canvasFormat,
       guidanceConfig: promptGuidanceConfig,
+      hasActiveBackground: !!backgroundPatternAssetUrl,
       referenceImages: referenceImages.map((img) => ({ url: img.url, tag: img.tag })),
     };
 

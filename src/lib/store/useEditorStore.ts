@@ -155,6 +155,7 @@ const defaultBrief: DesignBrief = {
   negativePrompt: ["script font", "calligraphy", "chopin script", "mockup", "paper texture", "leaves"],
   outputMode: "hybrid",
   aspectRatio: "1:1",
+  hasActiveBackground: false,
   recommendedFonts: ["Cormorant Garamond", "Bodoni Moda", "Cinzel"],
   productionNotes: [],
 };

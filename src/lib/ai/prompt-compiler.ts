@@ -231,13 +231,17 @@ export function compileGenerationPrompt(
     fontStyleClause = "Use crisp architectural sans-serif typography with generous letter spacing.";
   }
 
+  const colorHarmonyClause = brief.hasActiveBackground
+    ? "COLOR HARMONY DIRECTIVE: An artistic background backdrop is present on Layer 1. Render all typography, lettering, initials, and line art using deep, dark, rich color tones (such as rich onyx black, dark espresso charcoal, or deep burnished gold) to establish high-contrast legibility and color harmony with the background artwork."
+    : "Color: solid black artwork on a pure white background.";
+
   const rawPrompt = [
     assetInstruction,
     aspectRatioInfo.promptInstruction,
     fontStyleClause,
     layoutInstruction,
     `Style aesthetic: ${styleDef.name}.`,
-    `Color: solid black artwork on a pure white background.`,
+    colorHarmonyClause,
     `Composition: balanced, restrained, refined, and appropriate for a high-end invitation.`,
     brief.generationPrompt ? `User instructions: ${brief.generationPrompt}` : "",
   ]

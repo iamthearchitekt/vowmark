@@ -25,6 +25,7 @@ describe("Server-side Prompt Compiler", () => {
       negativePrompt: ["chopin script"],
       outputMode: "hybrid",
       aspectRatio: "1:1",
+      hasActiveBackground: false,
       recommendedFonts: [],
       productionNotes: [],
     };

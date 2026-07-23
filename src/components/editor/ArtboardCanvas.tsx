@@ -156,8 +156,8 @@ export function ArtboardCanvas() {
   let heightPx = 650;
 
   if (canvasFormat === "2_x_6") {
-    widthPx = 280;
-    heightPx = 840;
+    widthPx = 600;
+    heightPx = 1800;
   } else if (canvasFormat === "4_x_6") {
     widthPx = 480;
     heightPx = 720;
@@ -226,16 +226,8 @@ export function ArtboardCanvas() {
             <img
               src={activeFrameOverlayUrl}
               alt="Photobooth Frame Overlay"
-              className="absolute w-full h-full object-fill z-10"
-              style={is2x6Format ? {
-                /* Slightly scale up and push down so the frame fills the canvas snugly */
-                top: "6px",
-                left: "-2px",
-                width: "calc(100% + 4px)",
-                height: "calc(100% - 2px)",
-              } : {
-                top: 0,
-                left: 0,
+              className="absolute inset-0 w-full h-full object-fill z-10"
+              style={is2x6Format ? undefined : {
                 transform: `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined,
               }}
             />

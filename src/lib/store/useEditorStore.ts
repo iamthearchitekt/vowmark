@@ -247,9 +247,12 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setCanvasFormat: (format) => {
     const dims = getFormatDimensions(format);
+    // Auto-zoom so each canvas size fits comfortably in the viewport
+    const autoZoom = format === "2_x_6" ? 44 : format === "square" ? 100 : 70;
     set((state) => ({
       canvasFormat: format,
       photoboothMode: format !== "square",
+      zoomLevel: autoZoom,
       typographyOptions: {
         ...state.typographyOptions,
         canvasWidth: dims.width,

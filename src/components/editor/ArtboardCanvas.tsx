@@ -176,7 +176,6 @@ export function ArtboardCanvas() {
   // Determine active text/logo artwork URL (Layer 2)
   const activeLogoAsset = textLogoAssetUrl || (studioMode === "generative_ai" ? aiGeneratedAssetUrl : null);
 
-  const is2x6Format = canvasFormat === "2_x_6";
   const is6x4Format = canvasFormat === "6_x_4";
   const isNonSquare = canvasFormat !== "square";
 
@@ -222,7 +221,6 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* PHOTOBOOTH STRIP & FRAME OVERLAY (2x6, 4x6, 6x4 Formats) */}
-        {/* Full Edge-to-Edge Photo Mock Fitting */}
         {/* ======================================================== */}
         {isNonSquare && photoboothMode && activeFrameOverlayUrl && (
           <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between">
@@ -230,7 +228,7 @@ export function ArtboardCanvas() {
             <img
               src={activeFrameOverlayUrl}
               alt="Photobooth Frame Overlay"
-              className="absolute inset-0 w-full h-full object-cover z-10 transition-transform duration-200"
+              className="absolute inset-0 w-full h-full object-contain z-10 transition-transform duration-200"
               style={{
                 transform: `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined,
               }}
@@ -240,14 +238,10 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
-        {/* Anchored consistently in bottom section for 2x6 strip */}
+        {/* Unconstrained full-canvas bounds for 100% position & flip freedom */}
         {/* ======================================================== */}
         <div
-          className={`absolute z-20 flex items-center justify-center transition-all ${
-            is2x6Format
-              ? "bottom-0 left-0 right-0 h-[25%] p-3"
-              : "inset-0 p-6 w-full h-full"
-          }`}
+          className="absolute inset-0 z-20 p-4 w-full h-full flex items-center justify-center transition-all"
           style={{
             transform:
               isNonSquare

@@ -313,17 +313,7 @@ export function RightAiPanel() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              onClick={handleVisualizeFromConversation}
-              disabled={isAiGenerating}
-              className="px-3.5 py-1.5 bg-vow-accent hover:brightness-110 text-vow-dark font-black text-xs rounded-md shadow-md border border-vow-accent flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-              title="Synthesize conversation history into live canvas artwork"
-            >
-              <Sparkles className="w-4 h-4 text-vow-dark fill-vow-dark" />
-              <span>Visualize</span>
-            </button>
+          <div className="flex items-center space-x-1.5">
             <button
               type="button"
               onClick={() => setIsPromptGuidanceModalOpen(true)}

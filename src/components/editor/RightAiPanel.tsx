@@ -198,9 +198,99 @@ export function RightAiPanel() {
       } catch (err) {
         addMessage({
           role: "assistant",
-          content: "Design planning response logged. Type 'Make me a...' when ready to render artwork on canvas.",
+          content: "Design planning response logged. Click 'Visualize' when ready to render artwork on canvas.",
         });
       }
+    }
+  };
+
+  const handleVisualizeFromConversation = async () => {
+    // Collect entire chat history between user and assistant
+    const chatHistorySummary = messages
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
+      .join("\n");
+
+    const textSummary =
+      chatHistorySummary || "Create a bespoke luxury wedding identity mark based on our design preferences.";
+
+    addMessage({
+      role: "user",
+      content: "🎨 Visualize latest conversation artwork on canvas.",
+    });
+
+    setIsAiGenerating(true);
+
+    const intent = parseChatIntent(textSummary);
+
+    const updatedBriefData: any = {
+      generationPrompt: textSummary,
+      generationType: aiGenerationType,
+      guidanceConfig: promptGuidanceConfig,
+    };
+
+    if (
+      aiGenerationType === "text_logo" &&
+      intent.primaryText &&
+      intent.primaryText.length <= 15 &&
+      intent.secondaryText &&
+      intent.secondaryText.length <= 15
+    ) {
+      updatedBriefData.primaryText = intent.primaryText;
+      updatedBriefData.secondaryText = intent.secondaryText;
+      setTypographyOptions({
+        primaryText: intent.primaryText,
+        secondaryText: intent.secondaryText,
+      });
+    }
+
+    if (intent.assetType) {
+      updatedBriefData.assetType = intent.assetType;
+    }
+    if (intent.weddingStyle) {
+      updatedBriefData.weddingStyle = intent.weddingStyle;
+    }
+
+    setBrief(updatedBriefData);
+
+    const mergedBrief = {
+      ...brief,
+      ...updatedBriefData,
+      generationPrompt: textSummary,
+      generationType: aiGenerationType,
+      canvasFormat: canvasFormat,
+      guidanceConfig: promptGuidanceConfig,
+      referenceImages: referenceImages.map((img) => ({ url: img.url, tag: img.tag })),
+    };
+
+    try {
+      const genRes = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brief: mergedBrief,
+          action: "generate",
+        }),
+      });
+
+      const genData = await genRes.json();
+      const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
+
+      setAiGeneratedAssetUrl(generatedUrl);
+      addMessage({
+        role: "assistant",
+        content:
+          aiGenerationType === "background_pattern"
+            ? "Background pattern generation completed from conversation history. Canvas updated."
+            : "Logo generation completed from conversation history. Canvas updated.",
+      });
+    } catch (err) {
+      addMessage({
+        role: "assistant",
+        content: "Generation failed. Please try again.",
+      });
+    } finally {
+      setIsAiGenerating(false);
     }
   };
 
@@ -399,21 +489,16 @@ export function RightAiPanel() {
           <div className="flex items-center justify-between">
             <button
               type="button"
-              onClick={() => {
-                const prefix = "Make me a ";
-                if (!inputMsg.toLowerCase().startsWith("make me a")) {
-                  setInputMsg(prefix + inputMsg);
-                }
-                promptInputRef.current?.focus();
-              }}
-              className="px-3 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded text-xs font-bold text-amber-950 flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
-              title="Prefill chat input with 'Make me a ' to trigger live artwork generation"
+              onClick={handleVisualizeFromConversation}
+              disabled={isAiGenerating}
+              className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 border border-amber-600 rounded-md text-xs font-black text-slate-950 flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer disabled:opacity-50"
+              title="Synthesize our latest conversation into new artwork on canvas"
             >
-              <Sparkles className="w-3.5 h-3.5 text-vow-accent" />
-              <span>Visualize</span>
+              <Sparkles className="w-4 h-4 text-slate-950" />
+              <span>Visualize Conversation Artwork</span>
             </button>
             <span className="text-[10px] text-vow-muted font-mono">
-              Triggers Live Artboard Generation
+              Generates Artwork from Chat History
             </span>
           </div>
 

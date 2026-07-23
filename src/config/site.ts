@@ -1,13 +1,14 @@
 export const SITE_CONFIG = {
   name: "VOWMARK",
-  tagline: "AI-Powered Wedding Identity & Stationery Asset Generator",
+  domain: "vowmark.studio",
+  tagline: "AI-Powered Wedding Identity & Stationery Asset Studio",
   description:
-    "Refined, high-end wedding identity design combining conversational AI, deterministic vector typography, and wedding intelligence.",
-  url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-  ogImage: "https://vowmark.com/og.jpg",
+    "Refined, high-end wedding identity design combining conversational AI, deterministic vector typography, and bespoke wedding stationery design.",
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://vowmark.studio",
+  ogImage: "https://vowmark.studio/og.png",
   links: {
-    twitter: "https://twitter.com/vowmark",
-    github: "https://github.com/vowmark",
+    twitter: "https://twitter.com/vowmarkstudio",
+    github: "https://github.com/iamthearchitekt/vowmark",
   },
   defaultBranding: {
     primaryColor: "#C9A251", // Gold Accent Hex: #C9A251

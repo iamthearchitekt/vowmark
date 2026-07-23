@@ -1,9 +1,59 @@
-# VOWMARK Deployment Guide
+# VOWMARK Studio Production & Custom Domain Deployment Guide
 
-VOWMARK can be deployed to Vercel, AWS, or any Node.js container environment.
+**Target Domain**: `vowmark.studio`
 
-## Steps
-1. Set up production PostgreSQL database and set `DATABASE_URL`.
-2. Configure `.env` variables (`OPENAI_API_KEY`, `GOOGLE_GEMINI_API_KEY`, `STORAGE_BUCKET`).
-3. Run `npx prisma db push`.
-4. Deploy using `npm run build` and `npm run start`.
+---
+
+## 1. Domain & DNS Setup (`vowmark.studio`)
+
+To link your newly purchased domain **`vowmark.studio`** (via Porkbun, Namecheap, GoDaddy, Google Domains, etc.) to your production host (e.g., Vercel):
+
+### Recommended Vercel DNS Records:
+| Type | Name | Value / Target | Purpose |
+| :--- | :--- | :--- | :--- |
+| **A Record** | `@` | `76.76.21.21` | Apex domain (`vowmark.studio`) |
+| **CNAME** | `www` | `cname.vercel-dns.com` | Subdomain (`www.vowmark.studio`) |
+
+*Vercel will automatically issue and renew free SSL / TLS certificates (HTTPS) for `vowmark.studio` upon DNS verification.*
+
+---
+
+## 2. Environment Variables Configuration
+
+Set these production environment variables in your hosting provider dashboard (Vercel Settings → Environment Variables):
+
+```env
+# Application URL
+NEXT_PUBLIC_APP_URL="https://vowmark.studio"
+
+# Database & Auth
+DATABASE_URL="postgresql://user:password@db-host:5432/vowmark_db"
+AUTH_SECRET="your-secure-production-auth-secret-32-chars"
+
+# OpenAI Image & Chat API Credentials
+OPENAI_API_KEY="sk-proj-your-live-openai-key"
+OPENAI_CHAT_MODEL="gpt-4o"
+OPENAI_IMAGE_MODEL="gpt-image-2"
+
+# Storage & Stripe
+STORAGE_ENDPOINT="https://s3.amazonaws.com"
+STORAGE_BUCKET="vowmark-studio-assets"
+STRIPE_SECRET_KEY="sk_live_..."
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
+```
+
+---
+
+## 3. Build & Deployment Commands
+
+```bash
+# 1. Typecheck & Verification
+npm run typecheck
+npm run test
+
+# 2. Production Build
+npm run build
+
+# 3. Start Server
+npm run start
+```

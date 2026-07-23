@@ -3,8 +3,50 @@ import "./globals.css";
 import { SITE_CONFIG } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: `${SITE_CONFIG.name} — AI-Powered Wedding Identity & Stationery Asset Generator`,
+  metadataBase: new URL(SITE_CONFIG.url),
+  title: {
+    default: `${SITE_CONFIG.name} Studio — AI Wedding Identity & Vector Typography`,
+    template: `%s | ${SITE_CONFIG.name} Studio`,
+  },
   description: SITE_CONFIG.description,
+  keywords: [
+    "wedding logo",
+    "wedding monogram",
+    "wedding identity design",
+    "vector typography",
+    "wedding stationery",
+    "AI logo generator",
+    "wedding crest",
+    "vowmark studio",
+  ],
+  authors: [{ name: "VOWMARK Studio" }],
+  creator: "VOWMARK Studio",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: SITE_CONFIG.url,
+    title: `${SITE_CONFIG.name} Studio — AI Wedding Identity & Vector Typography`,
+    description: SITE_CONFIG.description,
+    siteName: `${SITE_CONFIG.name} Studio`,
+    images: [
+      {
+        url: SITE_CONFIG.ogImage,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_CONFIG.name} Studio`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_CONFIG.name} Studio — AI Wedding Identity & Vector Typography`,
+    description: SITE_CONFIG.description,
+    images: [SITE_CONFIG.ogImage],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

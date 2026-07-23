@@ -3,12 +3,72 @@
 import Link from "next/link";
 import { SITE_CONFIG } from "@/config/site";
 import { useEditorStore } from "@/lib/store/useEditorStore";
-import { RotateCcw, Camera } from "lucide-react";
+import { RotateCcw, Camera, Save, Check } from "lucide-react";
+import { useState } from "react";
 
 export function Header() {
   const resetFields = useEditorStore((state) => state.resetFields);
   const photoboothMode = useEditorStore((state) => state.photoboothMode);
   const setPhotoboothMode = useEditorStore((state) => state.setPhotoboothMode);
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSaveProject = () => {
+    const state = useEditorStore.getState();
+    const pId = state.projectId || `proj_${Date.now()}`;
+    const pTitle =
+      state.typographyOptions.primaryText && state.typographyOptions.secondaryText
+        ? `${state.typographyOptions.primaryText} & ${state.typographyOptions.secondaryText}`
+        : state.projectTitle || "Wedding Mark Project";
+
+    const projectData = {
+      id: pId,
+      title: pTitle,
+      assetType: state.brief.assetType || "couple_logo",
+      style: state.brief.weddingStyle || "editorial_luxury",
+      font: state.typographyOptions.fontFamily || "Cormorant Garamond",
+      primaryText: state.typographyOptions.primaryText,
+      secondaryText: state.typographyOptions.secondaryText,
+      dateText: state.typographyOptions.dateText,
+      hashtagText: state.typographyOptions.hashtagText,
+      canvasFormat: state.canvasFormat,
+      backgroundPatternAssetUrl: state.backgroundPatternAssetUrl,
+      backgroundSuite: state.backgroundSuite,
+      textLogoAssetUrl: state.textLogoAssetUrl,
+      textColor: state.textColor,
+      photoboothMode: state.photoboothMode,
+      brief: state.brief,
+      typographyOptions: state.typographyOptions,
+      updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      savedAtIso: new Date().toISOString(),
+      version: "v1.0 (Saved)",
+    };
+
+    try {
+      // 1. Save individual project
+      localStorage.setItem(`vowmark_project_${pId}`, JSON.stringify(projectData));
+      localStorage.setItem("vowmark_latest_project", JSON.stringify(projectData));
+
+      // 2. Push to global Client Projects array
+      const existingRaw = localStorage.getItem("vowmark_client_projects");
+      let projectsList: any[] = existingRaw ? JSON.parse(existingRaw) : [];
+
+      const existingIdx = projectsList.findIndex((p: any) => p.id === pId);
+      if (existingIdx >= 0) {
+        projectsList[existingIdx] = projectData;
+      } else {
+        projectsList.unshift(projectData);
+      }
+      localStorage.setItem("vowmark_client_projects", JSON.stringify(projectsList));
+
+      // 3. Dispatch event to notify dashboard
+      window.dispatchEvent(new CustomEvent("vowmark_project_saved", { detail: projectData }));
+    } catch (e) {
+      console.warn("Save project error:", e);
+    }
+
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-vow-paper border-b border-vow-border px-6 py-3.5 flex items-center justify-between font-sans">
@@ -43,7 +103,7 @@ export function Header() {
         <button
           type="button"
           onClick={() => setPhotoboothMode(!photoboothMode)}
-          className={`text-[11px] font-sans font-bold flex items-center space-x-1.5 px-3 py-1 rounded border transition-all shadow-2xs ${
+          className={`text-[11px] font-sans font-bold flex items-center space-x-1.5 px-3 py-1 rounded border transition-all shadow-2xs cursor-pointer ${
             photoboothMode
               ? "bg-vow-dark text-white border-vow-dark ring-1 ring-vow-accent"
               : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"
@@ -54,10 +114,34 @@ export function Header() {
           <span>Photo Mock: {photoboothMode ? "ON" : "OFF"}</span>
         </button>
 
+        {/* Save Project Button */}
+        <button
+          type="button"
+          onClick={handleSaveProject}
+          className={`text-[11px] font-sans font-bold flex items-center space-x-1.5 px-3.5 py-1 rounded border transition-all shadow-2xs cursor-pointer ${
+            isSaved
+              ? "bg-emerald-600 text-white border-emerald-600"
+              : "bg-vow-dark text-vow-paper hover:bg-black border-vow-dark"
+          }`}
+          title="Save active project design & settings"
+        >
+          {isSaved ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-vow-champagne" />
+              <span>Project Saved!</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-3.5 h-3.5 text-vow-accent" />
+              <span>Save Project</span>
+            </>
+          )}
+        </button>
+
         <button
           type="button"
           onClick={resetFields}
-          className="text-[11px] font-sans font-medium text-stone-500 hover:text-stone-800 flex items-center space-x-1.5 px-2.5 py-1 rounded border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-colors shadow-2xs"
+          className="text-[11px] font-sans font-medium text-stone-500 hover:text-stone-800 flex items-center space-x-1.5 px-2.5 py-1 rounded border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-colors shadow-2xs cursor-pointer"
           title="Reset all form fields & artboard to initial state"
         >
           <RotateCcw className="w-3 h-3 text-stone-400" />

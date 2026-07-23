@@ -117,6 +117,7 @@ export interface EditorState {
   setZoomLevel: (zoom: number) => void;
   addMessage: (msg: { role: "user" | "assistant" | "system"; content: string; flowerOptions?: string[] }) => void;
   setIsAiGenerating: (loading: boolean) => void;
+  loadProject: (projectData: any) => void;
   resetFields: () => void;
 }
 
@@ -186,28 +187,40 @@ const defaultTypography: TypographyOptions = {
   textColor: "#000000",
 };
 
+const getSavedStudioState = (): Partial<EditorState> => {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem("vowmark_active_studio_state");
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+};
+
+const savedStudioState = getSavedStudioState();
+
 export const useEditorStore = create<EditorState>((set) => ({
-  projectId: "proj_new_client",
-  projectTitle: "New Client Wedding Mark",
+  projectId: savedStudioState.projectId || "proj_new_client",
+  projectTitle: savedStudioState.projectTitle || "New Client Wedding Mark",
   assetType: "couple_logo",
 
-  studioMode: "generative_ai",
-  aiGeneratedAssetUrl: null,
+  studioMode: savedStudioState.studioMode || "generative_ai",
+  aiGeneratedAssetUrl: savedStudioState.aiGeneratedAssetUrl ?? null,
 
   // 2-Layer Composition System defaults with blend mode and opacities
-  backgroundPatternAssetUrl: null,
-  backgroundSuite: null,
-  multiFormatSuiteEnabled: true,
-  backgroundLayerOpacity: 100,     // Default 100% opacity for Layer 1 Background
-  layer1Visible: true,             // Layer 1 Visible by default
-  textLogoAssetUrl: null,
-  textLayerBlendMode: "multiply", // Default to multiply for seamless print blending
-  textLayerOpacity: 100,          // Default 100% opacity for Layer 2 Text
-  layer2Visible: true,             // Layer 2 Visible by default
-  vectorOverlayEnabled: true,     // Vector text overlay on top of AI backgrounds enabled by default
+  backgroundPatternAssetUrl: savedStudioState.backgroundPatternAssetUrl ?? null,
+  backgroundSuite: savedStudioState.backgroundSuite ?? null,
+  multiFormatSuiteEnabled: savedStudioState.multiFormatSuiteEnabled ?? true,
+  backgroundLayerOpacity: savedStudioState.backgroundLayerOpacity ?? 100,
+  layer1Visible: savedStudioState.layer1Visible ?? true,
+  textLogoAssetUrl: savedStudioState.textLogoAssetUrl ?? null,
+  textLayerBlendMode: savedStudioState.textLayerBlendMode || "multiply",
+  textLayerOpacity: savedStudioState.textLayerOpacity ?? 100,
+  layer2Visible: savedStudioState.layer2Visible ?? true,
+  vectorOverlayEnabled: savedStudioState.vectorOverlayEnabled ?? true,
 
   // Universal Vector Text Color default
-  textColor: "#000000",
+  textColor: savedStudioState.textColor || "#000000",
 
   aiPrompt: "",
 
@@ -216,29 +229,31 @@ export const useEditorStore = create<EditorState>((set) => ({
   activeGuardrailPresetId: "bse_photobooth_master",
   isPromptGuidanceModalOpen: false,
 
-  canvasFormat: "square",
+  canvasFormat: savedStudioState.canvasFormat || "square",
 
   // Photobooth strip mode & non-square adjustment defaults
-  photoboothMode: true,
-  photoboothMode6x4: "mode1",
-  photoboothFlipH: false,
-  photoboothFlipV: false,
-  photoboothFrameUrl: null,
-  photoboothOffsetX: 0,
-  photoboothOffsetY: 0,
-  photoboothScale: 100,
+  photoboothMode: savedStudioState.photoboothMode ?? true,
+  photoboothMode6x4: savedStudioState.photoboothMode6x4 || "mode1",
+  photoboothFlipH: savedStudioState.photoboothFlipH || false,
+  photoboothFlipV: savedStudioState.photoboothFlipV || false,
+  photoboothFrameUrl: savedStudioState.photoboothFrameUrl ?? null,
+  photoboothOffsetX: savedStudioState.photoboothOffsetX || 0,
+  photoboothOffsetY: savedStudioState.photoboothOffsetY || 0,
+  photoboothScale: savedStudioState.photoboothScale || 100,
 
-  brief: defaultBrief,
-  typographyOptions: defaultTypography,
+  brief: savedStudioState.brief ? { ...defaultBrief, ...savedStudioState.brief } : defaultBrief,
+  typographyOptions: savedStudioState.typographyOptions
+    ? { ...defaultTypography, ...savedStudioState.typographyOptions }
+    : defaultTypography,
 
-  referenceImages: [],
+  referenceImages: savedStudioState.referenceImages || [],
 
-  ornamentUrl: null,
+  ornamentUrl: savedStudioState.ornamentUrl ?? null,
   ornamentPosition: { x: 500, y: 500, scale: 1 },
 
   // Always flat white background with 100% default zoom scaling
   previewMode: "white",
-  zoomLevel: 100,
+  zoomLevel: savedStudioState.zoomLevel || 100,
 
   messages: [
     {
@@ -359,6 +374,23 @@ export const useEditorStore = create<EditorState>((set) => ({
   addMessage: (msg) => set((state) => ({ messages: [...state.messages, msg] })),
   setIsAiGenerating: (loading) => set({ isAiGenerating: loading }),
 
+  loadProject: (projectData) =>
+    set((state) => ({
+      projectId: projectData.id || state.projectId,
+      projectTitle: projectData.title || state.projectTitle,
+      brief: projectData.brief ? { ...state.brief, ...projectData.brief } : state.brief,
+      typographyOptions: projectData.typographyOptions
+        ? { ...state.typographyOptions, ...projectData.typographyOptions }
+        : state.typographyOptions,
+      canvasFormat: projectData.canvasFormat || state.canvasFormat,
+      backgroundPatternAssetUrl: projectData.backgroundPatternAssetUrl ?? state.backgroundPatternAssetUrl,
+      backgroundSuite: projectData.backgroundSuite ?? state.backgroundSuite,
+      textLogoAssetUrl: projectData.textLogoAssetUrl ?? state.textLogoAssetUrl,
+      aiGeneratedAssetUrl: projectData.textLogoAssetUrl ?? state.aiGeneratedAssetUrl,
+      textColor: projectData.textColor || state.textColor,
+      photoboothMode: projectData.photoboothMode ?? state.photoboothMode,
+    })),
+
   resetFields: () =>
     set({
       brief: defaultBrief,
@@ -383,3 +415,30 @@ export const useEditorStore = create<EditorState>((set) => ({
       photoboothScale: 100,
     }),
 }));
+
+if (typeof window !== "undefined") {
+  useEditorStore.subscribe((state) => {
+    try {
+      const activeState = {
+        projectId: state.projectId,
+        projectTitle: state.projectTitle,
+        studioMode: state.studioMode,
+        brief: state.brief,
+        typographyOptions: state.typographyOptions,
+        canvasFormat: state.canvasFormat,
+        backgroundPatternAssetUrl: state.backgroundPatternAssetUrl,
+        backgroundSuite: state.backgroundSuite,
+        textLogoAssetUrl: state.textLogoAssetUrl,
+        aiGeneratedAssetUrl: state.aiGeneratedAssetUrl,
+        textColor: state.textColor,
+        photoboothMode: state.photoboothMode,
+        photoboothOffsetX: state.photoboothOffsetX,
+        photoboothOffsetY: state.photoboothOffsetY,
+        photoboothScale: state.photoboothScale,
+      };
+      localStorage.setItem("vowmark_active_studio_state", JSON.stringify(activeState));
+    } catch (e) {
+      // Ignore quota errors
+    }
+  });
+}

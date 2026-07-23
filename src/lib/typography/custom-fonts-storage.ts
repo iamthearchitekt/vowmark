@@ -30,3 +30,17 @@ export function savePersistentCustomFontsBulk(fonts: FontRecord[]): void {
     console.error("Failed to bulk save custom fonts persistently:", err);
   }
 }
+
+export function removePersistentCustomFont(fontId: string): void {
+  try {
+    const existing = loadPersistentCustomFonts();
+    const filtered = existing.filter((f) => f.id !== fontId);
+    const dir = path.dirname(DATA_FILE_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(filtered, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Failed to remove persistent custom font:", err);
+  }
+}

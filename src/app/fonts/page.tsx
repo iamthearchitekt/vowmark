@@ -27,7 +27,6 @@ export default function FontsDiscoveryPage() {
   // Bulk font upload modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingUploads, setPendingUploads] = useState<UploadItem[]>([]);
-  const [globalCommercialApproved, setGlobalCommercialApproved] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,6 +80,23 @@ export default function FontsDiscoveryPage() {
       }
     }
   }, [allFontsList]);
+
+  // Remove font from library
+  const handleRemoveFont = async (fontToRemove: FontRecord) => {
+    if (!confirm(`Are you sure you want to remove ${fontToRemove.familyName} from your fonts library?`)) {
+      return;
+    }
+
+    setAllFontsList((prev) => prev.filter((f) => f.id !== fontToRemove.id));
+
+    try {
+      await fetch(`/api/fonts?id=${fontToRemove.id}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.warn("Failed to delete font on server:", err);
+    }
+  };
 
   // Save tag edits
   const handleSaveFontTags = (fontId: string, updatedTags: string[], subclassification?: string) => {
@@ -153,7 +169,6 @@ export default function FontsDiscoveryPage() {
     const payload = pendingUploads.map((item) => ({
       familyName: item.familyName.trim(),
       classification: item.classification,
-      commercialApproved: globalCommercialApproved,
       fontFileName: item.fileName,
     }));
 
@@ -218,7 +233,7 @@ export default function FontsDiscoveryPage() {
           <div>
             <h1 className="font-serif font-bold text-3xl text-vow-dark">Fonts Library</h1>
             <p className="text-xs text-vow-muted font-sans mt-1">
-              Browse, test custom previews, and edit font tags for high-precision recommendation filtering.
+              Browse, test custom previews, and manage your studio fonts library.
             </p>
           </div>
 
@@ -252,7 +267,7 @@ export default function FontsDiscoveryPage() {
             ))}
           </div>
 
-          {/* Dafont-Style Custom Live Preview Text Input */}
+          {/* Custom Live Preview Text Input */}
           <div className="relative w-full sm:w-80">
             <Type className="w-4 h-4 text-vow-accent absolute left-3 top-2.5" />
             <input
@@ -275,6 +290,7 @@ export default function FontsDiscoveryPage() {
               secondaryText=""
               onSelect={() => setSelectedFontForModal(font)}
               onEditTags={(targetFont) => setFontForTagEditing(targetFont)}
+              onRemoveFont={(targetFont) => handleRemoveFont(targetFont)}
             />
           ))}
         </div>
@@ -318,8 +334,7 @@ export default function FontsDiscoveryPage() {
               Batch Register Typefaces
             </h3>
             <p className="text-xs text-vow-muted mb-4">
-              Review and adjust details for all selected font files before registering into your
-              studio library.
+              Review and adjust details for all selected font files before registering into your studio library.
             </p>
 
             <div className="flex-1 overflow-y-auto pr-1 space-y-3 my-2">
@@ -369,33 +384,21 @@ export default function FontsDiscoveryPage() {
               ))}
             </div>
 
-            <div className="pt-4 border-t border-vow-border flex items-center justify-between mt-2">
-              <label className="flex items-center space-x-2 text-xs font-semibold text-vow-dark cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={globalCommercialApproved}
-                  onChange={(e) => setGlobalCommercialApproved(e.target.checked)}
-                  className="rounded border-vow-border text-vow-dark focus:ring-vow-dark"
-                />
-                <span>Mark all as Commercial Approved</span>
-              </label>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-white border border-vow-border text-vow-dark rounded-md text-xs font-bold uppercase tracking-wider hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveAllFonts}
-                  className="px-5 py-2 bg-vow-dark text-white rounded-md text-xs font-bold uppercase tracking-wider hover:bg-black"
-                >
-                  Register All Fonts
-                </button>
-              </div>
+            <div className="pt-4 border-t border-vow-border flex items-center justify-end space-x-2 mt-2">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-white border border-vow-border text-vow-dark rounded-md text-xs font-bold uppercase tracking-wider hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAllFonts}
+                className="px-5 py-2 bg-vow-dark text-white rounded-md text-xs font-bold uppercase tracking-wider hover:bg-black"
+              >
+                Register All Fonts
+              </button>
             </div>
           </div>
         </div>

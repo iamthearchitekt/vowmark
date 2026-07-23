@@ -4,7 +4,7 @@ import { FontRecord } from "@/lib/typography/fonts-db";
 import { resolveFontConfig } from "@/lib/typography/font-resolver";
 import { useEditorStore } from "@/lib/store/useEditorStore";
 import { useRouter } from "next/navigation";
-import { Check, ShieldCheck, ArrowRight, Tag } from "lucide-react";
+import { Check, ArrowRight, Tag, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 
 interface FontSpecimenCardProps {
@@ -14,6 +14,7 @@ interface FontSpecimenCardProps {
   isSelected?: boolean;
   onSelect?: () => void;
   onEditTags?: (font: FontRecord) => void;
+  onRemoveFont?: (font: FontRecord) => void;
 }
 
 export function FontSpecimenCard({
@@ -23,13 +24,10 @@ export function FontSpecimenCard({
   isSelected,
   onSelect,
   onEditTags,
+  onRemoveFont,
 }: FontSpecimenCardProps) {
   const router = useRouter();
   const setTypographyOptions = useEditorStore((state) => state.setTypographyOptions);
-
-  const isCustomUploaded =
-    font.description?.includes("Uploaded custom font") ||
-    font.description?.includes("Uploaded custom typeface");
 
   const fontConfig = resolveFontConfig(font.familyName, font.classification);
 
@@ -60,6 +58,13 @@ export function FontSpecimenCard({
     }
   };
 
+  const handleRemoveFont = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onRemoveFont) {
+      onRemoveFont(font);
+    }
+  };
+
   return (
     <div
       onClick={onSelect}
@@ -79,18 +84,11 @@ export function FontSpecimenCard({
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          {font.licensing.commercialApproved && (
-            <span className="text-[10px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded flex items-center gap-1 font-semibold">
-              <ShieldCheck className="w-3 h-3 text-emerald-600" /> Commercial Approved
-            </span>
-          )}
-          {isSelected && (
-            <div className="w-6 h-6 rounded-full bg-vow-accent text-white flex items-center justify-center">
-              <Check className="w-4 h-4" />
-            </div>
-          )}
-        </div>
+        {isSelected && (
+          <div className="w-6 h-6 rounded-full bg-vow-accent text-white flex items-center justify-center">
+            <Check className="w-4 h-4" />
+          </div>
+        )}
       </div>
 
       {/* Render Wedding Tags Pills */}
@@ -115,15 +113,28 @@ export function FontSpecimenCard({
       </div>
 
       <div className="flex items-center justify-between text-[11px] text-vow-muted">
-        <button
-          type="button"
-          onClick={handleOpenTagEditor}
-          className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 rounded text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer"
-          title="Edit font tags and classification"
-        >
-          <Tag className="w-3 h-3 text-vow-accent" />
-          <span>Edit Tags</span>
-        </button>
+        <div className="flex items-center space-x-1.5">
+          <button
+            type="button"
+            onClick={handleOpenTagEditor}
+            className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 rounded text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+            title="Edit font tags and classification"
+          >
+            <Tag className="w-3 h-3 text-vow-accent" />
+            <span>Edit Tags</span>
+          </button>
+
+          {onRemoveFont && (
+            <button
+              type="button"
+              onClick={handleRemoveFont}
+              className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded border border-slate-200 hover:border-rose-200 transition-all cursor-pointer"
+              title="Remove Font from Studio Library"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
 
         <button
           type="button"

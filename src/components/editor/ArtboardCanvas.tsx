@@ -146,6 +146,7 @@ export function ArtboardCanvas() {
   const activeLogoAsset = textLogoAssetUrl || (studioMode === "generative_ai" ? aiGeneratedAssetUrl : null);
 
   const is2x6Format = canvasFormat === "2_x_6";
+  const activeFrameOverlayUrl = photoboothFrameUrl || "/photobooth-2x6-frame.png";
 
   return (
     <div className="relative flex-1 flex flex-col items-center justify-center p-8 bg-slate-100/90 overflow-hidden select-none font-sans">
@@ -176,39 +177,23 @@ export function ArtboardCanvas() {
         {/* PHOTOBOOTH STRIP FRAME OVERLAY (2 x 6 Format Only) */}
         {/* ======================================================== */}
         {is2x6Format && photoboothMode && (
-          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col p-4 justify-between">
-            {/* Custom PNG Mock Frame Overlay if uploaded */}
-            {photoboothFrameUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={photoboothFrameUrl}
-                alt="2x6 Photobooth Frame Overlay"
-                className="absolute inset-0 w-full h-full object-contain z-20"
-              />
-            ) : (
-              /* Built-in 3-Slot Photo Cutout Frame Layout */
-              <div className="flex flex-col space-y-3 w-full pt-2">
-                {[1, 2, 3].map((slotIdx) => (
-                  <div
-                    key={slotIdx}
-                    className="w-full h-44 rounded border-2 border-slate-300/80 bg-slate-900/10 backdrop-blur-xs flex flex-col items-center justify-center text-slate-500 shadow-inner"
-                  >
-                    <Camera className="w-6 h-6 text-slate-400 opacity-60 mb-1" />
-                    <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-slate-600">
-                      Photo Slot #{slotIdx}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={activeFrameOverlayUrl}
+              alt="2x6 Photobooth Strip Frame"
+              className="absolute inset-0 w-full h-full object-contain z-10"
+            />
           </div>
         )}
 
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER */}
         {/* ======================================================== */}
-        <div className={`absolute inset-0 z-20 flex items-center justify-center p-6 w-full h-full ${
-          is2x6Format && photoboothMode ? "pt-[570px] pb-4" : ""
+        <div className={`absolute z-20 flex items-center justify-center transition-all ${
+          is2x6Format && photoboothMode
+            ? "bottom-0 left-0 right-0 h-[30%] p-4"
+            : "inset-0 p-6 w-full h-full"
         }`}>
           {studioMode === "generative_ai" ? (
             activeLogoAsset ? (
@@ -221,15 +206,15 @@ export function ArtboardCanvas() {
             ) : (
               /* Blank Canvas Indicator when no text logo asset is loaded yet */
               !backgroundPatternAssetUrl && (
-                <div className="text-center text-vow-muted p-6 flex flex-col items-center justify-center space-y-2 border-2 border-dashed border-slate-200/80 rounded-xl max-w-xs bg-white/90 backdrop-blur-2xs shadow-2xs">
-                  <div className="w-9 h-9 rounded-full bg-slate-100 text-vow-accent flex items-center justify-center">
+                <div className="text-center text-vow-muted p-4 flex flex-col items-center justify-center space-y-1.5 border-2 border-dashed border-slate-200/80 rounded-xl max-w-xs bg-white/90 backdrop-blur-2xs shadow-2xs">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 text-vow-accent flex items-center justify-center">
                     <Sparkles className="w-4 h-4" />
                   </div>
-                  <h4 className="font-bold text-xs text-vow-dark uppercase tracking-wider">
-                    Studio Artboard
+                  <h4 className="font-bold text-[11px] text-vow-dark uppercase tracking-wider">
+                    Monogram Zone
                   </h4>
-                  <p className="text-[10px] leading-relaxed text-slate-500 font-sans">
-                    Type in the AI Assistant to generate DALL·E 3 text logos or background patterns.
+                  <p className="text-[9px] leading-relaxed text-slate-500 font-sans">
+                    Type in AI Assistant to render logo artwork in this branding zone.
                   </p>
                 </div>
               )

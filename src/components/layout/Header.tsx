@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { SITE_CONFIG } from "@/config/site";
 import { useEditorStore } from "@/lib/store/useEditorStore";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Camera } from "lucide-react";
 
 export function Header() {
   const resetFields = useEditorStore((state) => state.resetFields);
+  const photoboothMode = useEditorStore((state) => state.photoboothMode);
+  const setPhotoboothMode = useEditorStore((state) => state.setPhotoboothMode);
 
   return (
     <header className="sticky top-0 z-40 bg-vow-paper border-b border-vow-border px-6 py-3.5 flex items-center justify-between font-sans">
@@ -37,6 +39,21 @@ export function Header() {
       </div>
 
       <div className="flex items-center space-x-3">
+        {/* Universal Toggle Photo Mock Switch */}
+        <button
+          type="button"
+          onClick={() => setPhotoboothMode(!photoboothMode)}
+          className={`text-[11px] font-sans font-bold flex items-center space-x-1.5 px-3 py-1 rounded border transition-all shadow-2xs ${
+            photoboothMode
+              ? "bg-vow-dark text-white border-vow-dark ring-1 ring-vow-accent"
+              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+          }`}
+          title="Toggle Universal Photo Mock Frame Overlay"
+        >
+          <Camera className={`w-3.5 h-3.5 ${photoboothMode ? "text-vow-accent" : "text-slate-400"}`} />
+          <span>Photo Mock: {photoboothMode ? "ON" : "OFF"}</span>
+        </button>
+
         <button
           type="button"
           onClick={resetFields}

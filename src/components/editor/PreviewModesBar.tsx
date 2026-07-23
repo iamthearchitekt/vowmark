@@ -17,7 +17,7 @@ export function PreviewModesBar() {
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
   const zoomLevel = useEditorStore((state) => state.zoomLevel);
 
-  // 2-Layer Composition & Photobooth state
+  // 2-Layer Composition & Universal Photo Mock state
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const photoboothMode = useEditorStore((state) => state.photoboothMode);
   const photoboothOffsetY = useEditorStore((state) => state.photoboothOffsetY || 0);
@@ -27,7 +27,6 @@ export function PreviewModesBar() {
   const setCanvasFormat = useEditorStore((state) => state.setCanvasFormat);
   const setZoomLevel = useEditorStore((state) => state.setZoomLevel);
   const setTextLayerBlendMode = useEditorStore((state) => state.setTextLayerBlendMode);
-  const setPhotoboothMode = useEditorStore((state) => state.setPhotoboothMode);
   const setPhotoboothOffsetY = useEditorStore((state) => state.setPhotoboothOffsetY);
   const setPhotoboothScale = useEditorStore((state) => state.setPhotoboothScale);
 
@@ -41,8 +40,6 @@ export function PreviewModesBar() {
       </div>
     );
   }
-
-  const is2x6Format = canvasFormat === "2_x_6";
 
   return (
     <>
@@ -126,68 +123,47 @@ export function PreviewModesBar() {
           </div>
         </div>
 
-        {/* SPECIAL 2x6 PHOTOBOOTH STRIP CONTROL TOOLBAR */}
-        {is2x6Format && (
-          <div className="flex items-center space-x-3 bg-slate-900 text-white px-3.5 py-1 rounded-lg shadow-sm border border-slate-800 animate-fadeIn">
-            {/* Toggle Photobooth Frame ON/OFF */}
-            <button
-              type="button"
-              onClick={() => setPhotoboothMode(!photoboothMode)}
-              className={`px-2.5 py-1 rounded text-[11px] font-bold flex items-center gap-1.5 transition-all ${
-                photoboothMode
-                  ? "bg-vow-accent text-vow-dark font-extrabold shadow-sm"
-                  : "bg-slate-800 text-slate-400 hover:text-white"
-              }`}
-              title="Toggle Photobooth 3-Slot Strip Frame Overlay"
-            >
-              <Camera className="w-3.5 h-3.5" />
-              <span>Photobooth Frame: {photoboothMode ? "ON" : "OFF"}</span>
-            </button>
+        {/* PHOTO MOCK POSITIONING ADJUSTMENT TOOLBAR */}
+        {photoboothMode && (
+          <div className="flex items-center space-x-3 bg-slate-900 text-white px-3 py-1 rounded-lg shadow-sm border border-slate-800 animate-fadeIn">
+            {/* Vertical Y-Offset Position Adjustment */}
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-mono text-slate-300 font-bold flex items-center gap-1">
+                <ArrowUpDown className="w-3 h-3 text-vow-accent" />
+                Mock Vertical Pos:
+              </span>
+              <input
+                type="range"
+                min="-120"
+                max="120"
+                value={photoboothOffsetY}
+                onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
+                className="w-20 accent-vow-accent cursor-pointer"
+                title="Adjust vertical position of logo/text in photo mock zone"
+              />
+              <span className="font-mono text-[10px] text-vow-accent w-8 font-bold">
+                {photoboothOffsetY > 0 ? `+${photoboothOffsetY}` : photoboothOffsetY}px
+              </span>
+            </div>
 
-            {photoboothMode && (
-              <>
-                <div className="h-4 w-px bg-slate-700" />
+            <div className="h-4 w-px bg-slate-700" />
 
-                {/* Vertical Y-Offset Position Adjustment */}
-                <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-mono text-slate-300 font-bold flex items-center gap-1">
-                    <ArrowUpDown className="w-3 h-3 text-vow-accent" />
-                    Vertical Pos:
-                  </span>
-                  <input
-                    type="range"
-                    min="-120"
-                    max="120"
-                    value={photoboothOffsetY}
-                    onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
-                    className="w-20 accent-vow-accent cursor-pointer"
-                    title="Adjust vertical position of logo/text in photobooth zone"
-                  />
-                  <span className="font-mono text-[10px] text-vow-accent w-8 font-bold">
-                    {photoboothOffsetY > 0 ? `+${photoboothOffsetY}` : photoboothOffsetY}px
-                  </span>
-                </div>
-
-                <div className="h-4 w-px bg-slate-700" />
-
-                {/* Logo Scale Adjustment */}
-                <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-mono text-slate-300 font-bold">Logo Size:</span>
-                  <input
-                    type="range"
-                    min="40"
-                    max="160"
-                    value={photoboothScale}
-                    onChange={(e) => setPhotoboothScale(Number(e.target.value))}
-                    className="w-16 accent-vow-accent cursor-pointer"
-                    title="Adjust scale of logo/text in photobooth zone"
-                  />
-                  <span className="font-mono text-[10px] text-vow-accent w-8 font-bold">
-                    {photoboothScale}%
-                  </span>
-                </div>
-              </>
-            )}
+            {/* Logo Scale Adjustment */}
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-mono text-slate-300 font-bold">Mock Logo Size:</span>
+              <input
+                type="range"
+                min="40"
+                max="160"
+                value={photoboothScale}
+                onChange={(e) => setPhotoboothScale(Number(e.target.value))}
+                className="w-16 accent-vow-accent cursor-pointer"
+                title="Adjust scale of logo/text in photo mock zone"
+              />
+              <span className="font-mono text-[10px] text-vow-accent w-8 font-bold">
+                {photoboothScale}%
+              </span>
+            </div>
           </div>
         )}
 

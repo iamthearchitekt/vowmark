@@ -2,13 +2,12 @@
 
 import { useEditorStore } from "@/lib/store/useEditorStore";
 import { resolveFontConfig } from "@/lib/typography/font-resolver";
-import { Layout, Type, Upload, Sliders, ChevronLeft, ChevronRight, Camera, X, Image as ImageIcon, ArrowUpDown } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { Layout, Type, Upload, Sliders, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function LeftControlPanel() {
   const [mounted, setMounted] = useState(false);
   const [fontsList, setFontsList] = useState<any[]>([]);
-  const frameFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -24,18 +23,6 @@ export function LeftControlPanel() {
 
   const studioMode = useEditorStore((state) => state.studioMode);
   const setStudioMode = useEditorStore((state) => state.setStudioMode);
-
-  // Photobooth Strip Mode state
-  const canvasFormat = useEditorStore((state) => state.canvasFormat);
-  const photoboothMode = useEditorStore((state) => state.photoboothMode);
-  const photoboothFrameUrl = useEditorStore((state) => state.photoboothFrameUrl);
-  const photoboothOffsetY = useEditorStore((state) => state.photoboothOffsetY || 0);
-  const photoboothScale = useEditorStore((state) => state.photoboothScale || 100);
-
-  const setPhotoboothMode = useEditorStore((state) => state.setPhotoboothMode);
-  const setPhotoboothFrameUrl = useEditorStore((state) => state.setPhotoboothFrameUrl);
-  const setPhotoboothOffsetY = useEditorStore((state) => state.setPhotoboothOffsetY);
-  const setPhotoboothScale = useEditorStore((state) => state.setPhotoboothScale);
 
   // Subscribe to scalar primitive values
   const primaryText = useEditorStore((state) => state.typographyOptions.primaryText);
@@ -65,15 +52,6 @@ export function LeftControlPanel() {
 
   const isGenerativeAi = studioMode === "generative_ai";
   const [manualCollapsed, setManualCollapsed] = useState(false);
-
-  const handleFrameUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setPhotoboothFrameUrl(url);
-      setPhotoboothMode(true);
-    }
-  };
 
   // In AI mode, panel is automatically collapsed to the left side
   const isCollapsed = isGenerativeAi || manualCollapsed;
@@ -107,8 +85,6 @@ export function LeftControlPanel() {
     );
   }
 
-  const is2x6Format = canvasFormat === "2_x_6";
-
   return (
     <aside className="w-[400px] bg-vow-paper border-r border-vow-border h-full flex flex-col select-none z-20 overflow-hidden font-sans">
       {/* Panel Header */}
@@ -128,107 +104,6 @@ export function LeftControlPanel() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* PHOTOBOOTH STRIP SPECIAL FEATURE (2x6 Format Only) */}
-        {is2x6Format && (
-          <div className="p-4 bg-slate-900 text-white rounded-xl space-y-3.5 shadow-sm border border-slate-800">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Camera className="w-4 h-4 text-vow-accent" />
-                <h4 className="font-bold text-xs uppercase tracking-wider text-vow-champagne">
-                  2x6 Photobooth Strip Mode
-                </h4>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={photoboothMode}
-                  onChange={(e) => setPhotoboothMode(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-vow-accent"></div>
-              </label>
-            </div>
-
-            <p className="text-[10px] text-slate-300 leading-relaxed">
-              Toggles the 3-slot photobooth frame overlay with lower monogram branding zone.
-            </p>
-
-            {photoboothMode && (
-              <div className="pt-2 border-t border-slate-800 space-y-3">
-                {/* Vertical Position Adjustment */}
-                <div>
-                  <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="text-slate-300 font-bold flex items-center gap-1">
-                      <ArrowUpDown className="w-3 h-3 text-vow-accent" />
-                      Vertical Position
-                    </span>
-                    <span className="font-mono text-vow-accent font-bold">
-                      {photoboothOffsetY > 0 ? `+${photoboothOffsetY}` : photoboothOffsetY}px
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="-120"
-                    max="120"
-                    value={photoboothOffsetY}
-                    onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
-                    className="w-full accent-vow-accent cursor-pointer"
-                  />
-                </div>
-
-                {/* Logo Scale Adjustment */}
-                <div>
-                  <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="text-slate-300 font-bold">Logo Scale</span>
-                    <span className="font-mono text-vow-accent font-bold">{photoboothScale}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="40"
-                    max="160"
-                    value={photoboothScale}
-                    onChange={(e) => setPhotoboothScale(Number(e.target.value))}
-                    className="w-full accent-vow-accent cursor-pointer"
-                  />
-                </div>
-
-                {/* Upload Custom PNG Frame */}
-                <div className="pt-2 border-t border-slate-800">
-                  <input
-                    type="file"
-                    ref={frameFileInputRef}
-                    onChange={handleFrameUpload}
-                    accept="image/png"
-                    className="hidden"
-                  />
-
-                  <div className="flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => frameFileInputRef.current?.click()}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-bold rounded flex items-center space-x-1.5 transition-colors border border-slate-700"
-                    >
-                      <Upload className="w-3.5 h-3.5 text-vow-accent" />
-                      <span>{photoboothFrameUrl ? "Replace Frame PNG" : "Upload Custom Frame PNG"}</span>
-                    </button>
-
-                    {photoboothFrameUrl && (
-                      <button
-                        type="button"
-                        onClick={() => setPhotoboothFrameUrl(null)}
-                        className="p-1 text-slate-400 hover:text-rose-400"
-                        title="Remove custom PNG frame"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* SECTION 1: CONTENT & IDENTITY */}
         <div className="space-y-4">
           <div className="flex items-center space-x-2 pb-2 border-b border-vow-border text-vow-dark font-bold text-xs uppercase tracking-wider">

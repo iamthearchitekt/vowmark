@@ -22,6 +22,7 @@ import {
   Layers,
   Trash2,
   Blend,
+  Paperclip,
 } from "lucide-react";
 
 function isImageGenerationTrigger(text: string): boolean {
@@ -468,59 +469,6 @@ export function RightAiPanel() {
           </div>
         </div>
 
-        {/* CLIENT REFERENCE IMAGES UPLOAD PANEL */}
-        <div className="p-3 bg-slate-50/80 border-b border-vow-border space-y-2">
-          <div className="flex items-center justify-between">
-            <p className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
-              <FileImage className="w-3.5 h-3.5 text-vow-accent" />
-              <span>Client Reference &amp; Invitations ({referenceImages.length})</span>
-            </p>
-          </div>
-
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileUpload}
-            accept="image/*"
-            multiple
-            className="hidden"
-          />
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-vow-border hover:border-vow-dark bg-white rounded-lg p-2 text-center cursor-pointer transition-all duration-150 group"
-          >
-            <Upload className="w-3.5 h-3.5 text-vow-muted group-hover:text-vow-accent mx-auto mb-0.5 transition-colors" />
-            <p className="font-semibold text-[10px] text-vow-dark">
-              Upload Client Invitations / References
-            </p>
-          </div>
-
-          {referenceImages.length > 0 && (
-            <div className="grid grid-cols-3 gap-2 pt-1">
-              {referenceImages.map((img) => (
-                <div
-                  key={img.id}
-                  className="relative group bg-white border border-vow-border rounded-lg p-1 flex flex-col items-center space-y-1 shadow-2xs"
-                >
-                  <button
-                    type="button"
-                    onClick={() => removeReferenceImage(img.id)}
-                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                    title="Remove reference image"
-                  >
-                    <X className="w-2.5 h-2.5" />
-                  </button>
-
-                  <div className="w-full h-12 bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Chat Messages Container */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 select-text selection:bg-amber-200 selection:text-slate-900">
           {messages.map((m, idx) => (
@@ -560,7 +508,33 @@ export function RightAiPanel() {
           )}
         </div>
 
-        {/* Chat Prompt Input */}
+        {/* Attached Reference Images Thumbnails Bar (Compact) */}
+        {referenceImages.length > 0 && (
+          <div className="px-3 py-1.5 bg-slate-100 border-t border-vow-border flex items-center space-x-2 overflow-x-auto">
+            <span className="text-[9px] font-mono text-vow-muted uppercase font-bold flex-shrink-0">
+              Refs ({referenceImages.length}):
+            </span>
+            {referenceImages.map((img) => (
+              <div
+                key={img.id}
+                className="relative group flex-shrink-0 w-8 h-8 rounded border border-slate-300 bg-white overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => removeReferenceImage(img.id)}
+                  className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-rose-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  title="Remove reference"
+                >
+                  <X className="w-2 h-2" />
+                </button>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Chat Prompt Input with File Upload Button Next to Send Button */}
         <div className="p-3.5 border-t border-vow-border bg-vow-surface space-y-2">
           <div className="flex items-center justify-between">
             <button
@@ -585,6 +559,26 @@ export function RightAiPanel() {
             }}
             className="flex items-center space-x-2"
           >
+            {/* Hidden Input File for Reference Upload */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept="image/*"
+              multiple
+              className="hidden"
+            />
+
+            {/* Reference Upload Icon Button Next to Chat Input */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="p-2.5 bg-white hover:bg-slate-100 text-slate-600 rounded-md border border-vow-border transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
+              title="Attach Client Reference Images / Invitations"
+            >
+              <Paperclip className="w-4 h-4 text-vow-dark" />
+            </button>
+
             <input
               ref={promptInputRef}
               type="text"

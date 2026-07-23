@@ -47,7 +47,6 @@ export const DesignBriefSchema = z.object({
     "stacked",
     "interlocking",
     "overlapping",
-    "circular",
     "crest",
     "wreath",
     "corner",

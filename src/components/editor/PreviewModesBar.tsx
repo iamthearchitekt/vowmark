@@ -35,7 +35,7 @@ export function PreviewModesBar() {
   return (
     <>
       <div className="h-14 bg-vow-paper border-b border-vow-border px-6 flex items-center justify-between text-xs font-sans select-none z-30">
-        {/* Studio Mode Selector (OpenAI DALL-E 3 AI Mode vs Vector Mode) */}
+        {/* Studio Mode Selector (OpenAI gpt-image-2 AI Mode vs Vector Mode) */}
         <div className="flex items-center space-x-4">
           <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200">
             <button
@@ -48,7 +48,7 @@ export function PreviewModesBar() {
               }`}
             >
               <Sparkles className="w-3.5 h-3.5 text-vow-accent" />
-              <span>Generative AI Mode (DALL·E 3)</span>
+              <span>Generative AI Mode (gpt-image-2)</span>
             </button>
 
             <button
@@ -94,22 +94,37 @@ export function PreviewModesBar() {
 
         {/* Zoom & Action Controls */}
         <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1 bg-vow-surface px-2 py-1 rounded-md border border-vow-border">
+          <div className="flex items-center space-x-1.5 bg-vow-surface px-2.5 py-1 rounded-md border border-vow-border">
             <button
               type="button"
               onClick={() => setZoomLevel(Math.max(40, zoomLevel - 10))}
-              className="hover:text-vow-dark"
+              className="hover:text-vow-dark p-0.5"
+              title="Zoom Out"
             >
-              <ZoomIn className="w-3.5 h-3.5 rotate-180" />
+              <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="font-mono text-[11px] min-w-[2.2rem] text-center font-bold">{zoomLevel}%</span>
+            <span className="font-mono text-[11px] min-w-[2.5rem] text-center font-bold">{zoomLevel}%</span>
             <button
               type="button"
-              onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))}
-              className="hover:text-vow-dark"
+              onClick={() => setZoomLevel(Math.min(200, zoomLevel + 10))}
+              className="hover:text-vow-dark p-0.5"
+              title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
+            <div className="h-3 w-px bg-slate-300 mx-1" />
+            {[100, 150, 200].map((z) => (
+              <button
+                key={z}
+                type="button"
+                onClick={() => setZoomLevel(z)}
+                className={`px-1.5 py-0.5 text-[10px] font-mono rounded font-bold transition-colors ${
+                  zoomLevel === z ? "bg-vow-dark text-white" : "hover:bg-slate-200 text-slate-600"
+                }`}
+              >
+                {z}%
+              </button>
+            ))}
           </div>
 
           <button

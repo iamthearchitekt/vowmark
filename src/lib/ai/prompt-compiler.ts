@@ -1,6 +1,16 @@
 import { DesignBrief } from "./brief-schema";
 import { getStyleDefinition } from "../design/styles-taxonomy";
 
+export const UNIVERSAL_WEDDING_PROMPT_AID = {
+  prefix: "High-fashion luxury wedding stationery asset. Ultra-clean, high contrast, pure white background (#FFFFFF), solid black artwork (#000000). Isolated asset composition, precise line weight, perfect symmetry and balance.",
+  suffix: "No paper texture, no realistic mockups, no 3D rendering, no shadows, no gray background, no color bleed, no blurry edges, high-resolution production artwork."
+};
+
+export function applyUniversalPromptAid(rawPrompt: string): string {
+  const cleanPrompt = rawPrompt.trim();
+  return `${UNIVERSAL_WEDDING_PROMPT_AID.prefix} ${cleanPrompt} ${UNIVERSAL_WEDDING_PROMPT_AID.suffix}`.trim();
+}
+
 export function compileGenerationPrompt(brief: DesignBrief): {
   prompt: string;
   negativePrompt: string[];
@@ -36,7 +46,7 @@ export function compileGenerationPrompt(brief: DesignBrief): {
     fontStyleClause = "Use crisp architectural sans-serif typography with generous letter spacing.";
   }
 
-  const prompt = [
+  const rawPrompt = [
     assetInstruction,
     fontStyleClause,
     layoutInstruction,
@@ -47,6 +57,8 @@ export function compileGenerationPrompt(brief: DesignBrief): {
   ]
     .filter(Boolean)
     .join(" ");
+
+  const finalPrompt = applyUniversalPromptAid(rawPrompt);
 
   const combinedNegativePrompts = Array.from(
     new Set([
@@ -62,7 +74,7 @@ export function compileGenerationPrompt(brief: DesignBrief): {
   );
 
   return {
-    prompt,
+    prompt: finalPrompt,
     negativePrompt: combinedNegativePrompts,
   };
 }

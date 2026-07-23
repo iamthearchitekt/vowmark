@@ -1,9 +1,22 @@
 "use client";
 
-import { useEditorStore } from "@/lib/store/useEditorStore";
+import { useEditorStore, ReferenceImage } from "@/lib/store/useEditorStore";
 import { parseChatIntent } from "@/lib/ai/chat-parser";
-import { useState } from "react";
-import { Sparkles, Send, RefreshCw, Zap, Cpu, Image as ImageIcon, Copy, Check } from "lucide-react";
+import { useState, useRef } from "react";
+import {
+  Sparkles,
+  Send,
+  RefreshCw,
+  Zap,
+  Cpu,
+  Image as ImageIcon,
+  Copy,
+  Check,
+  Upload,
+  X,
+  FileImage,
+  Tag,
+} from "lucide-react";
 
 export function RightAiPanel() {
   const messages = useEditorStore((state) => state.messages);
@@ -11,6 +24,10 @@ export function RightAiPanel() {
   const studioMode = useEditorStore((state) => state.studioMode);
   const brief = useEditorStore((state) => state.brief);
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
+
+  const referenceImages = useEditorStore((state) => state.referenceImages);
+  const addReferenceImage = useEditorStore((state) => state.addReferenceImage);
+  const removeReferenceImage = useEditorStore((state) => state.removeReferenceImage);
 
   const addMessage = useEditorStore((state) => state.addMessage);
   const setIsAiGenerating = useEditorStore((state) => state.setIsAiGenerating);
@@ -20,11 +37,33 @@ export function RightAiPanel() {
 
   const [inputMsg, setInputMsg] = useState("");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [selectedTag, setSelectedTag] = useState<ReferenceImage["tag"]>("Invitation");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCopyMessage = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIdx(idx);
     setTimeout(() => setCopiedIdx(null), 2000);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      if (!file.type.startsWith("image/")) return;
+      const objectUrl = URL.createObjectURL(file);
+      addReferenceImage({
+        id: `ref_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+        url: objectUrl,
+        name: file.name,
+        tag: selectedTag,
+      });
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleSendMessage = async (customPrompt?: string) => {
@@ -35,14 +74,19 @@ export function RightAiPanel() {
     if (!customPrompt) setInputMsg("");
     setIsAiGenerating(true);
 
-    // 1. Parse intent cleanly
+    // Parse intent cleanly
     const intent = parseChatIntent(textToSend);
-    
+
     const updatedBriefData: any = {
       generationPrompt: textToSend,
     };
 
-    if (intent.primaryText && intent.primaryText.length <= 15 && intent.secondaryText && intent.secondaryText.length <= 15) {
+    if (
+      intent.primaryText &&
+      intent.primaryText.length <= 15 &&
+      intent.secondaryText &&
+      intent.secondaryText.length <= 15
+    ) {
       updatedBriefData.primaryText = intent.primaryText;
       updatedBriefData.secondaryText = intent.secondaryText;
       setTypographyOptions({
@@ -64,10 +108,11 @@ export function RightAiPanel() {
       ...brief,
       ...updatedBriefData,
       generationPrompt: textToSend,
+      referenceImages: referenceImages.map((img) => ({ url: img.url, tag: img.tag })),
     };
 
     try {
-      // 2. Trigger OpenAI DALL-E 3 Image Generation
+      // Trigger OpenAI DALL-E 3 Image Generation
       const genRes = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,10 +125,9 @@ export function RightAiPanel() {
       const genData = await genRes.json();
       const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
 
-      // Update artboard canvas with DALL-E 3 image
       setAiGeneratedAssetUrl(generatedUrl);
 
-      // 3. Call OpenAI Chat Assistant for conversational response
+      // Call OpenAI Chat Assistant for conversational response
       const chatRes = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -108,9 +152,9 @@ export function RightAiPanel() {
   };
 
   return (
-    <aside className="w-96 bg-vow-paper border-l border-vow-border flex flex-col h-full overflow-hidden text-xs font-sans">
+    <aside className="w-96 bg-vow-paper border-l border-vow-border flex flex-col h-full overflow-hidden text-xs font-sans select-none">
       {/* Assistant Header */}
-      <div className="p-4 border-b border-vow-border bg-vow-surface flex items-center justify-between select-none">
+      <div className="p-4 border-b border-vow-border bg-vow-surface flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <div className="w-7 h-7 rounded-md bg-vow-dark text-vow-accent flex items-center justify-center font-bold">
             <Sparkles className="w-4 h-4 text-vow-accent" />
@@ -119,7 +163,7 @@ export function RightAiPanel() {
             <h3 className="font-bold text-vow-dark uppercase tracking-wider text-xs">
               AI Design Assistant
             </h3>
-            <p className="text-[10px] text-vow-muted">OpenAI DALL·E 3 Image Generator</p>
+            <p className="text-[10px] text-vow-muted">OpenAI DALL·E 3 Generator</p>
           </div>
         </div>
 
@@ -128,8 +172,89 @@ export function RightAiPanel() {
         </span>
       </div>
 
+      {/* CLIENT REFERENCE IMAGES & INVITATIONS UPLOAD PANEL */}
+      <div className="p-3 bg-slate-50/80 border-b border-vow-border space-y-2.5">
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
+            <FileImage className="w-3.5 h-3.5 text-vow-accent" />
+            <span>Client Reference &amp; Invitations ({referenceImages.length})</span>
+          </p>
+
+          <div className="flex items-center space-x-1">
+            <Tag className="w-3 h-3 text-vow-muted" />
+            <select
+              value={selectedTag}
+              onChange={(e) => setSelectedTag(e.target.value as any)}
+              className="bg-white border border-vow-border rounded px-1.5 py-0.5 text-[10px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+            >
+              <option value="Invitation">Invitation</option>
+              <option value="Layout">Layout</option>
+              <option value="Typography">Typography</option>
+              <option value="Ornament">Ornament</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Drop / Upload Button */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          accept="image/*"
+          multiple
+          className="hidden"
+        />
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="border-2 border-dashed border-vow-border hover:border-vow-dark bg-white rounded-lg p-2.5 text-center cursor-pointer transition-all duration-150 group"
+        >
+          <Upload className="w-4 h-4 text-vow-muted group-hover:text-vow-accent mx-auto mb-1 transition-colors" />
+          <p className="font-semibold text-[11px] text-vow-dark">
+            Upload Client Invitations / References
+          </p>
+          <p className="text-[9px] text-vow-muted">
+            Click or drag PNG, JPG, WebP for AI style guidance
+          </p>
+        </div>
+
+        {/* Uploaded Reference Thumbnails Grid */}
+        {referenceImages.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 pt-1">
+            {referenceImages.map((img) => (
+              <div
+                key={img.id}
+                className="relative group bg-white border border-vow-border rounded-lg p-1.5 flex flex-col items-center space-y-1 shadow-2xs"
+              >
+                <button
+                  type="button"
+                  onClick={() => removeReferenceImage(img.id)}
+                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  title="Remove reference image"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+
+                <div className="w-full h-14 bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                </div>
+
+                <div className="w-full flex items-center justify-between">
+                  <span className="text-[9px] font-mono text-slate-600 truncate max-w-[60px]" title={img.name}>
+                    {img.name}
+                  </span>
+                  <span className="text-[8px] font-mono font-bold bg-amber-50 text-amber-900 px-1 py-0.5 rounded border border-amber-200 uppercase">
+                    {img.tag}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Quick AI Generator Chips */}
-      <div className="p-3 bg-slate-50 border-b border-vow-border space-y-2 select-none">
+      <div className="p-3 bg-white border-b border-vow-border space-y-2">
         <p className="text-[10px] font-bold text-vow-muted uppercase tracking-wider flex items-center gap-1">
           <Cpu className="w-3 h-3 text-vow-accent" /> Quick DALL·E 3 Generators
         </p>
@@ -145,7 +270,7 @@ export function RightAiPanel() {
               key={item.label}
               type="button"
               onClick={() => handleSendMessage(item.action)}
-              className="px-2.5 py-1 bg-white border border-vow-border hover:border-vow-dark hover:bg-slate-50 rounded text-[11px] font-bold text-vow-charcoal transition-all shadow-2xs flex items-center gap-1 active:scale-95"
+              className="px-2.5 py-1 bg-slate-50 border border-vow-border hover:border-vow-dark hover:bg-slate-100 rounded text-[11px] font-bold text-vow-charcoal transition-all shadow-2xs flex items-center gap-1 active:scale-95"
             >
               <Zap className="w-2.5 h-2.5 text-vow-accent" />
               {item.label}
@@ -172,7 +297,11 @@ export function RightAiPanel() {
               title="Copy message text"
               className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-700 rounded opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur"
             >
-              {copiedIdx === idx ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+              {copiedIdx === idx ? (
+                <Check className="w-3 h-3 text-emerald-600" />
+              ) : (
+                <Copy className="w-3 h-3" />
+              )}
             </button>
 
             <p className="whitespace-pre-wrap pr-4">{m.content}</p>
@@ -181,7 +310,11 @@ export function RightAiPanel() {
               <div className="mt-2.5 p-2 bg-slate-50 border border-slate-200 rounded-md flex items-center space-x-2 select-none">
                 <div className="w-12 h-12 bg-white rounded border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={aiGeneratedAssetUrl} alt="Generated DALL-E 3 Preview" className="w-full h-full object-contain" />
+                  <img
+                    src={aiGeneratedAssetUrl}
+                    alt="Generated DALL-E 3 Preview"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div className="flex-1">
                   <p className="font-bold text-[10px] text-vow-dark flex items-center gap-1">
@@ -194,7 +327,7 @@ export function RightAiPanel() {
           </div>
         ))}
         {isAiGenerating && (
-          <div className="p-3.5 bg-amber-50/80 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-center space-x-2.5 animate-pulse select-none">
+          <div className="p-3.5 bg-amber-50/80 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-center space-x-2.5 animate-spin-none select-none">
             <RefreshCw className="w-4 h-4 animate-spin text-vow-accent" />
             <span className="font-semibold">Generating AI image with OpenAI DALL·E 3...</span>
           </div>
@@ -220,7 +353,7 @@ export function RightAiPanel() {
           <button
             type="submit"
             disabled={isAiGenerating}
-            className="bg-vow-dark text-vow-paper p-2.5 rounded-md hover:bg-black transition-colors font-bold flex items-center justify-center"
+            className="bg-vow-dark text-vow-paper p-2.5 rounded-md hover:bg-black transition-colors font-bold flex items-center justify-center cursor-pointer"
           >
             <Send className="w-3.5 h-3.5 text-vow-champagne" />
           </button>

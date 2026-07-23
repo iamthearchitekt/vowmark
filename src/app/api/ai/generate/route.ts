@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openAIDallEProvider } from "@/lib/ai/dalle-provider";
+import { openAIImageProvider } from "@/lib/ai/dalle-provider";
 import { compileGenerationPrompt } from "@/lib/ai/prompt-compiler";
 
 export async function POST(req: NextRequest) {
@@ -14,11 +14,11 @@ export async function POST(req: NextRequest) {
     const compiled = compileGenerationPrompt(brief);
     const userPrompt = brief.generationPrompt || compiled.prompt;
 
-    // Trigger OpenAI DALL-E 3 Image Generation
-    const result = await openAIDallEProvider.generateImage({
+    // Trigger OpenAI Image Generation with Universal Prompt Aids
+    const result = await openAIImageProvider.generateImage({
       prompt: userPrompt,
-      quality: "standard",
-      size: "1024x1024",
+      quality: "medium",
+      size: "1536x1024",
     });
 
     return NextResponse.json({

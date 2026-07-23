@@ -2,6 +2,7 @@
 
 import { useEditorStore, getFormatDimensions } from "@/lib/store/useEditorStore";
 import { TypographyEngine } from "@/lib/typography/engine";
+import { resolveFontConfig } from "@/lib/typography/font-resolver";
 import { useEffect, useState, useMemo } from "react";
 import { Sparkles, Type } from "lucide-react";
 
@@ -19,28 +20,64 @@ export function ArtboardCanvas() {
   // Primitive scalar selectors for Vector mode
   const primaryText = useEditorStore((state) => state.typographyOptions.primaryText);
   const secondaryText = useEditorStore((state) => state.typographyOptions.secondaryText);
+  const ampersandText = useEditorStore((state) => state.typographyOptions.ampersandText);
   const dateText = useEditorStore((state) => state.typographyOptions.dateText);
+  const dateFontFamily = useEditorStore((state) => state.typographyOptions.dateFontFamily);
+  const dateFontSize = useEditorStore((state) => state.typographyOptions.dateFontSize);
+  const hashtagText = useEditorStore((state) => state.typographyOptions.hashtagText);
+  const hashtagFontFamily = useEditorStore((state) => state.typographyOptions.hashtagFontFamily);
+  const hashtagFontSize = useEditorStore((state) => state.typographyOptions.hashtagFontSize);
   const fontFamily = useEditorStore((state) => state.typographyOptions.fontFamily);
   const fontSize = useEditorStore((state) => state.typographyOptions.fontSize);
+  const primaryFontSize = useEditorStore((state) => state.typographyOptions.primaryFontSize);
+  const secondaryFontSize = useEditorStore((state) => state.typographyOptions.secondaryFontSize);
   const letterSpacing = useEditorStore((state) => state.typographyOptions.letterSpacing);
+  const nameGap = useEditorStore((state) => state.typographyOptions.nameGap);
   const ampersandScale = useEditorStore((state) => state.typographyOptions.ampersandScale);
   const layout = useEditorStore((state) => state.typographyOptions.layout);
-  
+
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
   const ornamentUrl = useEditorStore((state) => state.ornamentUrl);
   const zoomLevel = useEditorStore((state) => state.zoomLevel);
 
   const dimensions = useMemo(() => getFormatDimensions(canvasFormat), [canvasFormat]);
 
+  // Dynamically load Google Web Fonts when selected
+  useEffect(() => {
+    const fontsToLoad = [fontFamily, dateFontFamily, hashtagFontFamily].filter(Boolean) as string[];
+    fontsToLoad.forEach((fontName) => {
+      const config = resolveFontConfig(fontName);
+      if (config.googleFontUrl) {
+        const linkId = `font-link-${config.webFontName.replace(/\s+/g, "-").toLowerCase()}`;
+        if (!document.getElementById(linkId)) {
+          const link = document.createElement("link");
+          link.id = linkId;
+          link.rel = "stylesheet";
+          link.href = config.googleFontUrl;
+          document.head.appendChild(link);
+        }
+      }
+    });
+  }, [fontFamily, dateFontFamily, hashtagFontFamily]);
+
   // Vector SVG typography engine output
   const renderedVectorSvg = useMemo(() => {
     return TypographyEngine.renderSvg({
       primaryText,
       secondaryText,
+      ampersandText,
       dateText,
+      dateFontFamily,
+      dateFontSize,
+      hashtagText,
+      hashtagFontFamily,
+      hashtagFontSize,
       fontFamily,
       fontSize,
+      primaryFontSize,
+      secondaryFontSize,
       letterSpacing,
+      nameGap,
       ampersandScale,
       layout,
       colorMode: "black_on_white",
@@ -50,10 +87,19 @@ export function ArtboardCanvas() {
   }, [
     primaryText,
     secondaryText,
+    ampersandText,
     dateText,
+    dateFontFamily,
+    dateFontSize,
+    hashtagText,
+    hashtagFontFamily,
+    hashtagFontSize,
     fontFamily,
     fontSize,
+    primaryFontSize,
+    secondaryFontSize,
     letterSpacing,
+    nameGap,
     ampersandScale,
     layout,
     dimensions.width,
@@ -73,22 +119,22 @@ export function ArtboardCanvas() {
   // Always pure flat white background
   const bgClass = "bg-white border border-slate-300 shadow-xl";
 
-  // Explicit Container Dimensions for 2x6, 4x6, 6x4, and Square
-  let widthPx = 500;
-  let heightPx = 500;
+  // Scaled High-Res Studio Display Dimensions for 2x6, 4x6, 6x4, and Square
+  let widthPx = 650;
+  let heightPx = 650;
 
   if (canvasFormat === "2_x_6") {
-    widthPx = 240;
-    heightPx = 720;
+    widthPx = 280;
+    heightPx = 840;
   } else if (canvasFormat === "4_x_6") {
-    widthPx = 380;
-    heightPx = 570;
+    widthPx = 480;
+    heightPx = 720;
   } else if (canvasFormat === "6_x_4") {
-    widthPx = 600;
-    heightPx = 400;
+    widthPx = 720;
+    heightPx = 480;
   } else if (canvasFormat === "square") {
-    widthPx = 500;
-    heightPx = 500;
+    widthPx = 650;
+    heightPx = 650;
   }
 
   return (

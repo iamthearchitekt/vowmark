@@ -4,8 +4,9 @@ import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { CURATED_FONTS, FontRecord } from "@/lib/typography/fonts-db";
 import { FontSpecimenCard } from "@/components/fonts/FontSpecimenCard";
+import { FontDetailModal } from "@/components/fonts/FontDetailModal";
 import { useState, useEffect, useRef } from "react";
-import { Search, Upload, Layers, X } from "lucide-react";
+import { Upload, Layers, X, Type } from "lucide-react";
 
 interface UploadItem {
   fileName: string;
@@ -15,7 +16,8 @@ interface UploadItem {
 
 export default function FontsDiscoveryPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [customPreviewText, setCustomPreviewText] = useState<string>("Claude & Alexa");
+  const [selectedFontForModal, setSelectedFontForModal] = useState<FontRecord | null>(null);
   const [allFontsList, setAllFontsList] = useState<FontRecord[]>(CURATED_FONTS);
 
   // Bulk font upload modal state
@@ -35,6 +37,25 @@ export default function FontsDiscoveryPage() {
       })
       .catch((err) => console.warn("Failed to load dynamic fonts for discovery page:", err));
   }, []);
+
+  // Preload Google Fonts for all registered fonts
+  useEffect(() => {
+    const googleFontNames = allFontsList
+      .filter((f) => f.provider === "google")
+      .map((f) => f.familyName);
+
+    if (googleFontNames.length > 0) {
+      const linkId = "global-fonts-discovery-preload";
+      if (!document.getElementById(linkId)) {
+        const link = document.createElement("link");
+        link.id = linkId;
+        link.rel = "stylesheet";
+        link.href =
+          "https://fonts.googleapis.com/css2?family=Alex+Brush&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cinzel:wght@400..900&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Inter:wght@300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap";
+        document.head.appendChild(link);
+      }
+    }
+  }, [allFontsList]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -104,9 +125,10 @@ export default function FontsDiscoveryPage() {
   };
 
   const filteredFonts = allFontsList.filter((f) => {
-    const matchCategory = selectedCategory === "all" || f.classification.toLowerCase() === selectedCategory.toLowerCase();
-    const matchSearch = f.familyName.toLowerCase().includes(searchQuery.toLowerCase()) || f.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCategory && matchSearch;
+    return (
+      selectedCategory === "all" ||
+      f.classification.toLowerCase() === selectedCategory.toLowerCase()
+    );
   });
 
   return (
@@ -137,14 +159,16 @@ export default function FontsDiscoveryPage() {
           </button>
         </div>
 
-        {/* Filter Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-vow-paper p-4 rounded-xl border border-vow-border mb-8">
-          <div className="flex items-center space-x-2 w-full sm:w-auto">
+        {/* Combined Control Toolbar: Category Filter & Dafont-Style Live Custom Preview Text Input */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-vow-paper p-4 rounded-xl border border-vow-border mb-8 shadow-2xs">
+          {/* Category Filter Buttons */}
+          <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
             {["all", "serif", "sans", "script", "decorative"].map((cat) => (
               <button
                 key={cat}
+                type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-1.5 rounded-full text-xs font-sans capitalize transition-colors ${
+                className={`px-4 py-1.5 rounded-full text-xs font-sans capitalize transition-colors whitespace-nowrap ${
                   selectedCategory === cat
                     ? "bg-vow-dark text-vow-paper font-medium"
                     : "bg-vow-surface border border-vow-border text-vow-charcoal hover:bg-stone-200"
@@ -155,14 +179,15 @@ export default function FontsDiscoveryPage() {
             ))}
           </div>
 
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-vow-muted absolute left-3 top-2.5" />
+          {/* Dafont-Style Custom Live Preview Text Input */}
+          <div className="relative w-full sm:w-80">
+            <Type className="w-4 h-4 text-vow-accent absolute left-3 top-2.5" />
             <input
               type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search fonts by name or style..."
-              className="w-full bg-white border border-vow-border rounded-full pl-9 pr-4 py-2 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none"
+              value={customPreviewText}
+              onChange={(e) => setCustomPreviewText(e.target.value)}
+              placeholder="Type custom preview text (e.g. Claude & Alexa)..."
+              className="w-full bg-white border border-vow-border rounded-full pl-9 pr-4 py-2 text-xs font-semibold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none shadow-2xs"
             />
           </div>
         </div>
@@ -170,10 +195,25 @@ export default function FontsDiscoveryPage() {
         {/* Font Specimen Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredFonts.map((font) => (
-            <FontSpecimenCard key={font.id} font={font} />
+            <FontSpecimenCard
+              key={font.id}
+              font={font}
+              primaryText={customPreviewText || "Claude & Alexa"}
+              secondaryText=""
+              onSelect={() => setSelectedFontForModal(font)}
+            />
           ))}
         </div>
       </main>
+
+      {/* Font Specimen Detail Modal */}
+      {selectedFontForModal && (
+        <FontDetailModal
+          font={selectedFontForModal}
+          initialPreviewText={customPreviewText || "Claude & Alexa"}
+          onClose={() => setSelectedFontForModal(null)}
+        />
+      )}
 
       {/* Bulk Font Batch Registration Modal */}
       {isModalOpen && (
@@ -190,12 +230,20 @@ export default function FontsDiscoveryPage() {
               <Layers className="w-4 h-4" />
               <span>Bulk Font Registration ({pendingUploads.length} Files Selected)</span>
             </div>
-            <h3 className="font-serif font-bold text-xl text-vow-dark mb-1">Batch Register Typefaces</h3>
-            <p className="text-xs text-vow-muted mb-4">Review and adjust details for all selected font files before registering into your studio library.</p>
+            <h3 className="font-serif font-bold text-xl text-vow-dark mb-1">
+              Batch Register Typefaces
+            </h3>
+            <p className="text-xs text-vow-muted mb-4">
+              Review and adjust details for all selected font files before registering into your
+              studio library.
+            </p>
 
             <div className="flex-1 overflow-y-auto pr-1 space-y-3 my-2">
               {pendingUploads.map((item, idx) => (
-                <div key={idx} className="p-3 bg-white border border-vow-border rounded-lg flex items-center justify-between space-x-4">
+                <div
+                  key={idx}
+                  className="p-3 bg-white border border-vow-border rounded-lg flex items-center justify-between space-x-4"
+                >
                   <div className="flex-1 grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[10px] font-bold text-vow-muted uppercase tracking-wider mb-0.5">
@@ -247,7 +295,10 @@ export default function FontsDiscoveryPage() {
                   onChange={(e) => setGlobalCommercialApproved(e.target.checked)}
                   className="accent-vow-dark w-4 h-4"
                 />
-                <label htmlFor="globalCommApproved" className="text-xs text-vow-dark font-semibold cursor-pointer">
+                <label
+                  htmlFor="globalCommApproved"
+                  className="text-xs text-vow-dark font-semibold cursor-pointer"
+                >
                   Approve All {pendingUploads.length} Fonts for Commercial Client Work
                 </label>
               </div>

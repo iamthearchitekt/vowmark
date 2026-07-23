@@ -1,18 +1,16 @@
 "use client";
 
 import { useEditorStore } from "@/lib/store/useEditorStore";
-import { CURATED_FONTS, FontRecord } from "@/lib/typography/fonts-db";
+import { resolveFontConfig } from "@/lib/typography/font-resolver";
+import { Layout, Type, Upload, Sliders, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Upload, Sliders, Type, FileText, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
 export function LeftControlPanel() {
-  const studioMode = useEditorStore((state) => state.studioMode);
-  const setStudioMode = useEditorStore((state) => state.setStudioMode);
-
-  // Dynamic font options list (fetches registered persistent fonts from /api/fonts)
-  const [fontsList, setFontsList] = useState<FontRecord[]>(CURATED_FONTS);
+  const [mounted, setMounted] = useState(false);
+  const [fontsList, setFontsList] = useState<any[]>([]);
 
   useEffect(() => {
+    setMounted(true);
     fetch("/api/fonts")
       .then((res) => res.json())
       .then((data) => {
@@ -20,17 +18,33 @@ export function LeftControlPanel() {
           setFontsList(data);
         }
       })
-      .catch((err) => console.warn("Failed to load dynamic fonts list:", err));
+      .catch((err) => console.warn("Failed to load fonts for left panel:", err));
   }, []);
+
+  const studioMode = useEditorStore((state) => state.studioMode);
+  const setStudioMode = useEditorStore((state) => state.setStudioMode);
 
   // Subscribe to scalar primitive values
   const primaryText = useEditorStore((state) => state.typographyOptions.primaryText);
   const secondaryText = useEditorStore((state) => state.typographyOptions.secondaryText);
   const dateText = useEditorStore((state) => state.typographyOptions.dateText);
+  const dateFontFamily = useEditorStore((state) => state.typographyOptions.dateFontFamily);
+  const hashtagText = useEditorStore((state) => state.typographyOptions.hashtagText);
+  const hashtagFontFamily = useEditorStore((state) => state.typographyOptions.hashtagFontFamily);
   const fontFamily = useEditorStore((state) => state.typographyOptions.fontFamily);
   const fontSize = useEditorStore((state) => state.typographyOptions.fontSize);
+  const primaryFontSize = useEditorStore(
+    (state) => state.typographyOptions.primaryFontSize || state.typographyOptions.fontSize || 150
+  );
+  const secondaryFontSize = useEditorStore(
+    (state) => state.typographyOptions.secondaryFontSize || primaryFontSize
+  );
+  const dateFontSize = useEditorStore((state) => state.typographyOptions.dateFontSize || 42);
+  const hashtagFontSize = useEditorStore((state) => state.typographyOptions.hashtagFontSize || 36);
   const letterSpacing = useEditorStore((state) => state.typographyOptions.letterSpacing);
+  const nameGap = useEditorStore((state) => state.typographyOptions.nameGap);
   const ampersandScale = useEditorStore((state) => state.typographyOptions.ampersandScale);
+  const ampersandText = useEditorStore((state) => state.typographyOptions.ampersandText);
   const layout = useEditorStore((state) => state.typographyOptions.layout);
 
   const setBrief = useEditorStore((state) => state.setBrief);
@@ -54,117 +68,272 @@ export function LeftControlPanel() {
             }
             setManualCollapsed(false);
           }}
-          title={isGenerativeAi ? "Switch to Vector Mode to open Left Panel" : "Expand Left Control Panel"}
-          className="w-8 h-8 rounded-lg bg-vow-dark text-vow-paper flex items-center justify-center hover:bg-black transition-transform hover:scale-105 shadow-sm group"
+          className="p-2 bg-vow-dark text-vow-paper rounded-lg hover:bg-black transition-all shadow-sm"
+          title="Expand Control Panel (Switch to Vector Mode)"
         >
-          <ChevronRight className="w-4 h-4 text-vow-accent group-hover:translate-x-0.5 transition-transform" />
+          <ChevronRight className="w-4 h-4 text-vow-accent" />
         </button>
 
         <div className="flex-1 flex flex-col items-center justify-center space-y-6 text-vow-muted">
-          <span className="[writing-mode:vertical-lr] rotate-180 font-bold uppercase tracking-widest text-[10px] text-vow-charcoal flex items-center gap-2">
-            {isGenerativeAi ? (
-              <>
-                <Sparkles className="w-3 h-3 text-vow-accent rotate-90" /> Generative AI Mode
-              </>
-            ) : (
-              "Vector Controls Collapsed"
-            )}
-          </span>
+          <div className="writing-mode-vertical rotate-180 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">
+            {isGenerativeAi ? "AI Generator Mode" : "Vector Studio Mode"}
+          </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <aside className="relative w-96 bg-vow-paper border-r border-vow-border flex flex-col h-full overflow-hidden text-xs font-sans select-none z-20 transition-all duration-300">
-      {/* Consolidated Panel Header with Collapse Button */}
-      <div className="p-4 border-b border-vow-border bg-vow-surface flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Sliders className="w-4 h-4 text-vow-dark" />
-          <h3 className="font-bold text-vow-dark uppercase tracking-wider text-xs">
-            Studio Design Controls
-          </h3>
-        </div>
+  if (!mounted) {
+    return (
+      <aside className="w-[400px] bg-vow-paper border-r border-vow-border h-full p-6 text-xs font-sans select-none z-20">
+        <div className="text-slate-400">Loading Control Panel...</div>
+      </aside>
+    );
+  }
 
+  return (
+    <aside className="w-[400px] bg-vow-paper border-r border-vow-border h-full flex flex-col select-none z-20 overflow-hidden font-sans">
+      {/* Panel Header */}
+      <div className="p-4 border-b border-vow-border flex items-center justify-between bg-white">
+        <div className="flex items-center space-x-2">
+          <Sliders className="w-4 h-4 text-vow-accent" />
+          <h3 className="font-bold text-xs text-vow-dark uppercase tracking-wider">Vector Creator Studio</h3>
+        </div>
         <button
           type="button"
           onClick={() => setManualCollapsed(true)}
-          title="Collapse Left Control Panel"
-          className="p-1 rounded text-vow-muted hover:text-vow-dark hover:bg-slate-200 transition-colors"
+          className="p-1 text-vow-muted hover:text-vow-dark rounded hover:bg-slate-100 transition-colors"
+          title="Collapse Panel"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Single Consolidated Scrollable Panel */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-6">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {/* SECTION 1: CONTENT & IDENTITY */}
         <div className="space-y-4">
           <div className="flex items-center space-x-2 pb-2 border-b border-vow-border text-vow-dark font-bold text-xs uppercase tracking-wider">
-            <FileText className="w-3.5 h-3.5 text-vow-accent" />
+            <Layout className="w-3.5 h-3.5 text-vow-accent" />
             <span>Content &amp; Identity</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
-                Partner One Name
+          {/* Input 1 & 2 Text Fields + Single Shared Font Size Slider */}
+          <div className="p-3 bg-white border border-vow-border rounded-xl space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
+                  Input 1
+                </label>
+                <input
+                  type="text"
+                  value={primaryText || ""}
+                  onChange={(e) => {
+                    setBrief({ primaryText: e.target.value });
+                    setTypographyOptions({ primaryText: e.target.value });
+                  }}
+                  className="w-full bg-slate-50 border border-vow-border rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
+                  placeholder="Enter Input 1"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
+                  Input 2
+                </label>
+                <input
+                  type="text"
+                  value={secondaryText || ""}
+                  onChange={(e) => {
+                    setBrief({ secondaryText: e.target.value });
+                    setTypographyOptions({ secondaryText: e.target.value });
+                  }}
+                  className="w-full bg-slate-50 border border-vow-border rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
+                  placeholder="Enter Input 2"
+                />
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
+                  Inputs Font Size
+                </label>
+                <div className="flex items-center space-x-1">
+                  <input
+                    type="number"
+                    min="12"
+                    max="400"
+                    value={primaryFontSize}
+                    onChange={(e) => {
+                      const val = Math.max(12, Math.min(400, Number(e.target.value) || 12));
+                      setTypographyOptions({ primaryFontSize: val, secondaryFontSize: val, fontSize: val });
+                    }}
+                    className="w-14 bg-slate-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  />
+                  <span className="text-[10px] text-vow-muted font-bold">px</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min="12"
+                max="300"
+                value={primaryFontSize}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setTypographyOptions({ primaryFontSize: val, secondaryFontSize: val, fontSize: val });
+                }}
+                className="w-full accent-vow-dark cursor-pointer mb-2"
+              />
+
+              <div>
+                <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
+                  Inputs Typeface Selection ({fontsList.length} Available)
+                </label>
+                <select
+                  value={fontFamily}
+                  onChange={(e) => setTypographyOptions({ fontFamily: e.target.value })}
+                  className="w-full bg-slate-50 border border-vow-border rounded-md px-3 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                >
+                  {fontsList.map((f) => (
+                    <option key={f.id} value={f.familyName}>
+                      {f.familyName} ({f.classification}) {f.provider === "custom" ? "• Custom" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Date / Location with typeface & font size slider */}
+          <div className="p-3 bg-white border border-vow-border rounded-xl space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
+                Date / Location
               </label>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="number"
+                  min="10"
+                  max="200"
+                  value={dateFontSize}
+                  onChange={(e) => {
+                    const val = Math.max(10, Math.min(200, Number(e.target.value) || 10));
+                    setTypographyOptions({ dateFontSize: val });
+                  }}
+                  className="w-14 bg-slate-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                />
+                <span className="text-[10px] text-vow-muted font-bold">px</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
               <input
                 type="text"
-                value={primaryText || ""}
+                value={dateText || ""}
                 onChange={(e) => {
-                  setBrief({ primaryText: e.target.value });
-                  setTypographyOptions({ primaryText: e.target.value });
+                  setBrief({ date: e.target.value });
+                  setTypographyOptions({ dateText: e.target.value });
                 }}
-                className="w-full bg-white border border-vow-border rounded-md px-3 py-2 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
-                placeholder="Enter Partner 1 Name"
+                className="w-full bg-slate-50 border border-vow-border rounded-md px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
+                placeholder="e.g. OCTOBER 24, 2026"
               />
+              <select
+                value={dateFontFamily || fontFamily}
+                onChange={(e) => setTypographyOptions({ dateFontFamily: e.target.value })}
+                className="w-full bg-slate-50 border border-vow-border rounded-md px-2 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+              >
+                {fontsList.map((f) => (
+                  <option key={f.id} value={f.familyName}>
+                    {f.familyName}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
-              <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
-                Partner Two Name
-              </label>
+              <div className="flex justify-between text-[10px] text-vow-muted font-mono mb-0.5">
+                <span>Font Size</span>
+                <span>{dateFontSize}px</span>
+              </div>
               <input
-                type="text"
-                value={secondaryText || ""}
-                onChange={(e) => {
-                  setBrief({ secondaryText: e.target.value });
-                  setTypographyOptions({ secondaryText: e.target.value });
-                }}
-                className="w-full bg-white border border-vow-border rounded-md px-3 py-2 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
-                placeholder="Enter Partner 2 Name"
+                type="range"
+                min="10"
+                max="200"
+                value={dateFontSize}
+                onChange={(e) => setTypographyOptions({ dateFontSize: Number(e.target.value) })}
+                className="w-full accent-vow-dark cursor-pointer"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
-              Wedding Date / Location
-            </label>
-            <input
-              type="text"
-              value={dateText || ""}
-              onChange={(e) => {
-                setBrief({ date: e.target.value });
-                setTypographyOptions({ dateText: e.target.value });
-              }}
-              className="w-full bg-white border border-vow-border rounded-md px-3 py-2 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
-              placeholder="e.g. OCTOBER 24, 2026"
-            />
+          {/* Hashtag with typeface & font size slider */}
+          <div className="p-3 bg-white border border-vow-border rounded-xl space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
+                Hashtag
+              </label>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="number"
+                  min="10"
+                  max="200"
+                  value={hashtagFontSize}
+                  onChange={(e) => {
+                    const val = Math.max(10, Math.min(200, Number(e.target.value) || 10));
+                    setTypographyOptions({ hashtagFontSize: val });
+                  }}
+                  className="w-14 bg-slate-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                />
+                <span className="text-[10px] text-vow-muted font-bold">px</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="text"
+                value={hashtagText || ""}
+                onChange={(e) => setTypographyOptions({ hashtagText: e.target.value })}
+                className="w-full bg-slate-50 border border-vow-border rounded-md px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
+                placeholder="e.g. #EventHashtag"
+              />
+              <select
+                value={hashtagFontFamily || fontFamily}
+                onChange={(e) => setTypographyOptions({ hashtagFontFamily: e.target.value })}
+                className="w-full bg-slate-50 border border-vow-border rounded-md px-2 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+              >
+                {fontsList.map((f) => (
+                  <option key={f.id} value={f.familyName}>
+                    {f.familyName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[10px] text-vow-muted font-mono mb-0.5">
+                <span>Font Size</span>
+                <span>{hashtagFontSize}px</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="200"
+                value={hashtagFontSize}
+                onChange={(e) => setTypographyOptions({ hashtagFontSize: Number(e.target.value) })}
+                className="w-full accent-vow-dark cursor-pointer"
+              />
+            </div>
           </div>
 
           <div>
             <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
               Layout Structure
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {[
-                { id: "stacked", label: "Stacked Names" },
-                { id: "horizontal", label: "Horizontal Line" },
+                { id: "stacked", label: "Stacked" },
+                { id: "horizontal", label: "Horizontal" },
                 { id: "interlocking", label: "Interlocking" },
-                { id: "circular", label: "Circular Monogram" },
               ].map((l) => (
                 <button
                   key={l.id}
@@ -194,37 +363,6 @@ export function LeftControlPanel() {
           </div>
 
           <div>
-            <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1.5">
-              Typeface Selection ({fontsList.length} Available)
-            </label>
-            <select
-              value={fontFamily}
-              onChange={(e) => setTypographyOptions({ fontFamily: e.target.value })}
-              className="w-full bg-white border border-vow-border rounded-md px-3 py-2 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
-            >
-              {fontsList.map((f) => (
-                <option key={f.id} value={f.familyName}>
-                  {f.familyName} ({f.classification}) {f.provider === "custom" ? "• Custom" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
-              Font Size: {fontSize}px
-            </label>
-            <input
-              type="range"
-              min="32"
-              max="120"
-              value={fontSize}
-              onChange={(e) => setTypographyOptions({ fontSize: Number(e.target.value) })}
-              className="w-full accent-vow-dark"
-            />
-          </div>
-
-          <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
                 Letter Spacing (Tracking): {letterSpacing}px
@@ -248,27 +386,65 @@ export function LeftControlPanel() {
             </p>
           </div>
 
-          <div>
-            <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
-              Ampersand Scale: {Math.round((ampersandScale || 0.6) * 100)}%
-            </label>
-            <input
-              type="range"
-              min="30"
-              max="100"
-              value={(ampersandScale || 0.6) * 100}
-              onChange={(e) => setTypographyOptions({ ampersandScale: Number(e.target.value) / 100 })}
-              className="w-full accent-vow-dark"
-            />
-          </div>
-        </div>
+          {layout === "stacked" && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
+                  Partner Names Vertical Gap
+                </label>
+                <div className="flex items-center space-x-1">
+                  <input
+                    type="number"
+                    min="30"
+                    max="350"
+                    value={nameGap !== undefined ? nameGap : 120}
+                    onChange={(e) => setTypographyOptions({ nameGap: Number(e.target.value) || 30 })}
+                    className="w-16 bg-white border border-vow-border rounded px-1.5 py-0.5 text-right font-mono text-xs font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  />
+                  <span className="text-[10px] text-vow-muted font-bold">px</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min="30"
+                max="350"
+                value={nameGap !== undefined ? nameGap : 120}
+                onChange={(e) => setTypographyOptions({ nameGap: Number(e.target.value) })}
+                className="w-full accent-vow-dark cursor-pointer"
+              />
+            </div>
+          )}
 
-        {/* SECTION 3: REFERENCE ASSETS */}
-        <div className="space-y-4 pt-4 border-t border-vow-border">
-          <div className="border-2 border-dashed border-vow-border rounded-lg p-6 text-center bg-white hover:bg-slate-50 transition-colors cursor-pointer">
-            <Upload className="w-6 h-6 text-vow-muted mx-auto mb-2" />
-            <p className="font-sans font-medium text-xs text-vow-dark">Drop reference images here</p>
-            <p className="text-[10px] text-vow-muted mt-0.5">Classify as Layout, Typography, or Ornament</p>
+          <div>
+            <div className="flex items-center justify-between mb-2 bg-slate-50 p-2.5 rounded-lg border border-vow-border">
+              <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={ampersandText === ""}
+                  onChange={(e) => {
+                    setTypographyOptions({ ampersandText: e.target.checked ? "" : "&" });
+                  }}
+                  className="w-4 h-4 accent-vow-dark rounded border-vow-border cursor-pointer"
+                />
+                <span className="text-xs font-sans font-bold text-vow-dark">Hide ampersand (&amp;)</span>
+              </label>
+            </div>
+
+            {ampersandText !== "" && (
+              <div>
+                <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
+                  Ampersand Scale: {Math.round((ampersandScale || 0.6) * 100)}%
+                </label>
+                <input
+                  type="range"
+                  min="30"
+                  max="100"
+                  value={(ampersandScale || 0.6) * 100}
+                  onChange={(e) => setTypographyOptions({ ampersandScale: Number(e.target.value) / 100 })}
+                  className="w-full accent-vow-dark"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@
 /out/
 
 # production & environment files
+.env
 .env*.local
 
 # debug & task logs

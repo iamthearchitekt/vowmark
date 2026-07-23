@@ -1,17 +1,27 @@
+import { resolveFontConfig } from "./font-resolver";
+
 export interface TypographyOptions {
   primaryText: string;
   secondaryText?: string;
   ampersandText?: string;
   dateText?: string;
+  dateFontFamily?: string;
+  dateFontSize?: number;
+  hashtagText?: string;
+  hashtagFontFamily?: string;
+  hashtagFontSize?: number;
   locationText?: string;
   fontFamily: string;
-  fontSize: number; // e.g. 72
+  fontSize: number; // e.g. 150
+  primaryFontSize?: number;
+  secondaryFontSize?: number;
   fontWeight?: number | string;
   isItalic?: boolean;
   textTransform?: "uppercase" | "lowercase" | "titlecase" | "none";
   letterSpacing?: number; // in px or em
   lineHeight?: number; // relative e.g. 1.2
-  layout: "stacked" | "horizontal" | "interlocking" | "circular" | "crest";
+  nameGap?: number; // Gap between partner names in stacked mode (in px)
+  layout: "stacked" | "horizontal" | "interlocking" | "crest";
   ampersandScale?: number; // relative, e.g. 0.6
   ampersandOffsetY?: number; // in px
   initialOverlap?: number; // in px for monogram
@@ -64,73 +74,133 @@ export class TypographyEngine {
     const rawPrimary = options.primaryText ? options.primaryText.trim() : "";
     const rawSecondary = options.secondaryText ? options.secondaryText.trim() : "";
 
-    const pText = transformText(rawPrimary || "PARTNER 1");
-    const sText = transformText(rawSecondary || "PARTNER 2");
+    const pText = transformText(rawPrimary || "INPUT 1");
+    const sText = transformText(rawSecondary || "INPUT 2");
     const isPlaceholder = !rawPrimary && !rawSecondary;
     const textOpacity = isPlaceholder ? 0.35 : 1;
 
-    const ampText = options.ampersandText || "&";
+    const ampText = options.ampersandText !== undefined ? options.ampersandText : "&";
     const dateStr = transformText(options.dateText || "");
     const font = options.fontFamily || "Cormorant Garamond";
-    const fontSize = options.fontSize || 72;
+    const dateFont = options.dateFontFamily || font;
+    const hashtagFont = options.hashtagFontFamily || font;
+    const hashtagStr = transformText(options.hashtagText || "");
+
+    const defaultSize = options.fontSize || 150;
+    const pFontSize = options.primaryFontSize !== undefined ? options.primaryFontSize : defaultSize;
+    const sFontSize = options.secondaryFontSize !== undefined ? options.secondaryFontSize : pFontSize;
+    const dFontSize = options.dateFontSize !== undefined ? options.dateFontSize : Math.round(pFontSize * 0.28);
+    const hFontSize = options.hashtagFontSize !== undefined ? options.hashtagFontSize : Math.round(pFontSize * 0.24);
+
     const letterSpacing = options.letterSpacing || 6;
     const ampScale = options.ampersandScale || 0.6;
-    const ampFontSize = fontSize * ampScale;
+    const ampFontSize = pFontSize * ampScale;
     const isItalic = options.isItalic ? "italic" : "normal";
     const fontWeight = options.fontWeight || 400;
+
+    const mainFontConfig = resolveFontConfig(font);
+    const dateFontConfig = resolveFontConfig(dateFont);
+    const hashtagFontConfig = resolveFontConfig(hashtagFont);
+
+    // Collect all web font URLs to embed into SVG <defs><style>
+    const fontUrls = Array.from(
+      new Set(
+        [mainFontConfig.googleFontUrl, dateFontConfig.googleFontUrl, hashtagFontConfig.googleFontUrl].filter(
+          Boolean
+        ) as string[]
+      )
+    );
+
+    const fontImportTag = fontUrls.length > 0
+      ? `<defs><style>${fontUrls.map((u) => `@import url('${u}');`).join("\n")}</style></defs>`
+      : "";
 
     let elementsSvg = "";
 
     if (options.layout === "stacked") {
-      const spacingY = fontSize * (options.lineHeight || 1.15);
-      const topY = centerY - spacingY * 0.7;
+      const defaultGap = pFontSize * (options.lineHeight || 1.15) * 0.7;
+      const gapY = options.nameGap !== undefined ? options.nameGap : defaultGap;
+      const topY = centerY - gapY;
       const ampY = centerY + 8 + (options.ampersandOffsetY || 0);
-      const botY = centerY + spacingY * 0.7;
+      const botY = centerY + gapY;
+
+      const ampTag = ampText
+        ? `<text x="${centerX}" y="${ampY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${ampFontSize}" font-weight="300" font-style="italic" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(ampText)}</text>`
+        : "";
 
       elementsSvg = `
-        <text x="${centerX}" y="${topY}" font-family="${font}" font-size="${fontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(pText)}</text>
-        <text x="${centerX}" y="${ampY}" font-family="${font}" font-size="${ampFontSize}" font-weight="300" font-style="italic" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(ampText)}</text>
-        <text x="${centerX}" y="${botY}" font-family="${font}" font-size="${fontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(sText)}</text>
+        <text x="${centerX}" y="${topY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${pFontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(pText)}</text>
+        ${ampTag}
+        <text x="${centerX}" y="${botY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${sFontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(sText)}</text>
       `;
 
       if (dateStr) {
-        const dateY = botY + fontSize * 0.9;
+        const dateY = botY + sFontSize * 0.9;
         elementsSvg += `
-          <line x1="${centerX - 60}" y1="${dateY - 25}" x2="${centerX + 60}" y2="${dateY - 25}" stroke="${fill}" stroke-width="0.75" opacity="0.6" />
-          <text x="${centerX}" y="${dateY}" font-family="${font}" font-size="${fontSize * 0.28}" font-weight="400" letter-spacing="4" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
+          <text x="${centerX}" y="${dateY}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" font-weight="400" letter-spacing="4" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
+        `;
+      }
+
+      if (hashtagStr) {
+        const hashtagY = botY + sFontSize * (dateStr ? 1.35 : 0.9);
+        elementsSvg += `
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" font-weight="400" letter-spacing="3" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
         `;
       }
     } else if (options.layout === "horizontal") {
-      const horizontalText = `${pText}  ${ampText}  ${sText}`;
+      const horizontalText = ampText ? `${pText}  ${ampText}  ${sText}` : `${pText}   ${sText}`;
+
       elementsSvg = `
-        <text x="${centerX}" y="${centerY}" font-family="${font}" font-size="${fontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(horizontalText)}</text>
+        <text x="${centerX}" y="${centerY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${pFontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(horizontalText)}</text>
       `;
       if (dateStr) {
         elementsSvg += `
-          <text x="${centerX}" y="${centerY + fontSize * 0.8}" font-family="${font}" font-size="${fontSize * 0.3}" letter-spacing="4" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
+          <text x="${centerX}" y="${centerY + pFontSize * 0.8}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" letter-spacing="4" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
         `;
       }
-    } else if (options.layout === "interlocking" || options.layout === "circular") {
+      if (hashtagStr) {
+        const hashtagY = centerY + pFontSize * (dateStr ? 1.25 : 0.8);
+        elementsSvg += `
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="3" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+        `;
+      }
+    } else if (options.layout === "interlocking") {
       const init1 = rawPrimary ? pText.charAt(0) : "P1";
       const init2 = rawSecondary ? sText.charAt(0) : "P2";
-      const monoSize = fontSize * 2.2;
+      const monoSize = pFontSize * 2.2;
       const offset = options.initialOverlap || 45;
 
+      const ampTag = ampText
+        ? `<text x="${centerX}" y="${centerY + 15}" font-family="${mainFontConfig.cssFontFamily}" font-size="${monoSize * 0.4}" font-weight="300" font-style="italic" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(ampText)}</text>`
+        : "";
+
       elementsSvg = `
-        ${options.layout === "circular" ? `<circle cx="${centerX}" cy="${centerY}" r="${monoSize * 0.85}" fill="none" stroke="${fill}" stroke-width="1.5" opacity="0.85" />` : ""}
-        <text x="${centerX - offset}" y="${centerY + 10}" font-family="${font}" font-size="${monoSize}" font-weight="${fontWeight}" font-style="${isItalic}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(init1)}</text>
-        <text x="${centerX + offset}" y="${centerY + 10}" font-family="${font}" font-size="${monoSize}" font-weight="${fontWeight}" font-style="${isItalic}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(init2)}</text>
-        <text x="${centerX}" y="${centerY + 15}" font-family="${font}" font-size="${monoSize * 0.4}" font-weight="300" font-style="italic" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(ampText)}</text>
+        <text x="${centerX - offset}" y="${centerY + 10}" font-family="${mainFontConfig.cssFontFamily}" font-size="${monoSize}" font-weight="${fontWeight}" font-style="${isItalic}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(init1)}</text>
+        <text x="${centerX + offset}" y="${centerY + 10}" font-family="${mainFontConfig.cssFontFamily}" font-size="${monoSize}" font-weight="${fontWeight}" font-style="${isItalic}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(init2)}</text>
+        ${ampTag}
       `;
+      if (dateStr) {
+        elementsSvg += `
+          <text x="${centerX}" y="${centerY + monoSize * 0.65}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" letter-spacing="4" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
+        `;
+      }
+      if (hashtagStr) {
+        const hashtagY = centerY + monoSize * (dateStr ? 0.82 : 0.65);
+        elementsSvg += `
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="3" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+        `;
+      }
     } else {
+      const comboText = ampText ? `${pText} &amp; ${sText}` : `${pText} ${sText}`;
       elementsSvg = `
-        <text x="${centerX}" y="${centerY}" font-family="${font}" font-size="${fontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(pText)} &amp; ${escapeXml(sText)}</text>
+        <text x="${centerX}" y="${centerY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${pFontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(comboText)}</text>
       `;
     }
 
     const bgRect = bgFill !== "transparent" ? `<rect width="${width}" height="${height}" fill="${bgFill}" />` : "";
 
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+  ${fontImportTag}
   ${bgRect}
   <g id="vowmark-typography-layer">
     ${elementsSvg}

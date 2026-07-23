@@ -6,6 +6,13 @@ import { CURATED_FONTS } from "../typography/fonts-db";
 export type CanvasFormat = "2_x_6" | "4_x_6" | "6_x_4" | "square";
 export type StudioMode = "generative_ai" | "deterministic_vector";
 
+export interface ReferenceImage {
+  id: string;
+  url: string;
+  name: string;
+  tag: "Invitation" | "Layout" | "Typography" | "Ornament" | "General";
+}
+
 export interface EditorState {
   projectId: string;
   projectTitle: string;
@@ -22,6 +29,8 @@ export interface EditorState {
   brief: DesignBrief;
   typographyOptions: TypographyOptions;
 
+  referenceImages: ReferenceImage[];
+
   ornamentUrl: string | null;
   ornamentPosition: { x: number; y: number; scale: number };
 
@@ -37,6 +46,8 @@ export interface EditorState {
   setCanvasFormat: (format: CanvasFormat) => void;
   setBrief: (brief: Partial<DesignBrief>) => void;
   setTypographyOptions: (options: Partial<TypographyOptions>) => void;
+  addReferenceImage: (img: ReferenceImage) => void;
+  removeReferenceImage: (id: string) => void;
   setOrnamentUrl: (url: string | null) => void;
   setPreviewMode: (mode: "white") => void;
   setZoomLevel: (zoom: number) => void;
@@ -90,10 +101,15 @@ const defaultTypography: TypographyOptions = {
   ampersandText: "&",
   dateText: "",
   fontFamily: "Cormorant Garamond",
-  fontSize: 72,
+  fontSize: 150,
+  primaryFontSize: 150,
+  secondaryFontSize: 150,
+  dateFontSize: 42,
+  hashtagFontSize: 36,
   fontWeight: 400,
   letterSpacing: -1, // Set to -1px default
   lineHeight: 1.15,
+  nameGap: 120,
   layout: "stacked",
   ampersandScale: 0.6,
   ampersandOffsetY: 0,
@@ -114,6 +130,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   brief: defaultBrief,
   typographyOptions: defaultTypography,
 
+  referenceImages: [],
+
   ornamentUrl: null,
   ornamentPosition: { x: 500, y: 500, scale: 1 },
 
@@ -132,6 +150,9 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setStudioMode: (mode) => set({ studioMode: mode }),
   setAiGeneratedAssetUrl: (url) => set({ aiGeneratedAssetUrl: url }),
+  addReferenceImage: (img) => set((state) => ({ referenceImages: [...state.referenceImages, img] })),
+  removeReferenceImage: (id) =>
+    set((state) => ({ referenceImages: state.referenceImages.filter((img) => img.id !== id) })),
 
   setCanvasFormat: (format) => {
     const dims = getFormatDimensions(format);

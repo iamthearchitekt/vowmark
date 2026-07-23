@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditorStore, ReferenceImage, TextBlendMode } from "@/lib/store/useEditorStore";
+import { useEditorStore } from "@/lib/store/useEditorStore";
 import { parseChatIntent } from "@/lib/ai/chat-parser";
 import { PromptGuidanceModal } from "./PromptGuidanceModal";
 import { useState, useRef } from "react";
@@ -8,15 +8,10 @@ import {
   Sparkles,
   Send,
   RefreshCw,
-  Zap,
-  Cpu,
   Image as ImageIcon,
   Copy,
   Check,
-  Upload,
   X,
-  FileImage,
-  Tag,
   Sliders,
   Type,
   Layers,
@@ -455,7 +450,7 @@ export function RightAiPanel() {
             <div className="flex items-center justify-between">
               <span className="font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1">
                 <ImageIcon className="w-3 h-3 text-vow-accent" />
-                Layer 1 Background Opacity:
+                Layer 1 Opacity:
               </span>
               <div className="flex items-center space-x-1.5 bg-slate-200/60 px-2 py-0.5 rounded-md border border-slate-300/70">
                 <input
@@ -466,7 +461,7 @@ export function RightAiPanel() {
                   value={backgroundLayerOpacity}
                   onChange={(e) => setBackgroundLayerOpacity(Number(e.target.value))}
                   className="w-20 accent-vow-dark cursor-pointer h-1 bg-slate-300 rounded"
-                  title="Adjust Layer 1 Background Opacity (0% to 100%)"
+                  title="Adjust Layer 1 Background Opacity"
                 />
                 <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[28px] text-right">
                   {backgroundLayerOpacity}%
@@ -509,7 +504,7 @@ export function RightAiPanel() {
                   value={textLayerOpacity}
                   onChange={(e) => setTextLayerOpacity(Number(e.target.value))}
                   className="w-14 accent-vow-dark cursor-pointer h-1 bg-slate-300 rounded"
-                  title="Adjust Layer 2 Text Opacity (0% to 100%)"
+                  title="Adjust Layer 2 Text Opacity"
                 />
                 <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[24px] text-right">
                   {textLayerOpacity}%
@@ -592,13 +587,13 @@ export function RightAiPanel() {
               onClick={handleVisualizeFromConversation}
               disabled={isAiGenerating}
               className="px-3.5 py-1.5 bg-vow-accent hover:brightness-110 border border-vow-accent rounded-md text-xs font-black text-vow-dark flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer disabled:opacity-50"
-              title="Synthesize our latest conversation into new artwork on canvas"
+              title="Synthesize conversation artwork"
             >
               <Sparkles className="w-4 h-4 text-vow-dark fill-vow-dark" />
               <span>Visualize Conversation Artwork</span>
             </button>
             <span className="text-[10px] text-vow-muted font-mono">
-              Target: {isBackgroundMode ? "Layer 1 (Background)" : "Layer 2 (Text & Logo)"}
+              Target: {isBackgroundMode ? "Layer 1" : "Layer 2"}
             </span>
           </div>
 
@@ -624,7 +619,7 @@ export function RightAiPanel() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className="p-2.5 bg-white hover:bg-slate-100 text-slate-600 rounded-md border border-vow-border transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
-              title="Attach Client Reference Images / Invitations"
+              title="Attach Client Reference Images"
             >
               <Paperclip className="w-4 h-4 text-vow-dark" />
             </button>
@@ -636,8 +631,8 @@ export function RightAiPanel() {
               onChange={(e) => setInputMsg(e.target.value)}
               placeholder={
                 isBackgroundMode
-                  ? "Type background prompt (e.g. Make me a vintage floral watercolor border)..."
-                  : "Type prompt (e.g. Make me a logo for Jack & Jill)..."
+                  ? "Type background prompt..."
+                  : "Type prompt..."
               }
               className="flex-1 bg-white border border-vow-border rounded-md px-3.5 py-2.5 text-sm focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium select-text"
             />

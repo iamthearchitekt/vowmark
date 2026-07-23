@@ -1,8 +1,7 @@
 "use client";
 
 import { useEditorStore } from "@/lib/store/useEditorStore";
-import { resolveFontConfig } from "@/lib/typography/font-resolver";
-import { Layout, Type, Upload, Sliders, ChevronLeft, ChevronRight, Pipette, Palette } from "lucide-react";
+import { Layout, Type, Sliders, ChevronLeft, ChevronRight, Pipette } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 export function LeftControlPanel() {
@@ -35,12 +34,8 @@ export function LeftControlPanel() {
   const hashtagText = useEditorStore((state) => state.typographyOptions.hashtagText);
   const hashtagFontFamily = useEditorStore((state) => state.typographyOptions.hashtagFontFamily);
   const fontFamily = useEditorStore((state) => state.typographyOptions.fontFamily);
-  const fontSize = useEditorStore((state) => state.typographyOptions.fontSize);
   const primaryFontSize = useEditorStore(
     (state) => state.typographyOptions.primaryFontSize || state.typographyOptions.fontSize || 150
-  );
-  const secondaryFontSize = useEditorStore(
-    (state) => state.typographyOptions.secondaryFontSize || primaryFontSize
   );
   const dateFontSize = useEditorStore((state) => state.typographyOptions.dateFontSize || 42);
   const hashtagFontSize = useEditorStore((state) => state.typographyOptions.hashtagFontSize || 36);
@@ -439,7 +434,7 @@ export function LeftControlPanel() {
           </div>
         </div>
 
-        {/* SECTION 3: VECTOR COLOR & EYE DROPPER (SELF-EXPLANATORY) */}
+        {/* SECTION 3: VECTOR COLOR & EYE DROPPER */}
         <div className="pt-4 border-t border-vow-border">
           <div className="p-3 bg-white border border-vow-border rounded-xl flex items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-center space-x-2.5">

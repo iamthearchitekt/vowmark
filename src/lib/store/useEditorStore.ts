@@ -181,6 +181,7 @@ const defaultTypography: TypographyOptions = {
   layout: "stacked",
   ampersandScale: 0.6,
   ampersandOffsetY: 0,
+  hidePrimarySecondary: false,
   colorMode: "black_on_white",
   textColor: "#000000",
 };

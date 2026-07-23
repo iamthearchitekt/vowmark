@@ -46,6 +46,7 @@ export function LeftControlPanel() {
   const ampersandScale = useEditorStore((state) => state.typographyOptions.ampersandScale);
   const ampersandText = useEditorStore((state) => state.typographyOptions.ampersandText);
   const layout = useEditorStore((state) => state.typographyOptions.layout);
+  const hidePrimarySecondary = useEditorStore((state) => state.typographyOptions.hidePrimarySecondary || false);
 
   const setBrief = useEditorStore((state) => state.setBrief);
   const setTypographyOptions = useEditorStore((state) => state.setTypographyOptions);
@@ -159,6 +160,21 @@ export function LeftControlPanel() {
                   placeholder="Input 2"
                 />
               </div>
+            </div>
+
+            {/* Hide Primary/Secondary Vector Names Checkbox (For pairing AI Monogram Logo with Vector Date/Hashtag) */}
+            <div className="pt-2 border-t border-stone-100">
+              <label className="flex items-center space-x-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={hidePrimarySecondary}
+                  onChange={(e) => setTypographyOptions({ hidePrimarySecondary: e.target.checked })}
+                  className="w-3.5 h-3.5 accent-vow-dark rounded border-vow-border cursor-pointer"
+                />
+                <span className="text-[11px] font-sans font-bold text-vow-dark">
+                  Hide vector names (Use AI Logo for monogram)
+                </span>
+              </label>
             </div>
 
             <div className="pt-2 border-t border-stone-100">

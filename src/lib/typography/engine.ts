@@ -13,6 +13,7 @@ export interface TypographyOptions {
   hashtagFontSize?: number;
   hashtagLetterSpacing?: number;
   locationText?: string;
+  hidePrimarySecondary?: boolean;
   fontFamily: string;
   fontSize: number; // e.g. 150
   primaryFontSize?: number;
@@ -130,7 +131,23 @@ export class TypographyEngine {
 
     let elementsSvg = "";
 
-    if (options.layout === "stacked") {
+    if (options.hidePrimarySecondary) {
+      // Hide primary and secondary vector names (for pairing with AI Generated Monogram Logos)
+      if (dateStr) {
+        const dateY = is2x6 ? centerY + 40 : centerY + pFontSize * 1.1;
+        elementsSvg += `
+          <text x="${centerX}" y="${dateY}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" font-weight="400" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
+        `;
+      }
+      if (hashtagStr) {
+        const hashtagY = is2x6
+          ? centerY + (dateStr ? 85 : 40)
+          : centerY + pFontSize * (dateStr ? 1.45 : 1.1);
+        elementsSvg += `
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" font-weight="400" letter-spacing="${hLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+        `;
+      }
+    } else if (options.layout === "stacked") {
       const defaultGap = pFontSize * (options.lineHeight || 1.15) * 0.7;
       const gapY = options.nameGap !== undefined ? options.nameGap : defaultGap;
       const topY = centerY - gapY;

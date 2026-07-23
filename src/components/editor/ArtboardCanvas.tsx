@@ -68,6 +68,7 @@ export function ArtboardCanvas() {
   const nameGap = useEditorStore((state) => state.typographyOptions.nameGap);
   const ampersandScale = useEditorStore((state) => state.typographyOptions.ampersandScale);
   const layout = useEditorStore((state) => state.typographyOptions.layout);
+  const hidePrimarySecondary = useEditorStore((state) => state.typographyOptions.hidePrimarySecondary);
 
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
   const ornamentUrl = useEditorStore((state) => state.ornamentUrl);
@@ -107,6 +108,7 @@ export function ArtboardCanvas() {
       hashtagFontFamily,
       hashtagFontSize,
       hashtagLetterSpacing,
+      hidePrimarySecondary,
       fontFamily,
       fontSize,
       primaryFontSize,
@@ -133,6 +135,7 @@ export function ArtboardCanvas() {
     hashtagFontFamily,
     hashtagFontSize,
     hashtagLetterSpacing,
+    hidePrimarySecondary,
     fontFamily,
     fontSize,
     primaryFontSize,
@@ -463,18 +466,18 @@ export function ArtboardCanvas() {
               opacity: textLayerOpacity / 100,
             }}
           >
-            {activeLogoAsset ? (
-              /* When Layer 2 AI image is generated, display AI artwork & hide vector text output completely */
+            {activeLogoAsset && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={activeLogoAsset}
                 alt="Layer 2 AI Text & Monogram Logo Artwork"
-                className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
+                className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300 pointer-events-none z-10"
               />
-            ) : (
-              /* Deterministic Vector Mode Typography Overlay (Shown ONLY when no Layer 2 AI image is active) */
+            )}
+
+            {(!activeLogoAsset || hidePrimarySecondary || dateText || hashtagText) && (
               <>
-                {ornamentUrl && (
+                {ornamentUrl && !activeLogoAsset && (
                   <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-85">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -486,7 +489,7 @@ export function ArtboardCanvas() {
                 )}
 
                 <div
-                  className="absolute inset-0 flex items-center justify-center pointer-events-auto w-full h-full"
+                  className="absolute inset-0 flex items-center justify-center pointer-events-auto w-full h-full z-20"
                   dangerouslySetInnerHTML={{ __html: renderedVectorSvg }}
                 />
               </>

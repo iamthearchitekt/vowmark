@@ -197,27 +197,6 @@ export function ArtboardCanvas() {
         {/* Safe Area Guide */}
         <div className="absolute inset-4 border border-dashed border-slate-300/40 pointer-events-none" />
       </div>
-
-      {/* Canvas Status Telemetry */}
-      <div className="absolute bottom-4 left-6 flex items-center space-x-3 text-[11px] font-mono text-vow-muted bg-white/95 backdrop-blur px-3.5 py-1.5 rounded-md border border-vow-border shadow-sm">
-        <span className="flex items-center gap-1.5 font-bold text-vow-dark">
-          {studioMode === "generative_ai" ? (
-            <>
-              <Sparkles className="w-3.5 h-3.5 text-vow-accent" /> Mode: OpenAI DALL·E 3 Generator
-            </>
-          ) : (
-            <>
-              <Type className="w-3.5 h-3.5 text-vow-accent" /> Mode: Vector Typography Engine
-            </>
-          )}
-        </span>
-        <span>|</span>
-        <span className="font-bold text-vow-dark">
-          Format: {canvasFormat === "2_x_6" ? "2 x 6" : canvasFormat === "4_x_6" ? "4 x 6" : canvasFormat === "6_x_4" ? "6 x 4" : "Square"}
-        </span>
-        <span>|</span>
-        <span>{dimensions.width} x {dimensions.height} px</span>
-      </div>
     </div>
   );
 }

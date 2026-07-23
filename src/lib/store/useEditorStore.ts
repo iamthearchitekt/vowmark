@@ -15,6 +15,13 @@ export interface ReferenceImage {
   tag: string;
 }
 
+export interface BackgroundSuite {
+  "2_x_6"?: string;
+  "4_x_6"?: string;
+  "6_x_4"?: string;
+  "square"?: string;
+}
+
 export interface EditorState {
   projectId: string;
   projectTitle: string;
@@ -26,6 +33,8 @@ export interface EditorState {
 
   // 2-Layer Composition System
   backgroundPatternAssetUrl: string | null; // Layer 1: Background & Pattern
+  backgroundSuite: BackgroundSuite | null;   // All-Aspect-Ratios Background Suite
+  multiFormatSuiteEnabled: boolean;         // Generate for all aspect ratios simultaneously
   backgroundLayerOpacity: number;          // Layer 1 Opacity in percent (0 to 100, default 100)
   layer1Visible: boolean;                   // Layer 1 Visibility Toggle
   textLogoAssetUrl: string | null;          // Layer 2: Text & Monogram Logo
@@ -76,6 +85,8 @@ export interface EditorState {
   setStudioMode: (mode: StudioMode) => void;
   setAiGeneratedAssetUrl: (url: string | null) => void;
   setBackgroundPatternAssetUrl: (url: string | null) => void;
+  setBackgroundSuite: (suite: BackgroundSuite | null) => void;
+  setMultiFormatSuiteEnabled: (enabled: boolean) => void;
   setBackgroundLayerOpacity: (opacity: number) => void;
   setLayer1Visible: (visible: boolean) => void;
   setTextLogoAssetUrl: (url: string | null) => void;
@@ -109,17 +120,17 @@ export interface EditorState {
   resetFields: () => void;
 }
 
-export function getFormatDimensions(format: CanvasFormat): { width: number; height: number; aspectRatio: string } {
+export function getFormatDimensions(format: CanvasFormat): { width: number; height: number; aspectRatio: "1:1" | "4:3" | "3:4" | "16:9" } {
   switch (format) {
     case "2_x_6":
-      return { width: 600, height: 1800, aspectRatio: "1/3" };
+      return { width: 600, height: 1800, aspectRatio: "3:4" };
     case "4_x_6":
-      return { width: 1200, height: 1800, aspectRatio: "2/3" };
+      return { width: 1200, height: 1800, aspectRatio: "3:4" };
     case "6_x_4":
-      return { width: 1800, height: 1200, aspectRatio: "3/2" };
+      return { width: 1800, height: 1200, aspectRatio: "4:3" };
     case "square":
     default:
-      return { width: 1200, height: 1200, aspectRatio: "1/1" };
+      return { width: 1200, height: 1200, aspectRatio: "1:1" };
   }
 }
 
@@ -182,6 +193,8 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // 2-Layer Composition System defaults with blend mode and opacities
   backgroundPatternAssetUrl: null,
+  backgroundSuite: null,
+  multiFormatSuiteEnabled: true,
   backgroundLayerOpacity: 100,     // Default 100% opacity for Layer 1 Background
   layer1Visible: true,             // Layer 1 Visible by default
   textLogoAssetUrl: null,
@@ -235,6 +248,12 @@ export const useEditorStore = create<EditorState>((set) => ({
   setStudioMode: (mode) => set({ studioMode: mode }),
   setAiGeneratedAssetUrl: (url) => set({ aiGeneratedAssetUrl: url, textLogoAssetUrl: url }),
   setBackgroundPatternAssetUrl: (url) => set({ backgroundPatternAssetUrl: url }),
+  setBackgroundSuite: (suite) =>
+    set((state) => ({
+      backgroundSuite: suite,
+      backgroundPatternAssetUrl: suite ? (suite[state.canvasFormat] || state.backgroundPatternAssetUrl) : state.backgroundPatternAssetUrl,
+    })),
+  setMultiFormatSuiteEnabled: (enabled) => set({ multiFormatSuiteEnabled: enabled }),
   setBackgroundLayerOpacity: (opacity) => set({ backgroundLayerOpacity: opacity }),
   setLayer1Visible: (visible) => set({ layer1Visible: visible }),
   setTextLogoAssetUrl: (url) => set({ textLogoAssetUrl: url, aiGeneratedAssetUrl: url }),
@@ -260,18 +279,26 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setCanvasFormat: (format) => {
     const dims = getFormatDimensions(format);
-    // Auto-zoom so each canvas size fits comfortably in the viewport
     const autoZoom = format === "square" ? 100 : format === "6_x_4" ? 70 : 100;
-    set((state) => ({
-      canvasFormat: format,
-      photoboothMode: format !== "square",
-      zoomLevel: autoZoom,
-      typographyOptions: {
-        ...state.typographyOptions,
-        canvasWidth: dims.width,
-        canvasHeight: dims.height,
-      },
-    }));
+    set((state) => {
+      const matchingSuiteUrl = state.backgroundSuite ? state.backgroundSuite[format] : null;
+      return {
+        canvasFormat: format,
+        backgroundPatternAssetUrl: matchingSuiteUrl || state.backgroundPatternAssetUrl,
+        photoboothMode: format !== "square",
+        zoomLevel: autoZoom,
+        brief: {
+          ...state.brief,
+          canvasFormat: format,
+          aspectRatio: dims.aspectRatio,
+        },
+        typographyOptions: {
+          ...state.typographyOptions,
+          canvasWidth: dims.width,
+          canvasHeight: dims.height,
+        },
+      };
+    });
   },
 
   setPhotoboothMode: (enabled) => set({ photoboothMode: enabled }),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditorStore } from "@/lib/store/useEditorStore";
+import { useEditorStore, CanvasFormat } from "@/lib/store/useEditorStore";
 import { parseChatIntent } from "@/lib/ai/chat-parser";
 import { PromptGuidanceModal } from "./PromptGuidanceModal";
 import { useState, useRef } from "react";
@@ -81,6 +81,12 @@ export function RightAiPanel() {
   const referenceImages = useEditorStore((state) => state.referenceImages);
   const addReferenceImage = useEditorStore((state) => state.addReferenceImage);
   const removeReferenceImage = useEditorStore((state) => state.removeReferenceImage);
+
+  const backgroundSuite = useEditorStore((state) => state.backgroundSuite);
+  const setBackgroundSuite = useEditorStore((state) => state.setBackgroundSuite);
+  const multiFormatSuiteEnabled = useEditorStore((state) => state.multiFormatSuiteEnabled);
+  const setMultiFormatSuiteEnabled = useEditorStore((state) => state.setMultiFormatSuiteEnabled);
+  const setCanvasFormat = useEditorStore((state) => state.setCanvasFormat);
 
   const addMessage = useEditorStore((state) => state.addMessage);
   const setIsAiGenerating = useEditorStore((state) => state.setIsAiGenerating);
@@ -183,10 +189,44 @@ export function RightAiPanel() {
 
         if (aiGenerationType === "background_pattern") {
           setBackgroundPatternAssetUrl(generatedUrl);
-          addMessage({
-            role: "assistant",
-            content: "Layer 1 (Background & Pattern) generation completed. Canvas updated.",
-          });
+
+          if (multiFormatSuiteEnabled) {
+            const formats: CanvasFormat[] = ["2_x_6", "4_x_6", "6_x_4", "square"];
+            const suiteResults: Record<string, string> = { [canvasFormat]: generatedUrl };
+            const remainingFormats = formats.filter((f) => f !== canvasFormat);
+
+            const suitePromises = remainingFormats.map(async (fmt) => {
+              try {
+                const sRes = await fetch("/api/ai/generate", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    brief: { ...mergedBrief, canvasFormat: fmt },
+                    action: "generate",
+                  }),
+                });
+                const sData = await sRes.json();
+                if (sData.result?.imageUrl) {
+                  suiteResults[fmt] = sData.result.imageUrl;
+                }
+              } catch (e) {
+                console.error(`Suite generation error for ${fmt}:`, e);
+              }
+            });
+
+            await Promise.all(suitePromises);
+            setBackgroundSuite(suiteResults);
+
+            addMessage({
+              role: "assistant",
+              content: "✨ Multi-Format Aspect Ratio Suite generated for 2x6, 4x6, 6x4 & Square! Switch aspect ratios anytime to preview fitted artwork.",
+            });
+          } else {
+            addMessage({
+              role: "assistant",
+              content: "Layer 1 (Background & Pattern) generation completed. Canvas updated.",
+            });
+          }
         } else {
           setTextLogoAssetUrl(generatedUrl);
           addMessage({
@@ -410,6 +450,64 @@ export function RightAiPanel() {
               <Layers className="w-3.5 h-3.5 text-vow-accent" />
               <span>2-Layer Composition Stack</span>
             </span>
+          </div>
+
+          {/* Multi-Format Aspect Ratio Suite Controls */}
+          <div className="p-2 bg-white border border-stone-200 rounded-lg space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-vow-dark flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-vow-accent" />
+                <span>Multi-Format Suite (All Aspect Ratios)</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setMultiFormatSuiteEnabled(!multiFormatSuiteEnabled)}
+                className={`px-1.5 py-0.5 rounded text-[8px] font-bold border transition-all cursor-pointer ${
+                  multiFormatSuiteEnabled
+                    ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                    : "bg-stone-100 border-stone-300 text-stone-500"
+                }`}
+                title="Toggle simultaneous generation across all 4 aspect ratios (2x6, 4x6, 6x4, 1:1)"
+              >
+                {multiFormatSuiteEnabled ? "ON (4 Ratios)" : "OFF (Single)"}
+              </button>
+            </div>
+
+            {backgroundSuite && (
+              <div className="grid grid-cols-4 gap-1 pt-1">
+                {(["2_x_6", "4_x_6", "6_x_4", "square"] as CanvasFormat[]).map((fmt) => {
+                  const url = backgroundSuite[fmt];
+                  const isActive = canvasFormat === fmt;
+                  const label = fmt === "2_x_6" ? "2x6" : fmt === "4_x_6" ? "4x6" : fmt === "6_x_4" ? "6x4" : "1:1";
+                  return (
+                    <button
+                      key={fmt}
+                      type="button"
+                      onClick={() => setCanvasFormat(fmt)}
+                      className={`relative rounded border overflow-hidden text-center transition-all cursor-pointer p-0.5 ${
+                        isActive ? "border-vow-dark ring-1 ring-vow-dark bg-amber-50" : "border-stone-200 hover:border-stone-400 bg-stone-50"
+                      }`}
+                      title={`Switch to ${label} aspect ratio`}
+                    >
+                      <div className="h-8 w-full bg-stone-100 rounded overflow-hidden flex items-center justify-center relative">
+                        {url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={url} alt={label} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-[8px] text-stone-400 font-mono">None</span>
+                        )}
+                        {isActive && (
+                          <div className="absolute inset-0 bg-vow-dark/20 flex items-center justify-center">
+                            <span className="text-[7px] font-black text-white bg-vow-dark px-1 rounded uppercase">Active</span>
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-[8px] font-bold font-mono text-stone-700 block mt-0.5 uppercase">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-2">

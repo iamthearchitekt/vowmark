@@ -63,6 +63,7 @@ export function ArtboardCanvas() {
   const primaryFontSize = useEditorStore((state) => state.typographyOptions.primaryFontSize);
   const secondaryFontSize = useEditorStore((state) => state.typographyOptions.secondaryFontSize);
   const letterSpacing = useEditorStore((state) => state.typographyOptions.letterSpacing);
+  const dateLetterSpacing = useEditorStore((state) => state.typographyOptions.dateLetterSpacing);
   const nameGap = useEditorStore((state) => state.typographyOptions.nameGap);
   const ampersandScale = useEditorStore((state) => state.typographyOptions.ampersandScale);
   const layout = useEditorStore((state) => state.typographyOptions.layout);
@@ -100,6 +101,7 @@ export function ArtboardCanvas() {
       dateText,
       dateFontFamily,
       dateFontSize,
+      dateLetterSpacing,
       hashtagText,
       hashtagFontFamily,
       hashtagFontSize,
@@ -124,6 +126,7 @@ export function ArtboardCanvas() {
     dateText,
     dateFontFamily,
     dateFontSize,
+    dateLetterSpacing,
     hashtagText,
     hashtagFontFamily,
     hashtagFontSize,

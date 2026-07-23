@@ -376,13 +376,24 @@ export function LeftControlPanel() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
-                Date &amp; Location Spacing: {dateLetterSpacing}px
+                Date &amp; Location Spacing
               </label>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="number"
+                  min="-4"
+                  max="120"
+                  value={dateLetterSpacing}
+                  onChange={(e) => setTypographyOptions({ dateLetterSpacing: Number(e.target.value) || 0 })}
+                  className="w-16 bg-white border border-vow-border rounded px-1.5 py-0.5 text-right font-mono text-xs font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                />
+                <span className="text-[10px] text-vow-muted font-bold">px</span>
+              </div>
             </div>
             <input
               type="range"
-              min="-2"
-              max="30"
+              min="-4"
+              max="100"
               value={dateLetterSpacing}
               onChange={(e) => setTypographyOptions({ dateLetterSpacing: Number(e.target.value) })}
               className="w-full accent-vow-dark cursor-pointer"

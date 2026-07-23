@@ -5,8 +5,9 @@ import { Header } from "@/components/layout/Header";
 import { CURATED_FONTS, FontRecord } from "@/lib/typography/fonts-db";
 import { FontSpecimenCard } from "@/components/fonts/FontSpecimenCard";
 import { FontDetailModal } from "@/components/fonts/FontDetailModal";
+import { FontTagEditorModal } from "@/components/fonts/FontTagEditorModal";
 import { useState, useEffect, useRef } from "react";
-import { Upload, Layers, X, Type } from "lucide-react";
+import { Upload, Layers, X, Type, Tag } from "lucide-react";
 
 interface UploadItem {
   fileName: string;
@@ -14,10 +15,13 @@ interface UploadItem {
   classification: "serif" | "sans" | "script" | "decorative";
 }
 
+const LOCAL_STORAGE_TAGS_KEY = "vowmark_font_tags_overrides_v1";
+
 export default function FontsDiscoveryPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [customPreviewText, setCustomPreviewText] = useState<string>("Claude & Alexa");
   const [selectedFontForModal, setSelectedFontForModal] = useState<FontRecord | null>(null);
+  const [fontForTagEditing, setFontForTagEditing] = useState<FontRecord | null>(null);
   const [allFontsList, setAllFontsList] = useState<FontRecord[]>(CURATED_FONTS);
 
   // Bulk font upload modal state
@@ -27,13 +31,34 @@ export default function FontsDiscoveryPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Load custom font tag overrides from localStorage & API
   useEffect(() => {
     fetch("/api/fonts")
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setAllFontsList(data);
+        let baseList: FontRecord[] = Array.isArray(data) && data.length > 0 ? data : CURATED_FONTS;
+
+        // Apply local storage tag overrides if available
+        try {
+          const stored = localStorage.getItem(LOCAL_STORAGE_TAGS_KEY);
+          if (stored) {
+            const overrides = JSON.parse(stored);
+            baseList = baseList.map((f) => {
+              if (overrides[f.id]) {
+                return {
+                  ...f,
+                  weddingTags: overrides[f.id].weddingTags || f.weddingTags,
+                  subclassification: overrides[f.id].subclassification || f.subclassification,
+                };
+              }
+              return f;
+            });
+          }
+        } catch (err) {
+          console.warn("Failed to load local tag overrides:", err);
         }
+
+        setAllFontsList(baseList);
       })
       .catch((err) => console.warn("Failed to load dynamic fonts for discovery page:", err));
   }, []);
@@ -56,6 +81,35 @@ export default function FontsDiscoveryPage() {
       }
     }
   }, [allFontsList]);
+
+  // Save tag edits
+  const handleSaveFontTags = (fontId: string, updatedTags: string[], subclassification?: string) => {
+    const updatedList = allFontsList.map((f) => {
+      if (f.id === fontId) {
+        return {
+          ...f,
+          weddingTags: updatedTags,
+          subclassification: subclassification || f.subclassification,
+        };
+      }
+      return f;
+    });
+
+    setAllFontsList(updatedList);
+
+    // Save to localStorage
+    try {
+      const stored = localStorage.getItem(LOCAL_STORAGE_TAGS_KEY);
+      const overrides = stored ? JSON.parse(stored) : {};
+      overrides[fontId] = {
+        weddingTags: updatedTags,
+        subclassification,
+      };
+      localStorage.setItem(LOCAL_STORAGE_TAGS_KEY, JSON.stringify(overrides));
+    } catch (err) {
+      console.warn("Failed to persist tag overrides to localStorage:", err);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -124,11 +178,25 @@ export default function FontsDiscoveryPage() {
     setPendingUploads([]);
   };
 
+  // Collect all unique tags across the library for filter chips
+  const allUniqueTags = Array.from(
+    new Set([
+      "all",
+      "serif",
+      "sans",
+      "script",
+      "decorative",
+      ...allFontsList.flatMap((f) => f.weddingTags || []),
+    ])
+  );
+
   const filteredFonts = allFontsList.filter((f) => {
-    return (
-      selectedCategory === "all" ||
-      f.classification.toLowerCase() === selectedCategory.toLowerCase()
-    );
+    if (selectedCategory === "all") return true;
+    const catLower = selectedCategory.toLowerCase();
+    const matchesClassification = f.classification.toLowerCase() === catLower;
+    const matchesTag = f.weddingTags?.some((t) => t.toLowerCase() === catLower);
+    const matchesSubclass = f.subclassification.toLowerCase().includes(catLower);
+    return matchesClassification || matchesTag || matchesSubclass;
   });
 
   return (
@@ -147,7 +215,12 @@ export default function FontsDiscoveryPage() {
 
       <main className="flex-1 max-w-6xl w-full mx-auto p-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="font-serif font-bold text-3xl text-vow-dark">Fonts Library</h1>
+          <div>
+            <h1 className="font-serif font-bold text-3xl text-vow-dark">Fonts Library</h1>
+            <p className="text-xs text-vow-muted font-sans mt-1">
+              Browse, test custom previews, and edit font tags for high-precision recommendation filtering.
+            </p>
+          </div>
 
           <button
             type="button"
@@ -159,22 +232,22 @@ export default function FontsDiscoveryPage() {
           </button>
         </div>
 
-        {/* Combined Control Toolbar: Category Filter & Dafont-Style Live Custom Preview Text Input */}
+        {/* Combined Control Toolbar: Category & Tag Filter Chips + Custom Preview Text Input */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-vow-paper p-4 rounded-xl border border-vow-border mb-8 shadow-2xs">
-          {/* Category Filter Buttons */}
-          <div className="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-            {["all", "serif", "sans", "script", "decorative"].map((cat) => (
+          {/* Category & Tag Filter Chips */}
+          <div className="flex items-center space-x-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 scrollbar-thin">
+            {allUniqueTags.slice(0, 10).map((tagOrCat) => (
               <button
-                key={cat}
+                key={tagOrCat}
                 type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-1.5 rounded-full text-xs font-sans capitalize transition-colors whitespace-nowrap ${
-                  selectedCategory === cat
-                    ? "bg-vow-dark text-vow-paper font-medium"
+                onClick={() => setSelectedCategory(tagOrCat)}
+                className={`px-3 py-1.5 rounded-full text-xs font-sans capitalize transition-colors whitespace-nowrap ${
+                  selectedCategory.toLowerCase() === tagOrCat.toLowerCase()
+                    ? "bg-vow-dark text-vow-paper font-bold shadow-2xs"
                     : "bg-vow-surface border border-vow-border text-vow-charcoal hover:bg-stone-200"
                 }`}
               >
-                {cat}
+                {tagOrCat}
               </button>
             ))}
           </div>
@@ -201,6 +274,7 @@ export default function FontsDiscoveryPage() {
               primaryText={customPreviewText || "Claude & Alexa"}
               secondaryText=""
               onSelect={() => setSelectedFontForModal(font)}
+              onEditTags={(targetFont) => setFontForTagEditing(targetFont)}
             />
           ))}
         </div>
@@ -212,6 +286,16 @@ export default function FontsDiscoveryPage() {
           font={selectedFontForModal}
           initialPreviewText={customPreviewText || "Claude & Alexa"}
           onClose={() => setSelectedFontForModal(null)}
+        />
+      )}
+
+      {/* Interactive Font Tag Editor Modal */}
+      {fontForTagEditing && (
+        <FontTagEditorModal
+          font={fontForTagEditing}
+          isOpen={!!fontForTagEditing}
+          onClose={() => setFontForTagEditing(null)}
+          onSaveTags={handleSaveFontTags}
         />
       )}
 
@@ -253,32 +337,31 @@ export default function FontsDiscoveryPage() {
                         type="text"
                         value={item.familyName}
                         onChange={(e) => handleItemChange(idx, "familyName", e.target.value)}
-                        className="w-full bg-slate-50 border border-vow-border rounded px-2.5 py-1.5 text-xs font-bold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                        className="w-full bg-slate-50 border border-vow-border rounded px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-vow-dark"
                       />
                     </div>
-
                     <div>
                       <label className="block text-[10px] font-bold text-vow-muted uppercase tracking-wider mb-0.5">
                         Classification
                       </label>
                       <select
                         value={item.classification}
-                        onChange={(e) => handleItemChange(idx, "classification", e.target.value)}
-                        className="w-full bg-slate-50 border border-vow-border rounded px-2.5 py-1.5 text-xs font-bold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                        onChange={(e) =>
+                          handleItemChange(idx, "classification", e.target.value as any)
+                        }
+                        className="w-full bg-slate-50 border border-vow-border rounded px-2 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-vow-dark"
                       >
-                        <option value="serif">Serif (Didone / Roman Inscription)</option>
-                        <option value="sans">Sans-Serif (Modern Architectural)</option>
-                        <option value="script">Script (Calligraphic)</option>
-                        <option value="decorative">Decorative (Luxury Monogram)</option>
+                        <option value="serif">Serif</option>
+                        <option value="sans">Sans-Serif</option>
+                        <option value="script">Script / Calligraphy</option>
+                        <option value="decorative">Decorative</option>
                       </select>
                     </div>
                   </div>
-
                   <button
-                    type="button"
                     onClick={() => handleRemoveItem(idx)}
-                    className="p-1 text-slate-400 hover:text-red-600 rounded transition-colors"
-                    title="Remove from batch"
+                    className="p-1.5 text-slate-400 hover:text-rose-600 rounded"
+                    title="Remove from upload batch"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -286,37 +369,31 @@ export default function FontsDiscoveryPage() {
               ))}
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-vow-border mt-3">
-              <div className="flex items-center space-x-2">
+            <div className="pt-4 border-t border-vow-border flex items-center justify-between mt-2">
+              <label className="flex items-center space-x-2 text-xs font-semibold text-vow-dark cursor-pointer">
                 <input
                   type="checkbox"
-                  id="globalCommApproved"
                   checked={globalCommercialApproved}
                   onChange={(e) => setGlobalCommercialApproved(e.target.checked)}
-                  className="accent-vow-dark w-4 h-4"
+                  className="rounded border-vow-border text-vow-dark focus:ring-vow-dark"
                 />
-                <label
-                  htmlFor="globalCommApproved"
-                  className="text-xs text-vow-dark font-semibold cursor-pointer"
-                >
-                  Approve All {pendingUploads.length} Fonts for Commercial Client Work
-                </label>
-              </div>
+                <span>Mark all as Commercial Approved</span>
+              </label>
 
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-vow-border rounded-md text-xs font-bold uppercase tracking-wider text-vow-muted hover:bg-slate-50"
+                  className="px-4 py-2 bg-white border border-vow-border text-vow-dark rounded-md text-xs font-bold uppercase tracking-wider hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveAllFonts}
-                  className="px-5 py-2 bg-vow-dark text-white rounded-md text-xs font-bold uppercase tracking-wider hover:bg-black transition-colors"
+                  className="px-5 py-2 bg-vow-dark text-white rounded-md text-xs font-bold uppercase tracking-wider hover:bg-black"
                 >
-                  Register All ({pendingUploads.length} Fonts)
+                  Register All Fonts
                 </button>
               </div>
             </div>

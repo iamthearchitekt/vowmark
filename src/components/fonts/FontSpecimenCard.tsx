@@ -4,7 +4,7 @@ import { FontRecord } from "@/lib/typography/fonts-db";
 import { resolveFontConfig } from "@/lib/typography/font-resolver";
 import { useEditorStore } from "@/lib/store/useEditorStore";
 import { useRouter } from "next/navigation";
-import { Check, ShieldCheck, ArrowRight } from "lucide-react";
+import { Check, ShieldCheck, ArrowRight, Tag } from "lucide-react";
 import { useEffect } from "react";
 
 interface FontSpecimenCardProps {
@@ -13,6 +13,7 @@ interface FontSpecimenCardProps {
   secondaryText?: string;
   isSelected?: boolean;
   onSelect?: () => void;
+  onEditTags?: (font: FontRecord) => void;
 }
 
 export function FontSpecimenCard({
@@ -21,6 +22,7 @@ export function FontSpecimenCard({
   secondaryText = "Alexa",
   isSelected,
   onSelect,
+  onEditTags,
 }: FontSpecimenCardProps) {
   const router = useRouter();
   const setTypographyOptions = useEditorStore((state) => state.setTypographyOptions);
@@ -51,6 +53,13 @@ export function FontSpecimenCard({
     router.push("/editor");
   };
 
+  const handleOpenTagEditor = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEditTags) {
+      onEditTags(font);
+    }
+  };
+
   return (
     <div
       onClick={onSelect}
@@ -60,7 +69,7 @@ export function FontSpecimenCard({
           : "border-vow-border hover:border-stone-400 hover:shadow-sm"
       }`}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <div>
           <h4 className="font-bold text-lg text-vow-dark group-hover:text-vow-accent transition-colors">
             {font.familyName}
@@ -84,17 +93,37 @@ export function FontSpecimenCard({
         </div>
       </div>
 
+      {/* Render Wedding Tags Pills */}
+      {font.weddingTags && font.weddingTags.length > 0 && (
+        <div className="flex flex-wrap gap-1 my-2">
+          {font.weddingTags.map((tag) => (
+            <span
+              key={tag}
+              className="text-[9px] font-mono font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full border border-slate-200 uppercase"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Live Specimen Preview Render */}
-      <div className="py-8 border-y border-vow-border my-4 text-center bg-white rounded-lg p-6 flex items-center justify-center min-h-[110px]">
+      <div className="py-8 border-y border-vow-border my-3 text-center bg-white rounded-lg p-6 flex items-center justify-center min-h-[110px]">
         <p className="text-3xl text-vow-dark" style={{ fontFamily: fontConfig.cssFontFamily }}>
           {secondaryText ? `${primaryText} & ${secondaryText}` : primaryText}
         </p>
       </div>
 
       <div className="flex items-center justify-between text-[11px] text-vow-muted">
-        <p className="italic truncate max-w-[240px]">
-          {!isCustomUploaded ? font.description : "Click to view full specimen & character map."}
-        </p>
+        <button
+          type="button"
+          onClick={handleOpenTagEditor}
+          className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 rounded text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+          title="Edit font tags and classification"
+        >
+          <Tag className="w-3 h-3 text-vow-accent" />
+          <span>Edit Tags</span>
+        </button>
 
         <button
           type="button"

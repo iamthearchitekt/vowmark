@@ -27,6 +27,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
 
   const handleExport = async () => {
     setIsExporting(true);
+    setExportSuccess(false);
     try {
       const res = await fetch("/api/exports", {
         method: "POST",
@@ -51,6 +52,15 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
         }),
       });
 
+      // Check for server-side errors BEFORE reading as blob
+      // If we don't do this, a JSON error response gets saved as a corrupted file
+      if (!res.ok) {
+        const errText = await res.text();
+        let errMsg = "Export failed.";
+        try { errMsg = JSON.parse(errText)?.error || errMsg; } catch {}
+        throw new Error(errMsg);
+      }
+
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -58,10 +68,12 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
       a.download = `vowmark-wedding-asset.${selectedFormat === "svg" ? "svg" : selectedFormat === "jpeg" ? "jpg" : "png"}`;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      // Delay revoke so browser has time to start the download
+      setTimeout(() => window.URL.revokeObjectURL(url), 5000);
       setExportSuccess(true);
-    } catch (err) {
-      alert("Export completed.");
+    } catch (err: any) {
+      alert(`Export failed: ${err?.message || "Unknown error"}`);
     } finally {
       setIsExporting(false);
     }

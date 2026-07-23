@@ -76,22 +76,32 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Convert via Sharp ImageProcessor to guaranteed 100% Photoshop-compliant sRGB 32-bit RGBA PNG
+    // Per-format print-resolution output dimensions (300 DPI)
+    const FORMAT_DIMS: Record<string, { w: number; h: number }> = {
+      "2_x_6":  { w: 600,  h: 1800 },
+      "4_x_6":  { w: 1200, h: 1800 },
+      "6_x_4":  { w: 1800, h: 1200 },
+      "square": { w: 1800, h: 1800 },
+    };
+    const exportDims = FORMAT_DIMS[canvasFormat as string] ?? { w: 1800, h: 1800 };
+
+    // Convert via Sharp ImageProcessor to guaranteed 100% Photoshop-compliant sRGB RGBA PNG
     const processed = await ImageProcessor.processImage(inputBuffer, {
       makeTransparent: shouldBeTransparent,
       pureBlackAndWhite,
-      width: 2048,
-      height: 2048,
+      width: exportDims.w,
+      height: exportDims.h,
     });
 
     const mimeType = format === "jpeg" ? "image/jpeg" : "image/png";
     const ext = format === "jpeg" ? "jpg" : "png";
 
-    return new NextResponse(new Uint8Array(processed.processedBuffer), {
+    // Return Buffer directly — wrapping in Uint8Array can corrupt binary in some Next.js builds
+    return new NextResponse(processed.processedBuffer, {
       headers: {
         "Content-Type": mimeType,
         "Content-Disposition": `attachment; filename="vowmark-wedding-asset.${ext}"`,
-        "Content-Length": processed.processedBuffer.length.toString(),
+        "Content-Length": String(processed.processedBuffer.byteLength),
       },
     });
   } catch (err: any) {

@@ -3,6 +3,7 @@ import { applyUniversalPromptAid } from "./prompt-compiler";
 
 export interface ImageGenerationInput {
   prompt: string;
+  generationType?: "text_logo" | "background_pattern";
   quality?: "low" | "medium" | "high" | "standard" | "hd";
   size?: "1024x1024" | "1536x1024" | "1024x1536" | "1792x1024" | "1024x1792";
 }
@@ -20,8 +21,12 @@ export class OpenAIImageProvider {
     const startTime = Date.now();
     const model = process.env.OPENAI_IMAGE_MODEL || "gpt-image-2";
 
-    // Apply Universal Pre-Prompt Aid under the hood
-    const enhancedPrompt = applyUniversalPromptAid(input.prompt);
+    // Apply Universal Pre-Prompt Aid — pass generationType so background prompts
+    // are NOT forced into black-on-white text_logo mode
+    const enhancedPrompt = applyUniversalPromptAid(
+      input.prompt,
+      input.generationType ?? "text_logo"
+    );
 
     // If mock mode is explicitly forced via USE_MOCK_AI=true without an API key
     if (process.env.USE_MOCK_AI === "true") {

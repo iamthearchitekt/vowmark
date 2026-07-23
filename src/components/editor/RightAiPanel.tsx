@@ -160,8 +160,8 @@ export function RightAiPanel() {
         role: "assistant",
         content:
           aiGenerationType === "background_pattern"
-            ? "✨ Generated new seamless wedding background & floral pattern artwork on Artboard Canvas!"
-            : "✨ Generated new OpenAI wedding logo image artwork. Canvas updated!",
+            ? "Background pattern generation completed. Canvas updated."
+            : "Logo generation completed. Canvas updated.",
       });
     } finally {
       setIsAiGenerating(false);
@@ -351,8 +351,8 @@ export function RightAiPanel() {
               <RefreshCw className="w-4 h-4 animate-spin text-vow-accent" />
               <span className="font-semibold">
                 {isBackgroundMode
-                  ? "Generating background texture & florals with OpenAI Image AI..."
-                  : "Generating AI logo image with OpenAI Image AI..."}
+                  ? "Generating background texture..."
+                  : "Generating AI image..."}
               </span>
             </div>
           )}

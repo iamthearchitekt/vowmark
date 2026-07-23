@@ -33,10 +33,11 @@ export class OpenAIProvider {
     }
 
     try {
-      const systemPrompt = `You are VOWMARK's AI Design Assistant.
-CRITICAL INSTRUCTION: Be extremely concise, direct, and brief (1 to 2 short sentences MAX).
-Do NOT write long paragraphs, lists, or wordy explanations.
-Simply acknowledge the user's request and confirm that the artwork is generated on the canvas.`;
+      const systemPrompt = `You are VOWMARK's System AI Assistant.
+CRITICAL DIRECTIVES:
+1. NO EMOJIS. Never use emojis or cheerful fluff in any response.
+2. Be strictly procedural, concise, and direct (max 5-10 words).
+3. State procedural status directly, e.g. "Generation completed. Canvas updated." or "Generation failed."`;
 
       const completion = await this.client.chat.completions.create({
         model: this.model,
@@ -44,11 +45,11 @@ Simply acknowledge the user's request and confirm that the artwork is generated 
           { role: "system", content: systemPrompt },
           ...messages,
         ],
-        temperature: 0.5,
-        max_tokens: 60,
+        temperature: 0.3,
+        max_tokens: 30,
       });
 
-      const responseText = completion.choices[0]?.message?.content || "✨ Generated artwork on canvas.";
+      const responseText = completion.choices[0]?.message?.content?.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "").trim() || "Generation completed. Canvas updated.";
 
       return {
         message: responseText,
@@ -99,16 +100,16 @@ Simply acknowledge the user's request and confirm that the artwork is generated 
     const lastUserMsg = messages[messages.length - 1]?.content || "";
     const lower = lastUserMsg.toLowerCase();
 
-    let message = "✨ Generated artwork on canvas.";
+    let message = "Generation completed. Canvas updated.";
 
     if (lower.includes("crest") || strokeContains(lower, ["crest", "estate", "shield"])) {
-      message = "🛡️ Generated heraldic crest logo. Canvas updated.";
+      message = "Heraldic crest generation completed. Canvas updated.";
     } else if (lower.includes("editorial") || strokeContains(lower, ["editorial", "vogue", "luxury"])) {
-      message = "💎 Applied editorial luxury styling. Canvas updated.";
+      message = "Editorial luxury styling applied. Canvas updated.";
     } else if (lower.includes("minimal") || lower.includes("clean")) {
-      message = "✨ Generated minimal identity mark. Loaded on canvas.";
+      message = "Minimal identity mark generated. Canvas updated.";
     } else if (lower.includes("background") || lower.includes("floral") || lower.includes("border")) {
-      message = "🌸 Generated stationery background pattern on canvas.";
+      message = "Background pattern generation completed. Canvas updated.";
     }
 
     return {

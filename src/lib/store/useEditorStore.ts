@@ -156,8 +156,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   messages: [
     {
       role: "assistant",
-      content:
-        "Welcome to your AI Wedding Identity Creator. Your canvas is ready in Blank Template Mode. Type in the AI Assistant to generate custom wedding logos from scratch.",
+      content: "Canvas ready. Enter prompt to generate assets.",
     },
   ],
   isAiGenerating: false,

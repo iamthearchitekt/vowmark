@@ -24,9 +24,11 @@ export function ArtboardCanvas() {
   const studioMode = useEditorStore((state) => state.studioMode);
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
   const backgroundLayerOpacity = useEditorStore((state) => state.backgroundLayerOpacity ?? 100);
+  const layer1Visible = useEditorStore((state) => state.layer1Visible ?? true);
   const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const textLayerOpacity = useEditorStore((state) => state.textLayerOpacity ?? 100);
+  const layer2Visible = useEditorStore((state) => state.layer2Visible ?? true);
   const textColor = useEditorStore((state) => state.textColor || "#0F172A");
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
 
@@ -204,7 +206,7 @@ export function ArtboardCanvas() {
         {/* ======================================================== */}
         {/* LAYER 1 (BOTTOM): BACKGROUND & PATTERN LAYER WITH OPACITY */}
         {/* ======================================================== */}
-        {backgroundPatternAssetUrl && (
+        {backgroundPatternAssetUrl && layer1Visible && (
           <div
             className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-300"
             style={{ opacity: backgroundLayerOpacity / 100 }}
@@ -239,45 +241,47 @@ export function ArtboardCanvas() {
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
         {/* ======================================================== */}
-        <div
-          className="absolute z-20 flex items-center justify-center transition-all inset-0 p-6 w-full h-full"
-          style={{
-            transform:
-              isNonSquare && !is2x6Format
-                ? `translate(${photoboothOffsetX}px, ${photoboothOffsetY}px) scale(${photoboothScale / 100})`
-                : undefined,
-            mixBlendMode: textLayerBlendMode,
-            opacity: textLayerOpacity / 100,
-          }}
-        >
-          {studioMode === "generative_ai" && activeLogoAsset ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={activeLogoAsset}
-              alt="Layer 2 AI Text & Monogram Logo Artwork"
-              className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
-            />
-          ) : (
-            /* Deterministic Vector Mode Typography Overlay */
-            <>
-              {ornamentUrl && (
-                <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-85">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={ornamentUrl}
-                    alt="Ornament Layer"
-                    className="w-full h-full object-contain filter contrast-125"
-                  />
-                </div>
-              )}
-
-              <div
-                className="absolute inset-0 flex items-center justify-center pointer-events-auto w-full h-full"
-                dangerouslySetInnerHTML={{ __html: renderedVectorSvg }}
+        {layer2Visible && (
+          <div
+            className="absolute z-20 flex items-center justify-center transition-all inset-0 p-6 w-full h-full"
+            style={{
+              transform:
+                isNonSquare && !is2x6Format
+                  ? `translate(${photoboothOffsetX}px, ${photoboothOffsetY}px) scale(${photoboothScale / 100})`
+                  : undefined,
+              mixBlendMode: textLayerBlendMode,
+              opacity: textLayerOpacity / 100,
+            }}
+          >
+            {studioMode === "generative_ai" && activeLogoAsset ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={activeLogoAsset}
+                alt="Layer 2 AI Text & Monogram Logo Artwork"
+                className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
               />
-            </>
-          )}
-        </div>
+            ) : (
+              /* Deterministic Vector Mode Typography Overlay */
+              <>
+                {ornamentUrl && (
+                  <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-85">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={ornamentUrl}
+                      alt="Ornament Layer"
+                      className="w-full h-full object-contain filter contrast-125"
+                    />
+                  </div>
+                )}
+
+                <div
+                  className="absolute inset-0 flex items-center justify-center pointer-events-auto w-full h-full"
+                  dangerouslySetInnerHTML={{ __html: renderedVectorSvg }}
+                />
+              </>
+            )}
+          </div>
+        )}
 
         {/* Safe Area Guide */}
         <div className="absolute inset-3 border border-dashed border-slate-300/40 pointer-events-none z-30" />

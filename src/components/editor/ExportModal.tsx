@@ -51,18 +51,34 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
   const textLayerOpacity    = useEditorStore((s) => s.textLayerOpacity ?? 100);
   const backgroundPatternAssetUrl = useEditorStore((s) => s.backgroundPatternAssetUrl);
   const backgroundLayerOpacity   = useEditorStore((s) => s.backgroundLayerOpacity ?? 100);
+  const layer1Visible             = useEditorStore((s) => s.layer1Visible ?? true);
   const textLogoAssetUrl    = useEditorStore((s) => s.textLogoAssetUrl);
   const aiGeneratedAssetUrl = useEditorStore((s) => s.aiGeneratedAssetUrl);
+  const layer2Visible             = useEditorStore((s) => s.layer2Visible ?? true);
   const photoboothMode      = useEditorStore((s) => s.photoboothMode);
   const photoboothMode6x4   = useEditorStore((s) => s.photoboothMode6x4 || "mode1");
   const photoboothFlipH     = useEditorStore((s) => s.photoboothFlipH || false);
   const photoboothFlipV     = useEditorStore((s) => s.photoboothFlipV || false);
   const photoboothFrameUrl  = useEditorStore((s) => s.photoboothFrameUrl);
 
-  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("transparent_png");
   const [isExporting, setIsExporting]       = useState(false);
   const [exportSuccess, setExportSuccess]   = useState(false);
   const [errorMsg, setErrorMsg]             = useState<string | null>(null);
+
+  // If a background layer is present AND visible, transparent PNG is not valid —
+  // the background IS the design and must be included in the output.
+  const hasBackground = Boolean(backgroundPatternAssetUrl && layer1Visible);
+
+  // Derived effective format: clamp away from transparent_png when there's a background
+  const [selectedFormat, setSelectedFormatRaw] = useState<ExportFormat>("transparent_png");
+  const effectiveFormat: ExportFormat =
+    hasBackground && selectedFormat === "transparent_png" ? "png" : selectedFormat;
+
+  const setSelectedFormat = (f: ExportFormat) => {
+    setSelectedFormatRaw(f);
+    setExportSuccess(false);
+    setErrorMsg(null);
+  };
 
   // ── Resolve photobooth frame URL (same logic as ArtboardCanvas) ──────────────
   const activeFrameOverlayUrl = (() => {
@@ -88,12 +104,13 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
     setErrorMsg(null);
 
     try {
-      const isNonSquare    = canvasFormat !== "square";
-      const makeTransparent = selectedFormat === "transparent_png";
-      const slug           = canvasFormat.replace(/_/g, "");
+      const resolvedFormat  = effectiveFormat;
+      const slug            = canvasFormat.replace(/_/g, "");
+      const isNonSquare     = canvasFormat !== "square";
+      const makeTransparent = resolvedFormat === "transparent_png";
 
       // ── SVG Export ───────────────────────────────────────────────────────────
-      if (selectedFormat === "svg") {
+      if (resolvedFormat === "svg") {
         if (activeLayer2ImageUrl && studioMode === "generative_ai") {
           // AI image: wrap in an SVG container at correct dimensions
           const { width, height } = printDims;
@@ -158,7 +175,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
         height: printDims.height,
         makeTransparent,
 
-        layer1: backgroundPatternAssetUrl
+        layer1: (backgroundPatternAssetUrl && layer1Visible)
           ? { assetUrl: backgroundPatternAssetUrl, opacity: backgroundLayerOpacity }
           : null,
 
@@ -166,10 +183,11 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
           ? { assetUrl: activeFrameOverlayUrl, flipH: photoboothFlipH, flipV: photoboothFlipV }
           : null,
 
-        layer2,
+        layer2: layer2Visible ? layer2 : null,
       });
 
       downloadBlob(blob, `vowmark-${slug}.png`);
+
       setExportSuccess(true);
     } catch (err: any) {
       console.error("[Export]", err);
@@ -210,24 +228,33 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        {/* Vector transparent PNG callout */}
-        {studioMode !== "generative_ai" && (
+        {/* Contextual callout */}
+        {hasBackground ? (
+          <div className="mb-4 flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
+            <ImageIcon className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <span>
+              <strong>Background layer active.</strong> Transparent PNG is unavailable — your background is part of the design and will be included in all exports.
+            </span>
+          </div>
+        ) : studioMode !== "generative_ai" ? (
           <div className="mb-4 flex items-start gap-2 p-3 bg-stone-50 border border-stone-200 rounded-lg text-xs text-stone-700">
             <FileCode className="w-4 h-4 flex-shrink-0 mt-0.5 text-vow-accent" />
             <span>
-              <strong>Vector mode active.</strong> Select <em>Transparent PNG</em> to export your text &amp; monogram on a true alpha-channel background — ready to layer over any design.
+              <strong>Vector mode active.</strong> <em>Transparent PNG</em> exports your text &amp; monogram on a true alpha-channel background — ready to layer over any design.
             </span>
           </div>
-        )}
+        ) : null}
 
         {/* Format picker */}
         <div className="space-y-2.5 mb-5">
-          {FORMAT_OPTIONS.map((item) => (
+          {FORMAT_OPTIONS
+            .filter((item) => !(hasBackground && item.id === "transparent_png"))
+            .map((item) => (
             <div
               key={item.id}
-              onClick={() => { setSelectedFormat(item.id); setExportSuccess(false); setErrorMsg(null); }}
+              onClick={() => setSelectedFormat(item.id)}
               className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                selectedFormat === item.id
+                effectiveFormat === item.id
                   ? "border-vow-dark bg-stone-50 ring-1 ring-vow-dark"
                   : "border-vow-border bg-white hover:border-stone-300"
               }`}

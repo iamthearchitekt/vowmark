@@ -27,9 +27,11 @@ export interface EditorState {
   // 2-Layer Composition System
   backgroundPatternAssetUrl: string | null; // Layer 1: Background & Pattern
   backgroundLayerOpacity: number;          // Layer 1 Opacity in percent (0 to 100, default 100)
+  layer1Visible: boolean;                   // Layer 1 Visibility Toggle
   textLogoAssetUrl: string | null;          // Layer 2: Text & Monogram Logo
   textLayerBlendMode: TextBlendMode;         // Layer 2 Blend Mode: normal | multiply | overlay
   textLayerOpacity: number;                 // Layer 2 Opacity in percent (0 to 100, default 100)
+  layer2Visible: boolean;                   // Layer 2 Visibility Toggle
   vectorOverlayEnabled: boolean;            // Enable Vector Typography overlay over AI backgrounds
 
   // Universal Vector Text Color
@@ -74,9 +76,11 @@ export interface EditorState {
   setAiGeneratedAssetUrl: (url: string | null) => void;
   setBackgroundPatternAssetUrl: (url: string | null) => void;
   setBackgroundLayerOpacity: (opacity: number) => void;
+  setLayer1Visible: (visible: boolean) => void;
   setTextLogoAssetUrl: (url: string | null) => void;
   setTextLayerBlendMode: (mode: TextBlendMode) => void;
   setTextLayerOpacity: (opacity: number) => void;
+  setLayer2Visible: (visible: boolean) => void;
   setVectorOverlayEnabled: (enabled: boolean) => void;
   setTextColor: (color: string) => void;
   setAiGenerationType: (type: AiGenerationType) => void;
@@ -176,9 +180,11 @@ export const useEditorStore = create<EditorState>((set) => ({
   // 2-Layer Composition System defaults with blend mode and opacities
   backgroundPatternAssetUrl: null,
   backgroundLayerOpacity: 100,     // Default 100% opacity for Layer 1 Background
+  layer1Visible: true,             // Layer 1 Visible by default
   textLogoAssetUrl: null,
   textLayerBlendMode: "multiply", // Default to multiply for seamless print blending
   textLayerOpacity: 100,          // Default 100% opacity for Layer 2 Text
+  layer2Visible: true,             // Layer 2 Visible by default
   vectorOverlayEnabled: true,     // Vector text overlay on top of AI backgrounds enabled by default
 
   // Universal Vector Text Color default
@@ -226,9 +232,11 @@ export const useEditorStore = create<EditorState>((set) => ({
   setAiGeneratedAssetUrl: (url) => set({ aiGeneratedAssetUrl: url, textLogoAssetUrl: url }),
   setBackgroundPatternAssetUrl: (url) => set({ backgroundPatternAssetUrl: url }),
   setBackgroundLayerOpacity: (opacity) => set({ backgroundLayerOpacity: opacity }),
+  setLayer1Visible: (visible) => set({ layer1Visible: visible }),
   setTextLogoAssetUrl: (url) => set({ textLogoAssetUrl: url, aiGeneratedAssetUrl: url }),
   setTextLayerBlendMode: (mode) => set({ textLayerBlendMode: mode }),
   setTextLayerOpacity: (opacity) => set({ textLayerOpacity: opacity }),
+  setLayer2Visible: (visible) => set({ layer2Visible: visible }),
   setVectorOverlayEnabled: (enabled) => set({ vectorOverlayEnabled: enabled }),
 
   setTextColor: (color) =>

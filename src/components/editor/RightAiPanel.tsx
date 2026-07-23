@@ -18,6 +18,8 @@ import {
   Trash2,
   Blend,
   Paperclip,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 function isImageGenerationTrigger(text: string): boolean {
@@ -54,15 +56,19 @@ export function RightAiPanel() {
   // 2-Layer Composition State
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
   const backgroundLayerOpacity = useEditorStore((state) => state.backgroundLayerOpacity ?? 100);
+  const layer1Visible = useEditorStore((state) => state.layer1Visible ?? true);
   const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const textLayerOpacity = useEditorStore((state) => state.textLayerOpacity ?? 100);
+  const layer2Visible = useEditorStore((state) => state.layer2Visible ?? true);
 
   const setBackgroundPatternAssetUrl = useEditorStore((state) => state.setBackgroundPatternAssetUrl);
   const setBackgroundLayerOpacity = useEditorStore((state) => state.setBackgroundLayerOpacity);
+  const setLayer1Visible = useEditorStore((state) => state.setLayer1Visible);
   const setTextLogoAssetUrl = useEditorStore((state) => state.setTextLogoAssetUrl);
   const setTextLayerBlendMode = useEditorStore((state) => state.setTextLayerBlendMode);
   const setTextLayerOpacity = useEditorStore((state) => state.setTextLayerOpacity);
+  const setLayer2Visible = useEditorStore((state) => state.setLayer2Visible);
 
   const aiGenerationType = useEditorStore((state) => state.aiGenerationType);
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
@@ -392,26 +398,41 @@ export function RightAiPanel() {
             {/* Layer 1: Background */}
             <div className={`p-2 rounded border transition-all ${
               backgroundPatternAssetUrl ? "bg-white border-slate-300 shadow-2xs" : "bg-slate-50 border-dashed border-slate-300"
-            }`}>
+            } ${!layer1Visible ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-slate-600">Layer 1: Background</span>
-                {backgroundPatternAssetUrl && (
+                <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => setBackgroundPatternAssetUrl(null)}
-                    className="text-slate-400 hover:text-rose-600 p-0.5 cursor-pointer"
-                    title="Clear Background Layer"
+                    onClick={() => setLayer1Visible(!layer1Visible)}
+                    className={`p-0.5 transition-colors cursor-pointer ${
+                      layer1Visible ? "text-slate-600 hover:text-vow-dark" : "text-slate-400 hover:text-slate-600"
+                    }`}
+                    title={layer1Visible ? "Hide Layer 1 Background" : "Show Layer 1 Background"}
                   >
-                    <Trash2 className="w-3 h-3" />
+                    {layer1Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-slate-400" />}
                   </button>
-                )}
+                  {backgroundPatternAssetUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setBackgroundPatternAssetUrl(null)}
+                      className="text-slate-400 hover:text-rose-600 p-0.5 cursor-pointer"
+                      title="Clear Background Layer"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="h-10 rounded overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
+              <div className="h-10 rounded overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 relative">
                 {backgroundPatternAssetUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={backgroundPatternAssetUrl} alt="Background Layer" className="w-full h-full object-cover" />
+                  <img src={backgroundPatternAssetUrl} alt="Background Layer" className={`w-full h-full object-cover ${!layer1Visible ? "opacity-30 grayscale" : ""}`} />
                 ) : (
                   <span className="text-[9px] text-slate-400 italic">Pure White</span>
+                )}
+                {!layer1Visible && (
+                  <span className="absolute text-[9px] font-bold text-slate-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
                 )}
               </div>
             </div>
@@ -419,26 +440,41 @@ export function RightAiPanel() {
             {/* Layer 2: Text / Logo */}
             <div className={`p-2 rounded border transition-all ${
               textLogoAssetUrl ? "bg-white border-slate-300 shadow-2xs" : "bg-slate-50 border-dashed border-slate-300"
-            }`}>
+            } ${!layer2Visible ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[9px] font-bold uppercase tracking-wider text-slate-600">Layer 2: Text &amp; Logo</span>
-                {textLogoAssetUrl && (
+                <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => setTextLogoAssetUrl(null)}
-                    className="text-slate-400 hover:text-rose-600 p-0.5 cursor-pointer"
-                    title="Clear Text & Monogram Layer"
+                    onClick={() => setLayer2Visible(!layer2Visible)}
+                    className={`p-0.5 transition-colors cursor-pointer ${
+                      layer2Visible ? "text-slate-600 hover:text-vow-dark" : "text-slate-400 hover:text-slate-600"
+                    }`}
+                    title={layer2Visible ? "Hide Layer 2 Text & Monogram" : "Show Layer 2 Text & Monogram"}
                   >
-                    <Trash2 className="w-3 h-3" />
+                    {layer2Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-slate-400" />}
                   </button>
-                )}
+                  {textLogoAssetUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setTextLogoAssetUrl(null)}
+                      className="text-slate-400 hover:text-rose-600 p-0.5 cursor-pointer"
+                      title="Clear Text & Monogram Layer"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="h-10 rounded overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
+              <div className="h-10 rounded overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 relative">
                 {textLogoAssetUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={textLogoAssetUrl} alt="Text Logo Layer" className="w-full h-full object-contain p-0.5" />
+                  <img src={textLogoAssetUrl} alt="Text Logo Layer" className={`w-full h-full object-contain p-0.5 ${!layer2Visible ? "opacity-30 grayscale" : ""}`} />
                 ) : (
-                  <span className="text-[9px] text-slate-400 italic">Vector Engine Overlay</span>
+                  <span className={`text-[9px] text-slate-400 italic ${!layer2Visible ? "opacity-50" : ""}`}>Vector Engine Overlay</span>
+                )}
+                {!layer2Visible && (
+                  <span className="absolute text-[9px] font-bold text-slate-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
                 )}
               </div>
             </div>

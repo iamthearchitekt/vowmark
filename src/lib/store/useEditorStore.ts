@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { DesignBrief } from "../ai/brief-schema";
 import { TypographyOptions } from "../typography/engine";
 import { CURATED_FONTS } from "../typography/fonts-db";
+import { AiGenerationType, PromptGuidanceConfig, DEFAULT_PROMPT_GUIDANCE } from "../ai/prompt-compiler";
 
 export type CanvasFormat = "2_x_6" | "4_x_6" | "6_x_4" | "square";
 export type StudioMode = "generative_ai" | "deterministic_vector";
@@ -13,8 +14,6 @@ export interface ReferenceImage {
   tag: string;
 }
 
-import { AiGenerationType, PromptGuidanceConfig, DEFAULT_PROMPT_GUIDANCE } from "../ai/prompt-compiler";
-
 export interface EditorState {
   projectId: string;
   projectTitle: string;
@@ -23,6 +22,11 @@ export interface EditorState {
   // Studio Mode: Generative AI (OpenAI DALL-E 3) vs Deterministic Vector
   studioMode: StudioMode;
   aiGeneratedAssetUrl: string | null;
+
+  // 2-Layer Composition System
+  backgroundPatternAssetUrl: string | null; // Layer 1: Background & Pattern
+  textLogoAssetUrl: string | null;          // Layer 2: Text & Monogram Logo
+
   aiPrompt: string;
 
   // AI Generation Type: Text & Logo vs Background & Pattern
@@ -32,6 +36,10 @@ export interface EditorState {
 
   // Canvas Format Mode: 2x6, 4x6, 6x4, or basic square mode
   canvasFormat: CanvasFormat;
+
+  // Photobooth Strip Feature (2x6 format)
+  photoboothMode: boolean;
+  photoboothFrameUrl: string | null; // Custom PNG mock frame
 
   brief: DesignBrief;
   typographyOptions: TypographyOptions;
@@ -43,17 +51,21 @@ export interface EditorState {
 
   // Always flat white background
   previewMode: "white";
-  zoomLevel: number;
+  zoomLevel: number; // Changed default zoom scaling to 100%
 
   messages: Array<{ role: "user" | "assistant" | "system"; content: string }>;
   isAiGenerating: boolean;
 
   setStudioMode: (mode: StudioMode) => void;
   setAiGeneratedAssetUrl: (url: string | null) => void;
+  setBackgroundPatternAssetUrl: (url: string | null) => void;
+  setTextLogoAssetUrl: (url: string | null) => void;
   setAiGenerationType: (type: AiGenerationType) => void;
   setPromptGuidanceConfig: (config: Partial<PromptGuidanceConfig>) => void;
   setIsPromptGuidanceModalOpen: (open: boolean) => void;
   setCanvasFormat: (format: CanvasFormat) => void;
+  setPhotoboothMode: (enabled: boolean) => void;
+  setPhotoboothFrameUrl: (url: string | null) => void;
   setBrief: (brief: Partial<DesignBrief>) => void;
   setTypographyOptions: (options: Partial<TypographyOptions>) => void;
   addReferenceImage: (img: ReferenceImage) => void;
@@ -134,6 +146,11 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   studioMode: "generative_ai",
   aiGeneratedAssetUrl: null,
+
+  // 2-Layer Composition System defaults
+  backgroundPatternAssetUrl: null,
+  textLogoAssetUrl: null,
+
   aiPrompt: "",
 
   aiGenerationType: "text_logo",
@@ -141,6 +158,10 @@ export const useEditorStore = create<EditorState>((set) => ({
   isPromptGuidanceModalOpen: false,
 
   canvasFormat: "square",
+
+  // Photobooth strip mode defaults
+  photoboothMode: false,
+  photoboothFrameUrl: null,
 
   brief: defaultBrief,
   typographyOptions: defaultTypography,
@@ -150,9 +171,9 @@ export const useEditorStore = create<EditorState>((set) => ({
   ornamentUrl: null,
   ornamentPosition: { x: 500, y: 500, scale: 1 },
 
-  // Always flat white
+  // Always flat white background with 100% default zoom scaling
   previewMode: "white",
-  zoomLevel: 150,
+  zoomLevel: 100,
 
   messages: [
     {
@@ -163,7 +184,9 @@ export const useEditorStore = create<EditorState>((set) => ({
   isAiGenerating: false,
 
   setStudioMode: (mode) => set({ studioMode: mode }),
-  setAiGeneratedAssetUrl: (url) => set({ aiGeneratedAssetUrl: url }),
+  setAiGeneratedAssetUrl: (url) => set({ aiGeneratedAssetUrl: url, textLogoAssetUrl: url }),
+  setBackgroundPatternAssetUrl: (url) => set({ backgroundPatternAssetUrl: url }),
+  setTextLogoAssetUrl: (url) => set({ textLogoAssetUrl: url, aiGeneratedAssetUrl: url }),
   setAiGenerationType: (type) => set({ aiGenerationType: type }),
   setPromptGuidanceConfig: (config) =>
     set((state) => ({ promptGuidanceConfig: { ...state.promptGuidanceConfig, ...config } })),
@@ -176,6 +199,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     const dims = getFormatDimensions(format);
     set((state) => ({
       canvasFormat: format,
+      photoboothMode: format === "2_x_6" ? state.photoboothMode : false,
       typographyOptions: {
         ...state.typographyOptions,
         canvasWidth: dims.width,
@@ -183,6 +207,9 @@ export const useEditorStore = create<EditorState>((set) => ({
       },
     }));
   },
+
+  setPhotoboothMode: (enabled) => set({ photoboothMode: enabled }),
+  setPhotoboothFrameUrl: (url) => set({ photoboothFrameUrl: url }),
 
   setBrief: (newBrief) =>
     set((state) => ({
@@ -229,7 +256,11 @@ export const useEditorStore = create<EditorState>((set) => ({
       brief: defaultBrief,
       typographyOptions: defaultTypography,
       aiGeneratedAssetUrl: null,
+      backgroundPatternAssetUrl: null,
+      textLogoAssetUrl: null,
       ornamentUrl: null,
       referenceImages: [],
+      photoboothMode: false,
+      photoboothFrameUrl: null,
     }),
 }));

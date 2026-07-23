@@ -19,6 +19,8 @@ import {
   Tag,
   Sliders,
   Type,
+  Layers,
+  Trash2,
 } from "lucide-react";
 
 function isImageGenerationTrigger(text: string): boolean {
@@ -51,7 +53,12 @@ export function RightAiPanel() {
   const isAiGenerating = useEditorStore((state) => state.isAiGenerating);
   const studioMode = useEditorStore((state) => state.studioMode);
   const brief = useEditorStore((state) => state.brief);
-  const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
+
+  // 2-Layer Composition State
+  const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
+  const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
+  const setBackgroundPatternAssetUrl = useEditorStore((state) => state.setBackgroundPatternAssetUrl);
+  const setTextLogoAssetUrl = useEditorStore((state) => state.setTextLogoAssetUrl);
 
   const aiGenerationType = useEditorStore((state) => state.aiGenerationType);
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
@@ -65,7 +72,6 @@ export function RightAiPanel() {
 
   const addMessage = useEditorStore((state) => state.addMessage);
   const setIsAiGenerating = useEditorStore((state) => state.setIsAiGenerating);
-  const setAiGeneratedAssetUrl = useEditorStore((state) => state.setAiGeneratedAssetUrl);
   const setBrief = useEditorStore((state) => state.setBrief);
   const setTypographyOptions = useEditorStore((state) => state.setTypographyOptions);
 
@@ -163,14 +169,19 @@ export function RightAiPanel() {
         const genData = await genRes.json();
         const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
 
-        setAiGeneratedAssetUrl(generatedUrl);
-        addMessage({
-          role: "assistant",
-          content:
-            aiGenerationType === "background_pattern"
-              ? "Background pattern generation completed. Canvas updated."
-              : "Logo generation completed. Canvas updated.",
-        });
+        if (aiGenerationType === "background_pattern") {
+          setBackgroundPatternAssetUrl(generatedUrl);
+          addMessage({
+            role: "assistant",
+            content: "Layer 1 (Background & Pattern) generation completed. Canvas updated.",
+          });
+        } else {
+          setTextLogoAssetUrl(generatedUrl);
+          addMessage({
+            role: "assistant",
+            content: "Layer 2 (Text & Monogram Logo) generation completed. Canvas updated.",
+          });
+        }
       } catch (err) {
         addMessage({
           role: "assistant",
@@ -276,14 +287,19 @@ export function RightAiPanel() {
       const genData = await genRes.json();
       const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
 
-      setAiGeneratedAssetUrl(generatedUrl);
-      addMessage({
-        role: "assistant",
-        content:
-          aiGenerationType === "background_pattern"
-            ? "Background pattern generation completed from conversation history. Canvas updated."
-            : "Logo generation completed from conversation history. Canvas updated.",
-      });
+      if (aiGenerationType === "background_pattern") {
+        setBackgroundPatternAssetUrl(generatedUrl);
+        addMessage({
+          role: "assistant",
+          content: "Layer 1 (Background Pattern) generated from conversation history. Canvas updated.",
+        });
+      } else {
+        setTextLogoAssetUrl(generatedUrl);
+        addMessage({
+          role: "assistant",
+          content: "Layer 2 (Text & Monogram Logo) generated from conversation history. Canvas updated.",
+        });
+      }
     } catch (err) {
       addMessage({
         role: "assistant",
@@ -309,7 +325,7 @@ export function RightAiPanel() {
               <h3 className="font-bold text-vow-dark uppercase tracking-wider text-sm">
                 AI Design Assistant
               </h3>
-              <p className="text-xs text-vow-muted">OpenAI Image AI (gpt-image-2)</p>
+              <p className="text-xs text-vow-muted">OpenAI Image AI (DALL·E 3)</p>
             </div>
           </div>
 
@@ -328,7 +344,7 @@ export function RightAiPanel() {
         {/* MASTER GENERATION MENTALITY SWITCHER */}
         <div className="p-3 bg-vow-dark text-white flex items-center justify-between">
           <span className="text-xs font-mono uppercase font-bold tracking-wider text-vow-champagne">
-            Generation Mode:
+            Target Layer:
           </span>
           <div className="flex space-x-1 bg-black/40 p-1 rounded-lg">
             <button
@@ -341,7 +357,7 @@ export function RightAiPanel() {
               }`}
             >
               <Type className="w-3 h-3" />
-              <span>Text &amp; Logo</span>
+              <span>Layer 2: Text &amp; Logo</span>
             </button>
 
             <button
@@ -354,13 +370,79 @@ export function RightAiPanel() {
               }`}
             >
               <ImageIcon className="w-3 h-3" />
-              <span>Backgrounds</span>
+              <span>Layer 1: Background</span>
             </button>
           </div>
         </div>
 
-        {/* CLIENT REFERENCE IMAGES & INVITATIONS UPLOAD PANEL */}
-        <div className="p-3 bg-slate-50/80 border-b border-vow-border space-y-2.5">
+        {/* 2-LAYER INDEPENDENT COMPOSITION WIDGET */}
+        <div className="p-3 bg-slate-100/90 border-b border-vow-border space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
+              <Layers className="w-3.5 h-3.5 text-vow-accent" />
+              <span>2-Layer Composition Stack</span>
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {/* Layer 1: Background */}
+            <div className={`p-2 rounded border transition-all ${
+              backgroundPatternAssetUrl ? "bg-white border-slate-300 shadow-2xs" : "bg-slate-50 border-dashed border-slate-300"
+            }`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-600">Layer 1: Background</span>
+                {backgroundPatternAssetUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setBackgroundPatternAssetUrl(null)}
+                    className="text-slate-400 hover:text-rose-600 p-0.5"
+                    title="Clear Background Layer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+              <div className="h-10 rounded overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
+                {backgroundPatternAssetUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={backgroundPatternAssetUrl} alt="Background Layer" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[9px] text-slate-400 italic">Pure White</span>
+                )}
+              </div>
+            </div>
+
+            {/* Layer 2: Text / Logo */}
+            <div className={`p-2 rounded border transition-all ${
+              textLogoAssetUrl ? "bg-white border-slate-300 shadow-2xs" : "bg-slate-50 border-dashed border-slate-300"
+            }`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-600">Layer 2: Text &amp; Logo</span>
+                {textLogoAssetUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setTextLogoAssetUrl(null)}
+                    className="text-slate-400 hover:text-rose-600 p-0.5"
+                    title="Clear Text & Monogram Layer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+              <div className="h-10 rounded overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200">
+                {textLogoAssetUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={textLogoAssetUrl} alt="Text Logo Layer" className="w-full h-full object-contain p-0.5" />
+                ) : (
+                  <span className="text-[9px] text-slate-400 italic">Vector Engine Overlay</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CLIENT REFERENCE IMAGES UPLOAD PANEL */}
+        <div className="p-3 bg-slate-50/80 border-b border-vow-border space-y-2">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
               <FileImage className="w-3.5 h-3.5 text-vow-accent" />
@@ -368,7 +450,6 @@ export function RightAiPanel() {
             </p>
           </div>
 
-          {/* Drop / Upload Button */}
           <input
             type="file"
             ref={fileInputRef}
@@ -379,24 +460,20 @@ export function RightAiPanel() {
           />
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-vow-border hover:border-vow-dark bg-white rounded-lg p-2.5 text-center cursor-pointer transition-all duration-150 group"
+            className="border-2 border-dashed border-vow-border hover:border-vow-dark bg-white rounded-lg p-2 text-center cursor-pointer transition-all duration-150 group"
           >
-            <Upload className="w-4 h-4 text-vow-muted group-hover:text-vow-accent mx-auto mb-1 transition-colors" />
-            <p className="font-semibold text-[11px] text-vow-dark">
+            <Upload className="w-3.5 h-3.5 text-vow-muted group-hover:text-vow-accent mx-auto mb-0.5 transition-colors" />
+            <p className="font-semibold text-[10px] text-vow-dark">
               Upload Client Invitations / References
-            </p>
-            <p className="text-[9px] text-vow-muted">
-              Click or drag PNG, JPG, WebP for AI style guidance
             </p>
           </div>
 
-          {/* Uploaded Reference Thumbnails Grid */}
           {referenceImages.length > 0 && (
             <div className="grid grid-cols-3 gap-2 pt-1">
               {referenceImages.map((img) => (
                 <div
                   key={img.id}
-                  className="relative group bg-white border border-vow-border rounded-lg p-1.5 flex flex-col items-center space-y-1 shadow-2xs"
+                  className="relative group bg-white border border-vow-border rounded-lg p-1 flex flex-col items-center space-y-1 shadow-2xs"
                 >
                   <button
                     type="button"
@@ -407,15 +484,9 @@ export function RightAiPanel() {
                     <X className="w-2.5 h-2.5" />
                   </button>
 
-                  <div className="w-full h-14 bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
+                  <div className="w-full h-12 bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
-                  </div>
-
-                  <div className="w-full text-center">
-                    <span className="text-[9px] font-mono text-slate-600 truncate block max-w-full" title={img.name}>
-                      {img.name}
-                    </span>
                   </div>
                 </div>
               ))}
@@ -434,7 +505,6 @@ export function RightAiPanel() {
                   : "bg-white border border-vow-border text-vow-charcoal mr-6 rounded-tl-none shadow-2xs"
               }`}
             >
-              {/* Copy Button */}
               <button
                 type="button"
                 onClick={() => handleCopyMessage(m.content, idx)}
@@ -449,27 +519,6 @@ export function RightAiPanel() {
               </button>
 
               <p className="whitespace-pre-wrap pr-4">{m.content}</p>
-
-              {m.role === "assistant" && idx === messages.length - 1 && aiGeneratedAssetUrl && (
-                <div className="mt-3 p-2.5 bg-slate-50 border border-slate-200 rounded-md flex items-center space-x-3 select-none">
-                  <div className="w-14 h-14 bg-white rounded border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={aiGeneratedAssetUrl}
-                      alt="Generated OpenAI Image AI Preview"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-xs text-vow-dark flex items-center gap-1">
-                      <ImageIcon className="w-3.5 h-3.5 text-vow-accent" /> OpenAI Asset Generated
-                    </p>
-                    <p className="text-[10px] text-vow-muted">
-                      {isBackgroundMode ? "Seamless Background Loaded" : "Loaded on Artboard Canvas"}
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
           ))}
           {isAiGenerating && (
@@ -498,7 +547,7 @@ export function RightAiPanel() {
               <span>Visualize Conversation Artwork</span>
             </button>
             <span className="text-[10px] text-vow-muted font-mono">
-              Generates Artwork from Chat History
+              Target: {isBackgroundMode ? "Layer 1 (Background)" : "Layer 2 (Text & Logo)"}
             </span>
           </div>
 

@@ -4,7 +4,7 @@ import { useEditorStore, getFormatDimensions } from "@/lib/store/useEditorStore"
 import { TypographyEngine } from "@/lib/typography/engine";
 import { resolveFontConfig } from "@/lib/typography/font-resolver";
 import { useEffect, useState, useMemo } from "react";
-import { Sparkles, Type } from "lucide-react";
+import { Sparkles, Camera, Image as ImageIcon, Layers } from "lucide-react";
 
 export function ArtboardCanvas() {
   const [mounted, setMounted] = useState(false);
@@ -13,9 +13,14 @@ export function ArtboardCanvas() {
     setMounted(true);
   }, []);
 
-  // Subscribe to studio mode and AI generated asset state
+  // Subscribe to studio mode, 2-layer composition state, and photobooth state
   const studioMode = useEditorStore((state) => state.studioMode);
+  const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
+  const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
+
+  const photoboothMode = useEditorStore((state) => state.photoboothMode);
+  const photoboothFrameUrl = useEditorStore((state) => state.photoboothFrameUrl);
 
   // Primitive scalar selectors for Vector mode
   const primaryText = useEditorStore((state) => state.typographyOptions.primaryText);
@@ -116,7 +121,7 @@ export function ArtboardCanvas() {
     );
   }
 
-  // Always pure flat white background
+  // Always pure flat white background container
   const bgClass = "bg-white border border-slate-300 shadow-xl";
 
   // Scaled High-Res Studio Display Dimensions for 2x6, 4x6, 6x4, and Square
@@ -137,65 +142,122 @@ export function ArtboardCanvas() {
     heightPx = 650;
   }
 
+  // Determine active text/logo artwork URL (Layer 2)
+  const activeLogoAsset = textLogoAssetUrl || (studioMode === "generative_ai" ? aiGeneratedAssetUrl : null);
+
+  const is2x6Format = canvasFormat === "2_x_6";
+
   return (
     <div className="relative flex-1 flex flex-col items-center justify-center p-8 bg-slate-100/90 overflow-hidden select-none font-sans">
       {/* Visual Canvas Container */}
       <div
-        className={`relative rounded transition-all duration-200 flex items-center justify-center overflow-hidden ${bgClass}`}
+        className={`relative rounded transition-all duration-200 overflow-hidden ${bgClass}`}
         style={{
           width: `${widthPx}px`,
           height: `${heightPx}px`,
           transform: `scale(${zoomLevel / 100})`,
         }}
       >
-        {/* MODE 1: Generative AI Mode Canvas Display (OpenAI DALL-E 3) */}
-        {studioMode === "generative_ai" ? (
-          <div className="absolute inset-0 flex items-center justify-center p-8 w-full h-full">
-            {aiGeneratedAssetUrl ? (
+        {/* ======================================================== */}
+        {/* LAYER 1 (BOTTOM): BACKGROUND & PATTERN LAYER */}
+        {/* ======================================================== */}
+        {backgroundPatternAssetUrl && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={backgroundPatternAssetUrl}
+              alt="Layer 1 Background & Pattern"
+              className="w-full h-full object-cover transition-opacity duration-300"
+            />
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* PHOTOBOOTH STRIP FRAME OVERLAY (2 x 6 Format Only) */}
+        {/* ======================================================== */}
+        {is2x6Format && photoboothMode && (
+          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col p-4 justify-between">
+            {/* Custom PNG Mock Frame Overlay if uploaded */}
+            {photoboothFrameUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={aiGeneratedAssetUrl}
-                alt="AI Generated DALL-E 3 Wedding Logo"
-                className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
+                src={photoboothFrameUrl}
+                alt="2x6 Photobooth Frame Overlay"
+                className="absolute inset-0 w-full h-full object-contain z-20"
               />
             ) : (
-              /* Clean Blank Canvas Display */
-              <div className="text-center text-vow-muted p-8 flex flex-col items-center justify-center space-y-3 border-2 border-dashed border-slate-200/80 rounded-xl max-w-xs bg-white">
-                <div className="w-10 h-10 rounded-full bg-slate-100 text-vow-accent flex items-center justify-center">
-                  <Sparkles className="w-5 h-5" />
-                </div>
-                <h4 className="font-bold text-xs text-vow-dark uppercase tracking-wider">
-                  Studio Artboard
-                </h4>
-                <p className="text-[11px] leading-relaxed text-slate-500 font-sans">
-                  Type in the AI Design Assistant to generate DALL·E 3 logo artwork from scratch.
-                </p>
+              /* Built-in 3-Slot Photo Cutout Frame Layout */
+              <div className="flex flex-col space-y-3 w-full pt-2">
+                {[1, 2, 3].map((slotIdx) => (
+                  <div
+                    key={slotIdx}
+                    className="w-full h-44 rounded border-2 border-slate-300/80 bg-slate-900/10 backdrop-blur-xs flex flex-col items-center justify-center text-slate-500 shadow-inner"
+                  >
+                    <Camera className="w-6 h-6 text-slate-400 opacity-60 mb-1" />
+                    <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-slate-600">
+                      Photo Slot #{slotIdx}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
-        ) : (
-          /* MODE 2: Deterministic Vector Mode Canvas Display */
-          <>
-            {ornamentUrl && (
-              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-85">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={ornamentUrl}
-                  alt="Ornament Layer"
-                  className="w-full h-full object-contain filter contrast-125"
-                />
-              </div>
-            )}
-
-            <div
-              className="absolute inset-0 flex items-center justify-center pointer-events-auto w-full h-full"
-              dangerouslySetInnerHTML={{ __html: renderedVectorSvg }}
-            />
-          </>
         )}
 
+        {/* ======================================================== */}
+        {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER */}
+        {/* ======================================================== */}
+        <div className={`absolute inset-0 z-20 flex items-center justify-center p-6 w-full h-full ${
+          is2x6Format && photoboothMode ? "pt-[570px] pb-4" : ""
+        }`}>
+          {studioMode === "generative_ai" ? (
+            activeLogoAsset ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={activeLogoAsset}
+                alt="Layer 2 AI Text & Monogram Logo Artwork"
+                className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
+              />
+            ) : (
+              /* Blank Canvas Indicator when no text logo asset is loaded yet */
+              !backgroundPatternAssetUrl && (
+                <div className="text-center text-vow-muted p-6 flex flex-col items-center justify-center space-y-2 border-2 border-dashed border-slate-200/80 rounded-xl max-w-xs bg-white/90 backdrop-blur-2xs shadow-2xs">
+                  <div className="w-9 h-9 rounded-full bg-slate-100 text-vow-accent flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <h4 className="font-bold text-xs text-vow-dark uppercase tracking-wider">
+                    Studio Artboard
+                  </h4>
+                  <p className="text-[10px] leading-relaxed text-slate-500 font-sans">
+                    Type in the AI Assistant to generate DALL·E 3 text logos or background patterns.
+                  </p>
+                </div>
+              )
+            )
+          ) : (
+            /* Deterministic Vector Mode Typography Overlay */
+            <>
+              {ornamentUrl && (
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-85">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={ornamentUrl}
+                    alt="Ornament Layer"
+                    className="w-full h-full object-contain filter contrast-125"
+                  />
+                </div>
+              )}
+
+              <div
+                className="absolute inset-0 flex items-center justify-center pointer-events-auto w-full h-full"
+                dangerouslySetInnerHTML={{ __html: renderedVectorSvg }}
+              />
+            </>
+          )}
+        </div>
+
         {/* Safe Area Guide */}
-        <div className="absolute inset-4 border border-dashed border-slate-300/40 pointer-events-none" />
+        <div className="absolute inset-3 border border-dashed border-slate-300/40 pointer-events-none z-30" />
       </div>
     </div>
   );

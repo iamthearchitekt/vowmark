@@ -287,6 +287,9 @@ export const useEditorStore = create<EditorState>((set) => ({
         canvasFormat: format,
         backgroundPatternAssetUrl: matchingSuiteUrl || state.backgroundPatternAssetUrl,
         photoboothMode: format !== "square",
+        photoboothOffsetX: 0,
+        photoboothOffsetY: 0,
+        photoboothScale: 100,
         zoomLevel: autoZoom,
         brief: {
           ...state.brief,

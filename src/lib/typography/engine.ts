@@ -48,7 +48,13 @@ export class TypographyEngine {
     const width = options.canvasWidth || 1200;
     const height = options.canvasHeight || 1200;
     const centerX = width / 2;
-    const centerY = height / 2;
+
+    // 2x6 Photo Strip (600x1800): text naturally anchors in bottom 18% footer badge
+    const is2x6 = width === 600 && height === 1800;
+    const centerY = is2x6 ? height * 0.85 : height / 2;
+
+    // Proportional width scale factor relative to standard 1200px reference canvas
+    const scaleFactor = Math.min(width / 1200, is2x6 ? 0.75 : 1.5);
 
     let fill = options.textColor || "#000000";
     let bgFill = "transparent"; // Default to transparent so no giant white rect box is drawn
@@ -91,17 +97,17 @@ export class TypographyEngine {
     const hashtagFont = options.hashtagFontFamily || font;
     const hashtagStr = transformText(options.hashtagText || "");
 
-    const defaultSize = options.fontSize || 150;
-    const pFontSize = options.primaryFontSize !== undefined ? options.primaryFontSize : defaultSize;
-    const sFontSize = options.secondaryFontSize !== undefined ? options.secondaryFontSize : pFontSize;
-    const dFontSize = options.dateFontSize !== undefined ? options.dateFontSize : Math.round(pFontSize * 0.28);
-    const hFontSize = options.hashtagFontSize !== undefined ? options.hashtagFontSize : Math.round(pFontSize * 0.24);
+    const defaultSize = Math.round((options.fontSize || 150) * scaleFactor);
+    const pFontSize = options.primaryFontSize !== undefined ? Math.round(options.primaryFontSize * scaleFactor) : defaultSize;
+    const sFontSize = options.secondaryFontSize !== undefined ? Math.round(options.secondaryFontSize * scaleFactor) : pFontSize;
+    const dFontSize = options.dateFontSize !== undefined ? Math.round(options.dateFontSize * scaleFactor) : Math.round(pFontSize * 0.28);
+    const hFontSize = options.hashtagFontSize !== undefined ? Math.round(options.hashtagFontSize * scaleFactor) : Math.round(pFontSize * 0.24);
 
-    const dLetterSpacing = options.dateLetterSpacing !== undefined ? options.dateLetterSpacing : 4;
-    const hLetterSpacing = options.hashtagLetterSpacing !== undefined ? options.hashtagLetterSpacing : 4;
-    const letterSpacing = options.letterSpacing || 6;
+    const dLetterSpacing = Math.round((options.dateLetterSpacing !== undefined ? options.dateLetterSpacing : 4) * scaleFactor);
+    const hLetterSpacing = Math.round((options.hashtagLetterSpacing !== undefined ? options.hashtagLetterSpacing : 4) * scaleFactor);
+    const letterSpacing = Math.round((options.letterSpacing || 6) * scaleFactor);
     const ampScale = options.ampersandScale || 0.6;
-    const ampFontSize = pFontSize * ampScale;
+    const ampFontSize = Math.round(pFontSize * ampScale);
     const isItalic = options.isItalic ? "italic" : "normal";
     const fontWeight = options.fontWeight || 400;
 

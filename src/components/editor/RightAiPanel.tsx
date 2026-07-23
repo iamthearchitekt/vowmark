@@ -45,6 +45,7 @@ export function RightAiPanel() {
   const [inputMsg, setInputMsg] = useState("");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const promptInputRef = useRef<HTMLInputElement>(null);
 
   const messages = useEditorStore((state) => state.messages);
   const isAiGenerating = useEditorStore((state) => state.isAiGenerating);
@@ -394,7 +395,28 @@ export function RightAiPanel() {
         </div>
 
         {/* Chat Prompt Input */}
-        <div className="p-3.5 border-t border-vow-border bg-vow-surface">
+        <div className="p-3.5 border-t border-vow-border bg-vow-surface space-y-2">
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                const prefix = "Make me a ";
+                if (!inputMsg.toLowerCase().startsWith("make me a")) {
+                  setInputMsg(prefix + inputMsg);
+                }
+                promptInputRef.current?.focus();
+              }}
+              className="px-3 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded text-xs font-bold text-amber-950 flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
+              title="Prefill chat input with 'Make me a ' to trigger live artwork generation"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-vow-accent" />
+              <span>Visualize</span>
+            </button>
+            <span className="text-[10px] text-vow-muted font-mono">
+              Triggers Live Artboard Generation
+            </span>
+          </div>
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -403,13 +425,14 @@ export function RightAiPanel() {
             className="flex items-center space-x-2"
           >
             <input
+              ref={promptInputRef}
               type="text"
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
               placeholder={
                 isBackgroundMode
-                  ? "Type background prompt (e.g. Vintage floral watercolor border, gold filigree frame)..."
-                  : "Type prompt (e.g. Create logo for Jack & Jill)..."
+                  ? "Type background prompt (e.g. Make me a vintage floral watercolor border)..."
+                  : "Type prompt (e.g. Make me a logo for Jack & Jill)..."
               }
               className="flex-1 bg-white border border-vow-border rounded-md px-3.5 py-2.5 text-sm focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium select-text"
             />

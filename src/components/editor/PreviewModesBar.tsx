@@ -157,7 +157,7 @@ export function PreviewModesBar() {
             className="flex items-center space-x-1.5 px-4 py-1.5 bg-vow-dark text-vow-paper hover:bg-black rounded-md font-bold uppercase tracking-wider text-[11px] transition-colors shadow-sm cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-vow-champagne" />
-            <span>Batch Export</span>
+            <span>Export</span>
           </button>
         </div>
       </div>

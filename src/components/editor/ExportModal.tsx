@@ -13,23 +13,30 @@ import {
 
 type ExportFormat = "svg" | "transparent_png" | "png";
 
-const FORMAT_OPTIONS: { id: ExportFormat; title: string; desc: string; tag: string }[] = [
-  {
-    id: "svg",
-    title: "True Vector SVG",
-    desc: "Infinitely scalable vector file. Perfect for invitation printing, laser engraving, and Illustrator/Affinity workflows.",
-    tag: "Best for Print",
-  },
+const FORMAT_OPTIONS: {
+  id: ExportFormat;
+  title: string;
+  desc: string;
+  tag: string;
+  vectorOnly?: boolean;
+}[] = [
   {
     id: "transparent_png",
     title: "Transparent PNG — 300 DPI",
-    desc: "Isolated asset on a transparent background, ready to drop into Photoshop, Canva, or InDesign.",
-    tag: "Photoshop Ready",
+    desc: "True alpha-channel PNG. Drop directly into Photoshop, Canva, or InDesign over any background.",
+    tag: "Vector Workflow",
+    vectorOnly: false,
+  },
+  {
+    id: "svg",
+    title: "True Vector SVG",
+    desc: "Infinitely scalable vector paths. Perfect for invitation printing, laser engraving, and Illustrator/Affinity.",
+    tag: "Best for Print",
   },
   {
     id: "png",
     title: "White Background PNG — 300 DPI",
-    desc: "Standard PNG on a solid white background. Ideal for web previews and social media.",
+    desc: "Solid white background PNG. Ideal for web previews and social media.",
     tag: "Standard",
   },
 ];
@@ -187,8 +194,8 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
         </button>
 
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="font-serif font-bold text-xl text-vow-dark">Export Asset</h2>
+        <div className="mb-5">
+          <h2 className="font-serif font-bold text-xl text-vow-dark">Export</h2>
           <p className="text-xs text-vow-muted font-sans mt-1">
             All exports are generated locally in your browser — no upload required.
           </p>
@@ -203,8 +210,18 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
+        {/* Vector transparent PNG callout */}
+        {studioMode !== "generative_ai" && (
+          <div className="mb-4 flex items-start gap-2 p-3 bg-stone-50 border border-stone-200 rounded-lg text-xs text-stone-700">
+            <FileCode className="w-4 h-4 flex-shrink-0 mt-0.5 text-vow-accent" />
+            <span>
+              <strong>Vector mode active.</strong> Select <em>Transparent PNG</em> to export your text &amp; monogram on a true alpha-channel background — ready to layer over any design.
+            </span>
+          </div>
+        )}
+
         {/* Format picker */}
-        <div className="space-y-3 mb-6">
+        <div className="space-y-2.5 mb-5">
           {FORMAT_OPTIONS.map((item) => (
             <div
               key={item.id}
@@ -222,7 +239,11 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
                     : <ImageIcon className="w-4 h-4 text-vow-accent flex-shrink-0" />}
                   <span className="font-sans font-bold text-sm text-vow-dark">{item.title}</span>
                 </div>
-                <span className="text-[10px] font-mono uppercase bg-vow-surface px-2 py-0.5 rounded border border-vow-border text-vow-muted">
+                <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border ${
+                  item.id === "transparent_png" && studioMode !== "generative_ai"
+                    ? "bg-vow-dark text-vow-paper border-vow-dark"
+                    : "bg-vow-surface border-vow-border text-vow-muted"
+                }`}>
                   {item.tag}
                 </span>
               </div>

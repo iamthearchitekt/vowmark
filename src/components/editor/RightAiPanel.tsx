@@ -318,11 +318,11 @@ export function RightAiPanel() {
               type="button"
               onClick={handleVisualizeFromConversation}
               disabled={isAiGenerating}
-              className="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-md shadow-md border border-amber-500 flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer disabled:opacity-50 animate-pulse"
+              className="px-3.5 py-1.5 bg-vow-accent hover:brightness-110 text-vow-dark font-black text-xs rounded-md shadow-md border border-vow-accent flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
               title="Synthesize conversation history into live canvas artwork"
             >
-              <Sparkles className="w-4 h-4 text-slate-950 fill-slate-950" />
-              <span>🎨 Visualize</span>
+              <Sparkles className="w-4 h-4 text-vow-dark fill-vow-dark" />
+              <span>Visualize</span>
             </button>
             <button
               type="button"
@@ -501,10 +501,10 @@ export function RightAiPanel() {
               type="button"
               onClick={handleVisualizeFromConversation}
               disabled={isAiGenerating}
-              className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 border border-amber-600 rounded-md text-xs font-black text-slate-950 flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer disabled:opacity-50"
+              className="px-3.5 py-1.5 bg-vow-accent hover:brightness-110 border border-vow-accent rounded-md text-xs font-black text-vow-dark flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer disabled:opacity-50"
               title="Synthesize our latest conversation into new artwork on canvas"
             >
-              <Sparkles className="w-4 h-4 text-slate-950" />
+              <Sparkles className="w-4 h-4 text-vow-dark fill-vow-dark" />
               <span>Visualize Conversation Artwork</span>
             </button>
             <span className="text-[10px] text-vow-muted font-mono">

@@ -72,13 +72,11 @@ export function LeftControlPanel() {
     }
   };
 
-  // In AI mode, panel is automatically collapsed to the left side
   const isCollapsed = isGenerativeAi || manualCollapsed;
 
   if (isCollapsed) {
     return (
       <div className="relative z-20 flex flex-col items-center bg-vow-paper border-r border-vow-border w-12 h-full py-4 space-y-4 text-xs font-sans transition-all duration-300 select-none">
-        {/* Expand / Vector Mode Toggle Button */}
         <button
           type="button"
           onClick={() => {
@@ -99,7 +97,7 @@ export function LeftControlPanel() {
   if (!mounted) {
     return (
       <aside className="w-[400px] bg-vow-paper border-r border-vow-border h-full p-6 text-xs font-sans select-none z-20">
-        <div className="text-slate-400">Loading Control Panel...</div>
+        <div className="text-slate-400">Loading Studio Controls...</div>
       </aside>
     );
   }
@@ -123,14 +121,14 @@ export function LeftControlPanel() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* SECTION 1: CONTENT & IDENTITY */}
+        {/* SECTION 1: CONTENT */}
         <div className="space-y-4">
           <div className="flex items-center space-x-2 pb-2 border-b border-vow-border text-vow-dark font-bold text-xs uppercase tracking-wider">
             <Layout className="w-3.5 h-3.5 text-vow-accent" />
-            <span>Content &amp; Identity</span>
+            <span>Content</span>
           </div>
 
-          {/* Input 1 & 2 Text Fields + Single Shared Font Size Slider */}
+          {/* Input 1 & 2 Text Fields + Shared Font Size Slider */}
           <div className="p-3 bg-white border border-vow-border rounded-xl space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -145,7 +143,7 @@ export function LeftControlPanel() {
                     setTypographyOptions({ primaryText: e.target.value });
                   }}
                   className="w-full bg-slate-50 border border-vow-border rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
-                  placeholder="Enter Input 1"
+                  placeholder="Input 1"
                 />
               </div>
 
@@ -161,7 +159,7 @@ export function LeftControlPanel() {
                     setTypographyOptions({ secondaryText: e.target.value });
                   }}
                   className="w-full bg-slate-50 border border-vow-border rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
-                  placeholder="Enter Input 2"
+                  placeholder="Input 2"
                 />
               </div>
             </div>
@@ -169,7 +167,7 @@ export function LeftControlPanel() {
             <div className="pt-2 border-t border-slate-100">
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
-                  Inputs Font Size
+                  Inputs Size
                 </label>
                 <div className="flex items-center space-x-1">
                   <input
@@ -200,7 +198,7 @@ export function LeftControlPanel() {
 
               <div>
                 <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
-                  Inputs Typeface Selection ({fontsList.length} Available)
+                  Typeface
                 </label>
                 <select
                   value={fontFamily}
@@ -217,7 +215,7 @@ export function LeftControlPanel() {
             </div>
           </div>
 
-          {/* Date / Location with typeface & font size slider */}
+          {/* Date / Location */}
           <div className="p-3 bg-white border border-vow-border rounded-xl space-y-2">
             <div className="flex items-center justify-between">
               <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
@@ -248,7 +246,7 @@ export function LeftControlPanel() {
                   setTypographyOptions({ dateText: e.target.value });
                 }}
                 className="w-full bg-slate-50 border border-vow-border rounded-md px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
-                placeholder="e.g. OCTOBER 24, 2026"
+                placeholder="OCTOBER 24, 2026"
               />
               <select
                 value={dateFontFamily || fontFamily}
@@ -263,23 +261,17 @@ export function LeftControlPanel() {
               </select>
             </div>
 
-            <div>
-              <div className="flex justify-between text-[10px] text-vow-muted font-mono mb-0.5">
-                <span>Font Size</span>
-                <span>{dateFontSize}px</span>
-              </div>
-              <input
-                type="range"
-                min="10"
-                max="200"
-                value={dateFontSize}
-                onChange={(e) => setTypographyOptions({ dateFontSize: Number(e.target.value) })}
-                className="w-full accent-vow-dark cursor-pointer"
-              />
-            </div>
+            <input
+              type="range"
+              min="10"
+              max="200"
+              value={dateFontSize}
+              onChange={(e) => setTypographyOptions({ dateFontSize: Number(e.target.value) })}
+              className="w-full accent-vow-dark cursor-pointer"
+            />
           </div>
 
-          {/* Hashtag with typeface & font size slider */}
+          {/* Hashtag */}
           <div className="p-3 bg-white border border-vow-border rounded-xl space-y-2">
             <div className="flex items-center justify-between">
               <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
@@ -307,7 +299,7 @@ export function LeftControlPanel() {
                 value={hashtagText || ""}
                 onChange={(e) => setTypographyOptions({ hashtagText: e.target.value })}
                 className="w-full bg-slate-50 border border-vow-border rounded-md px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
-                placeholder="e.g. #EventHashtag"
+                placeholder="#Hashtag"
               />
               <select
                 value={hashtagFontFamily || fontFamily}
@@ -322,20 +314,14 @@ export function LeftControlPanel() {
               </select>
             </div>
 
-            <div>
-              <div className="flex justify-between text-[10px] text-vow-muted font-mono mb-0.5">
-                <span>Font Size</span>
-                <span>{hashtagFontSize}px</span>
-              </div>
-              <input
-                type="range"
-                min="10"
-                max="200"
-                value={hashtagFontSize}
-                onChange={(e) => setTypographyOptions({ hashtagFontSize: Number(e.target.value) })}
-                className="w-full accent-vow-dark cursor-pointer"
-              />
-            </div>
+            <input
+              type="range"
+              min="10"
+              max="200"
+              value={hashtagFontSize}
+              onChange={(e) => setTypographyOptions({ hashtagFontSize: Number(e.target.value) })}
+              className="w-full accent-vow-dark cursor-pointer"
+            />
           </div>
 
           <div>
@@ -372,19 +358,14 @@ export function LeftControlPanel() {
         <div className="space-y-4 pt-4 border-t border-vow-border">
           <div className="flex items-center space-x-2 pb-2 border-b border-vow-border text-vow-dark font-bold text-xs uppercase tracking-wider">
             <Type className="w-3.5 h-3.5 text-vow-accent" />
-            <span>Typography &amp; Styling</span>
+            <span>Typography</span>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
-                Letter Spacing (Tracking): {letterSpacing}px
+                Letter Spacing: {letterSpacing}px
               </label>
-              {letterSpacing === -1 && (
-                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-bold">
-                  Connected Default (-1px)
-                </span>
-              )}
             </div>
             <input
               type="range"
@@ -392,11 +373,8 @@ export function LeftControlPanel() {
               max="24"
               value={letterSpacing}
               onChange={(e) => setTypographyOptions({ letterSpacing: Number(e.target.value) })}
-              className="w-full accent-vow-dark"
+              className="w-full accent-vow-dark cursor-pointer"
             />
-            <p className="text-[10px] text-vow-muted mt-0.5">
-              Set to -1px for perfect cursive &amp; script letter connection.
-            </p>
           </div>
 
           {layout === "stacked" && (
@@ -454,34 +432,16 @@ export function LeftControlPanel() {
                   max="100"
                   value={(ampersandScale || 0.6) * 100}
                   onChange={(e) => setTypographyOptions({ ampersandScale: Number(e.target.value) / 100 })}
-                  className="w-full accent-vow-dark"
+                  className="w-full accent-vow-dark cursor-pointer"
                 />
               </div>
             )}
           </div>
         </div>
 
-        {/* SECTION 3: VECTOR TEXT COLOR & EYE DROPPER (FINAL STEP) */}
-        <div className="space-y-3 pt-4 border-t border-vow-border">
-          <div className="flex items-center justify-between pb-1 border-b border-vow-border text-vow-dark font-bold text-xs uppercase tracking-wider">
-            <div className="flex items-center space-x-2">
-              <Palette className="w-3.5 h-3.5 text-vow-accent" />
-              <span>Vector Text Color (Final Step)</span>
-            </div>
-
-            {/* Native Eye Dropper Button */}
-            <button
-              type="button"
-              onClick={handleEyeDropper}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-vow-dark hover:text-white text-slate-800 text-[10px] font-bold rounded-md flex items-center gap-1.5 transition-all border border-slate-300 cursor-pointer shadow-2xs"
-              title="Pick any color directly from your screen with Eye Dropper"
-            >
-              <Pipette className="w-3.5 h-3.5 text-vow-accent" />
-              <span>Eye Dropper</span>
-            </button>
-          </div>
-
-          <div className="p-3 bg-white border border-vow-border rounded-xl flex items-center justify-between">
+        {/* SECTION 3: VECTOR COLOR & EYE DROPPER (SELF-EXPLANATORY) */}
+        <div className="pt-4 border-t border-vow-border">
+          <div className="p-3 bg-white border border-vow-border rounded-xl flex items-center justify-between gap-3 shadow-2xs">
             <div className="flex items-center space-x-2.5">
               <input
                 ref={colorPickerRef}
@@ -489,24 +449,26 @@ export function LeftControlPanel() {
                 value={textColor}
                 onChange={(e) => setTextColor(e.target.value)}
                 className="w-8 h-8 rounded border border-slate-300 cursor-pointer p-0 bg-transparent"
-                title="Click to open color palette picker"
+                title="Color Picker"
               />
-              <div>
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Active Color</span>
-                <span className="font-mono text-xs font-bold text-vow-dark">{textColor}</span>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-1.5 bg-slate-50 p-1.5 rounded-md border border-slate-200">
-              <span className="text-[10px] font-mono font-bold text-slate-400">HEX:</span>
               <input
                 type="text"
                 value={textColor}
                 onChange={(e) => setTextColor(e.target.value)}
-                className="w-20 bg-white border border-slate-300 rounded px-2 py-1 font-mono text-xs font-bold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none uppercase"
+                className="w-22 bg-slate-50 border border-slate-300 rounded px-2 py-1 font-mono text-xs font-bold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none uppercase"
                 placeholder="#0F172A"
               />
             </div>
+
+            <button
+              type="button"
+              onClick={handleEyeDropper}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-vow-dark hover:text-white text-slate-800 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all border border-slate-300 cursor-pointer shadow-2xs"
+              title="Eye Dropper"
+            >
+              <Pipette className="w-4 h-4 text-vow-accent" />
+              <span>Eye Dropper</span>
+            </button>
           </div>
         </div>
       </div>

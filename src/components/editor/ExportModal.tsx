@@ -5,8 +5,11 @@ import { useState } from "react";
 import { X, Download, FileCode, Image as ImageIcon, ShieldCheck, Check } from "lucide-react";
 
 export function ExportModal({ onClose }: { onClose: () => void }) {
-  const { typographyOptions } = useEditorStore();
-  const [selectedFormat, setSelectedFormat] = useState<"svg" | "transparent_png" | "png" | "jpeg">("svg");
+  const typographyOptions = useEditorStore((state) => state.typographyOptions);
+  const studioMode = useEditorStore((state) => state.studioMode);
+  const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
+
+  const [selectedFormat, setSelectedFormat] = useState<"svg" | "transparent_png" | "png" | "jpeg">("transparent_png");
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
 
@@ -18,6 +21,8 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           format: selectedFormat,
+          studioMode,
+          aiGeneratedAssetUrl,
           typographyOptions,
           isTransparent: selectedFormat === "transparent_png",
         }),

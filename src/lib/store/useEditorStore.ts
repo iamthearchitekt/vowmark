@@ -39,7 +39,9 @@ export interface EditorState {
 
   // Photobooth Strip Feature (2x6 format)
   photoboothMode: boolean;
-  photoboothFrameUrl: string | null; // Custom PNG mock frame
+  photoboothFrameUrl: string | null; // Custom PNG mock frame or default /photobooth-2x6-frame.png
+  photoboothOffsetY: number;         // Vertical adjustment in px (-150 to +150)
+  photoboothScale: number;           // Scale adjustment in percent (50 to 150)
 
   brief: DesignBrief;
   typographyOptions: TypographyOptions;
@@ -51,7 +53,7 @@ export interface EditorState {
 
   // Always flat white background
   previewMode: "white";
-  zoomLevel: number; // Changed default zoom scaling to 100%
+  zoomLevel: number; // 100% default zoom scaling
 
   messages: Array<{ role: "user" | "assistant" | "system"; content: string }>;
   isAiGenerating: boolean;
@@ -66,6 +68,8 @@ export interface EditorState {
   setCanvasFormat: (format: CanvasFormat) => void;
   setPhotoboothMode: (enabled: boolean) => void;
   setPhotoboothFrameUrl: (url: string | null) => void;
+  setPhotoboothOffsetY: (offset: number) => void;
+  setPhotoboothScale: (scale: number) => void;
   setBrief: (brief: Partial<DesignBrief>) => void;
   setTypographyOptions: (options: Partial<TypographyOptions>) => void;
   addReferenceImage: (img: ReferenceImage) => void;
@@ -159,9 +163,11 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   canvasFormat: "square",
 
-  // Photobooth strip mode defaults
-  photoboothMode: false,
+  // Photobooth strip mode defaults (enabled when selecting 2x6)
+  photoboothMode: true,
   photoboothFrameUrl: null,
+  photoboothOffsetY: 0,
+  photoboothScale: 100,
 
   brief: defaultBrief,
   typographyOptions: defaultTypography,
@@ -199,7 +205,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     const dims = getFormatDimensions(format);
     set((state) => ({
       canvasFormat: format,
-      photoboothMode: format === "2_x_6" ? state.photoboothMode : false,
+      photoboothMode: format === "2_x_6" ? true : false,
       typographyOptions: {
         ...state.typographyOptions,
         canvasWidth: dims.width,
@@ -210,6 +216,8 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setPhotoboothMode: (enabled) => set({ photoboothMode: enabled }),
   setPhotoboothFrameUrl: (url) => set({ photoboothFrameUrl: url }),
+  setPhotoboothOffsetY: (offset) => set({ photoboothOffsetY: offset }),
+  setPhotoboothScale: (scale) => set({ photoboothScale: scale }),
 
   setBrief: (newBrief) =>
     set((state) => ({
@@ -260,7 +268,9 @@ export const useEditorStore = create<EditorState>((set) => ({
       textLogoAssetUrl: null,
       ornamentUrl: null,
       referenceImages: [],
-      photoboothMode: false,
+      photoboothMode: true,
       photoboothFrameUrl: null,
+      photoboothOffsetY: 0,
+      photoboothScale: 100,
     }),
 }));

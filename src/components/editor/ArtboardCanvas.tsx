@@ -21,6 +21,8 @@ export function ArtboardCanvas() {
 
   const photoboothMode = useEditorStore((state) => state.photoboothMode);
   const photoboothFrameUrl = useEditorStore((state) => state.photoboothFrameUrl);
+  const photoboothOffsetY = useEditorStore((state) => state.photoboothOffsetY || 0);
+  const photoboothScale = useEditorStore((state) => state.photoboothScale || 100);
 
   // Primitive scalar selectors for Vector mode
   const primaryText = useEditorStore((state) => state.typographyOptions.primaryText);
@@ -190,11 +192,19 @@ export function ArtboardCanvas() {
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER */}
         {/* ======================================================== */}
-        <div className={`absolute z-20 flex items-center justify-center transition-all ${
-          is2x6Format && photoboothMode
-            ? "bottom-0 left-0 right-0 h-[30%] p-4"
-            : "inset-0 p-6 w-full h-full"
-        }`}>
+        <div
+          className={`absolute z-20 flex items-center justify-center transition-all ${
+            is2x6Format && photoboothMode
+              ? "bottom-0 left-0 right-0 h-[30%] p-4"
+              : "inset-0 p-6 w-full h-full"
+          }`}
+          style={{
+            transform:
+              is2x6Format && photoboothMode
+                ? `translateY(${photoboothOffsetY}px) scale(${photoboothScale / 100})`
+                : undefined,
+          }}
+        >
           {studioMode === "generative_ai" ? (
             activeLogoAsset ? (
               // eslint-disable-next-line @next/next/no-img-element

@@ -40,11 +40,11 @@ export interface EditorState {
   // Canvas Format Mode: 2x6, 4x6, 6x4, or basic square mode
   canvasFormat: CanvasFormat;
 
-  // Photobooth Strip Feature (2x6 format)
+  // Photobooth & Non-Square Strip Vertical Readjustment Feature
   photoboothMode: boolean;
-  photoboothFrameUrl: string | null; // Custom PNG mock frame or default /photobooth-2x6-frame.png
-  photoboothOffsetY: number;         // Vertical adjustment in px (-150 to +150)
-  photoboothScale: number;           // Scale adjustment in percent (50 to 150)
+  photoboothFrameUrl: string | null; // Default /photobooth-2x6-frame.png
+  photoboothOffsetY: number;         // Vertical adjustment in px (-200 to +200) for text/logos on non-square formats
+  photoboothScale: number;           // Scale adjustment in percent (40 to 160) for text/logos on non-square formats
 
   brief: DesignBrief;
   typographyOptions: TypographyOptions;
@@ -170,7 +170,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   canvasFormat: "square",
 
-  // Photobooth strip mode defaults (enabled when selecting 2x6)
+  // Photobooth strip mode & vertical adjustment defaults
   photoboothMode: true,
   photoboothFrameUrl: null,
   photoboothOffsetY: 0,
@@ -214,7 +214,6 @@ export const useEditorStore = create<EditorState>((set) => ({
     const dims = getFormatDimensions(format);
     set((state) => ({
       canvasFormat: format,
-      photoboothMode: format === "2_x_6" ? true : false,
       typographyOptions: {
         ...state.typographyOptions,
         canvasWidth: dims.width,

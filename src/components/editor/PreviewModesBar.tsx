@@ -17,9 +17,8 @@ export function PreviewModesBar() {
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
   const zoomLevel = useEditorStore((state) => state.zoomLevel);
 
-  // 2-Layer Composition & Universal Photo Mock state
+  // 2-Layer Composition & Non-Square positioning state
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
-  const photoboothMode = useEditorStore((state) => state.photoboothMode);
   const photoboothOffsetY = useEditorStore((state) => state.photoboothOffsetY || 0);
   const photoboothScale = useEditorStore((state) => state.photoboothScale || 100);
 
@@ -40,6 +39,8 @@ export function PreviewModesBar() {
       </div>
     );
   }
+
+  const isNonSquare = canvasFormat !== "square";
 
   return (
     <>
@@ -123,25 +124,25 @@ export function PreviewModesBar() {
           </div>
         </div>
 
-        {/* PHOTO MOCK POSITIONING ADJUSTMENT TOOLBAR */}
-        {photoboothMode && (
-          <div className="flex items-center space-x-3 bg-slate-900 text-white px-3 py-1 rounded-lg shadow-sm border border-slate-800 animate-fadeIn">
+        {/* NON-SQUARE STRIP VERTICAL POSITION ADJUSTMENT TOOLBAR */}
+        {isNonSquare && (
+          <div className="flex items-center space-x-3 bg-slate-900 text-white px-3.5 py-1 rounded-lg shadow-sm border border-slate-800 animate-fadeIn">
             {/* Vertical Y-Offset Position Adjustment */}
             <div className="flex items-center space-x-2">
               <span className="text-[10px] font-mono text-slate-300 font-bold flex items-center gap-1">
                 <ArrowUpDown className="w-3 h-3 text-vow-accent" />
-                Mock Vertical Pos:
+                Vertical Pos:
               </span>
               <input
                 type="range"
-                min="-120"
-                max="120"
+                min="-200"
+                max="200"
                 value={photoboothOffsetY}
                 onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
-                className="w-20 accent-vow-accent cursor-pointer"
-                title="Adjust vertical position of logo/text in photo mock zone"
+                className="w-24 accent-vow-accent cursor-pointer"
+                title="Adjust vertical position of vector text or AI logo"
               />
-              <span className="font-mono text-[10px] text-vow-accent w-8 font-bold">
+              <span className="font-mono text-[10px] text-vow-accent w-9 font-bold">
                 {photoboothOffsetY > 0 ? `+${photoboothOffsetY}` : photoboothOffsetY}px
               </span>
             </div>
@@ -150,15 +151,15 @@ export function PreviewModesBar() {
 
             {/* Logo Scale Adjustment */}
             <div className="flex items-center space-x-2">
-              <span className="text-[10px] font-mono text-slate-300 font-bold">Mock Logo Size:</span>
+              <span className="text-[10px] font-mono text-slate-300 font-bold">Logo Scale:</span>
               <input
                 type="range"
                 min="40"
                 max="160"
                 value={photoboothScale}
                 onChange={(e) => setPhotoboothScale(Number(e.target.value))}
-                className="w-16 accent-vow-accent cursor-pointer"
-                title="Adjust scale of logo/text in photo mock zone"
+                className="w-20 accent-vow-accent cursor-pointer"
+                title="Adjust scale of vector text or AI logo"
               />
               <span className="font-mono text-[10px] text-vow-accent w-8 font-bold">
                 {photoboothScale}%

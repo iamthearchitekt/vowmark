@@ -149,6 +149,7 @@ export function ArtboardCanvas() {
   const activeLogoAsset = textLogoAssetUrl || (studioMode === "generative_ai" ? aiGeneratedAssetUrl : null);
 
   const is2x6Format = canvasFormat === "2_x_6";
+  const isNonSquare = canvasFormat !== "square";
   const activeFrameOverlayUrl = photoboothFrameUrl || "/photobooth-2x6-frame.png";
 
   return (
@@ -201,7 +202,7 @@ export function ArtboardCanvas() {
           }`}
           style={{
             transform:
-              is2x6Format && photoboothMode
+              isNonSquare
                 ? `translateY(${photoboothOffsetY}px) scale(${photoboothScale / 100})`
                 : undefined,
             mixBlendMode: textLayerBlendMode,

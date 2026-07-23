@@ -298,49 +298,6 @@ export function RightAiPanel() {
           )}
         </div>
 
-        {/* Quick AI Generator Chips */}
-        <div className="p-3 bg-white border-b border-vow-border space-y-2">
-          <p className="text-[10px] font-bold text-vow-muted uppercase tracking-wider flex items-center gap-1">
-            <Cpu className="w-3 h-3 text-vow-accent" />
-            <span>{isBackgroundMode ? "Quick Background Generators" : "Quick Text & Logo Generators"}</span>
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {isBackgroundMode
-              ? [
-                  { label: "🌸 Botanical Watercolor", action: "Generate botanical watercolor stationery border" },
-                  { label: "✨ Gold Filigree Frame", action: "Generate golden filigree invitation frame without text" },
-                  { label: "🌿 Olive Branch Crest", action: "Generate olive sprig crest border pattern without words" },
-                  { label: "📜 Vintage Parchment", action: "Generate vintage stationery texture background" },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => handleSendMessage(item.action)}
-                    className="px-2.5 py-1 bg-amber-50 border border-amber-200 hover:border-vow-dark hover:bg-amber-100 rounded text-[11px] font-bold text-amber-950 transition-all shadow-2xs flex items-center gap-1 active:scale-95"
-                  >
-                    <Zap className="w-2.5 h-2.5 text-vow-accent" />
-                    {item.label}
-                  </button>
-                ))
-              : [
-                  { label: "✨ Generate Logo M & S", action: "Generate luxury wedding logo for M & S" },
-                  { label: "Make Editorial", action: "Make logo more editorial and high-contrast" },
-                  { label: "Estate Crest E & V", action: "Generate European estate heraldic crest logo for E & V" },
-                  { label: "Simplify Monogram", action: "Simplify monogram initial silhouette" },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => handleSendMessage(item.action)}
-                    className="px-2.5 py-1 bg-slate-50 border border-vow-border hover:border-vow-dark hover:bg-slate-100 rounded text-[11px] font-bold text-vow-charcoal transition-all shadow-2xs flex items-center gap-1 active:scale-95"
-                  >
-                    <Zap className="w-2.5 h-2.5 text-vow-accent" />
-                    {item.label}
-                  </button>
-                ))}
-          </div>
-        </div>
-
         {/* Chat Messages Container */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3.5 select-text selection:bg-amber-200 selection:text-slate-900">
           {messages.map((m, idx) => (

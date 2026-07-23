@@ -353,40 +353,40 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal X-Position Slider */}
+          {/* Horizontal X-Position Slider (-500 to +500) */}
           <div className="flex items-center space-x-2">
             <MoveHorizontal className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
             <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">X Pos:</span>
             <input
               type="range"
-              min="-300"
-              max="300"
+              min="-500"
+              max="500"
               value={photoboothOffsetX}
               onChange={(e) => setPhotoboothOffsetX(Number(e.target.value))}
-              className="w-20 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+              className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
               title="Adjust horizontal X position of text/logo artwork"
             />
-            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[32px] text-right">
+            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[36px] text-right">
               {photoboothOffsetX > 0 ? `+${photoboothOffsetX}` : photoboothOffsetX}px
             </span>
           </div>
 
           <div className="h-3.5 w-px bg-slate-200" />
 
-          {/* Vertical Y-Position Slider */}
+          {/* Vertical Y-Position Slider (-500 to +500) */}
           <div className="flex items-center space-x-2">
             <ArrowUpDown className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
             <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Y Pos:</span>
             <input
               type="range"
-              min="-200"
-              max="200"
+              min="-500"
+              max="500"
               value={photoboothOffsetY}
               onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
-              className="w-20 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+              className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
               title="Adjust vertical Y position of text/logo artwork"
             />
-            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[32px] text-right">
+            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[36px] text-right">
               {photoboothOffsetY > 0 ? `+${photoboothOffsetY}` : photoboothOffsetY}px
             </span>
           </div>

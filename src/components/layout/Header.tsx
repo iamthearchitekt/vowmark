@@ -103,7 +103,7 @@ export function Header() {
         <button
           type="button"
           onClick={() => setPhotoboothMode(!photoboothMode)}
-          className={`text-[11px] font-sans font-bold flex items-center space-x-1.5 px-3 py-1 rounded border transition-all shadow-2xs cursor-pointer ${
+          className={`text-[11px] font-sans font-bold flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border transition-all shadow-2xs cursor-pointer ${
             photoboothMode
               ? "bg-vow-dark text-white border-vow-dark ring-1 ring-vow-accent"
               : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"
@@ -114,26 +114,26 @@ export function Header() {
           <span>Photo Mock: {photoboothMode ? "ON" : "OFF"}</span>
         </button>
 
-        {/* Save Project Button */}
+        {/* SAVE PROJECT Button — High Visibility Gold Highlight */}
         <button
           type="button"
           onClick={handleSaveProject}
-          className={`text-[11px] font-sans font-bold flex items-center space-x-1.5 px-3.5 py-1 rounded border transition-all shadow-2xs cursor-pointer ${
+          className={`text-[11px] font-sans font-extrabold tracking-wider uppercase flex items-center space-x-1.5 px-4 py-1.5 rounded-lg border transition-all shadow-md cursor-pointer ${
             isSaved
-              ? "bg-emerald-600 text-white border-emerald-600"
-              : "bg-vow-dark text-vow-paper hover:bg-black border-vow-dark"
+              ? "bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-400"
+              : "bg-vow-accent text-vow-dark hover:bg-amber-400 border-vow-accent ring-1 ring-stone-900"
           }`}
-          title="Save active project design & settings"
+          title="Save active project design & settings to Client Projects"
         >
           {isSaved ? (
             <>
-              <Check className="w-3.5 h-3.5 text-vow-champagne" />
+              <Check className="w-4 h-4 text-white" />
               <span>Project Saved!</span>
             </>
           ) : (
             <>
-              <Save className="w-3.5 h-3.5 text-vow-accent" />
-              <span>Save Project</span>
+              <Save className="w-4 h-4 text-vow-dark" />
+              <span>SAVE PROJECT</span>
             </>
           )}
         </button>

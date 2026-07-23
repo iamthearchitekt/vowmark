@@ -11,10 +11,67 @@ import {
   RotateCcw,
   FlipHorizontal,
   FlipVertical,
+  Save,
+  Check,
 } from "lucide-react";
 
 export function ArtboardCanvas() {
   const [mounted, setMounted] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSaveProject = () => {
+    const state = useEditorStore.getState();
+    const pId = state.projectId || `proj_${Date.now()}`;
+    const pTitle =
+      state.typographyOptions.primaryText && state.typographyOptions.secondaryText
+        ? `${state.typographyOptions.primaryText} & ${state.typographyOptions.secondaryText}`
+        : state.projectTitle || "Wedding Mark Project";
+
+    const projectData = {
+      id: pId,
+      title: pTitle,
+      assetType: state.brief.assetType || "couple_logo",
+      style: state.brief.weddingStyle || "editorial_luxury",
+      font: state.typographyOptions.fontFamily || "Cormorant Garamond",
+      primaryText: state.typographyOptions.primaryText,
+      secondaryText: state.typographyOptions.secondaryText,
+      dateText: state.typographyOptions.dateText,
+      hashtagText: state.typographyOptions.hashtagText,
+      canvasFormat: state.canvasFormat,
+      backgroundPatternAssetUrl: state.backgroundPatternAssetUrl,
+      backgroundSuite: state.backgroundSuite,
+      textLogoAssetUrl: state.textLogoAssetUrl,
+      textColor: state.textColor,
+      photoboothMode: state.photoboothMode,
+      brief: state.brief,
+      typographyOptions: state.typographyOptions,
+      updatedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      savedAtIso: new Date().toISOString(),
+      version: "v1.0 (Saved)",
+    };
+
+    try {
+      localStorage.setItem(`vowmark_project_${pId}`, JSON.stringify(projectData));
+      localStorage.setItem("vowmark_latest_project", JSON.stringify(projectData));
+
+      const existingRaw = localStorage.getItem("vowmark_client_projects");
+      let projectsList: any[] = existingRaw ? JSON.parse(existingRaw) : [];
+
+      const existingIdx = projectsList.findIndex((p: any) => p.id === pId);
+      if (existingIdx >= 0) {
+        projectsList[existingIdx] = projectData;
+      } else {
+        projectsList.unshift(projectData);
+      }
+      localStorage.setItem("vowmark_client_projects", JSON.stringify(projectsList));
+      window.dispatchEvent(new CustomEvent("vowmark_project_saved", { detail: projectData }));
+    } catch (e) {
+      console.warn("Save error:", e);
+    }
+
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -203,7 +260,32 @@ export function ArtboardCanvas() {
     <div className="relative flex-1 flex flex-col items-center justify-start pt-16 pb-24 bg-stone-100/90 overflow-y-auto overflow-x-hidden select-none font-sans">
       {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Top of Work Window) */}
       {(isNonSquare || !!activeLogoAsset) && (
-        <div className="absolute top-3 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-3.5 text-xs font-sans animate-fadeIn">
+        <div className="absolute top-3 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-4 py-1.5 flex items-center space-x-3 text-xs font-sans animate-fadeIn">
+          {/* Quick Save Project Button in Floating Bar */}
+          <button
+            type="button"
+            onClick={handleSaveProject}
+            className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 transition-all shadow-xs cursor-pointer ${
+              isSaved
+                ? "bg-emerald-600 text-white"
+                : "bg-vow-accent text-vow-dark hover:bg-amber-400 border border-vow-accent"
+            }`}
+            title="Save project design to Client Projects"
+          >
+            {isSaved ? (
+              <>
+                <Check className="w-3 h-3 text-white" />
+                <span>Saved!</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-3 h-3 text-vow-dark" />
+                <span>Save Project</span>
+              </>
+            )}
+          </button>
+
+          <div className="h-3.5 w-px bg-stone-200" />
           {/* 6x4 Mode Selector — mode1 = 3 Boxes, mode2 = 1 Box */}
           {is6x4Format && photoboothMode && (
             <>

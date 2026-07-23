@@ -4,7 +4,7 @@ import { useEditorStore, getFormatDimensions } from "@/lib/store/useEditorStore"
 import { TypographyEngine } from "@/lib/typography/engine";
 import { resolveFontConfig } from "@/lib/typography/font-resolver";
 import { useEffect, useState, useMemo } from "react";
-import { Sparkles, Camera, Image as ImageIcon, Layers } from "lucide-react";
+import { Sparkles, Camera, Image as ImageIcon, Layers, ArrowUpDown, Maximize2, RotateCcw } from "lucide-react";
 
 export function ArtboardCanvas() {
   const [mounted, setMounted] = useState(false);
@@ -24,6 +24,8 @@ export function ArtboardCanvas() {
   const photoboothFrameUrl = useEditorStore((state) => state.photoboothFrameUrl);
   const photoboothOffsetY = useEditorStore((state) => state.photoboothOffsetY || 0);
   const photoboothScale = useEditorStore((state) => state.photoboothScale || 100);
+  const setPhotoboothOffsetY = useEditorStore((state) => state.setPhotoboothOffsetY);
+  const setPhotoboothScale = useEditorStore((state) => state.setPhotoboothScale);
 
   // Primitive scalar selectors for Vector mode
   const primaryText = useEditorStore((state) => state.typographyOptions.primaryText);
@@ -240,6 +242,68 @@ export function ArtboardCanvas() {
         {/* Safe Area Guide */}
         <div className="absolute inset-3 border border-dashed border-slate-300/40 pointer-events-none z-30" />
       </div>
+
+      {/* Sleek Floating Glassmorphism Transform Control Pill (Non-Square Formats) */}
+      {isNonSquare && (
+        <div className="absolute bottom-6 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-5 text-xs font-sans animate-fadeIn">
+          {/* Vertical Y-Position Slider */}
+          <div className="flex items-center space-x-2">
+            <ArrowUpDown className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Position:</span>
+            <input
+              type="range"
+              min="-200"
+              max="200"
+              value={photoboothOffsetY}
+              onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
+              className="w-20 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+              title="Adjust vertical position of text/logo artwork"
+            />
+            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[32px] text-right">
+              {photoboothOffsetY > 0 ? `+${photoboothOffsetY}` : photoboothOffsetY}px
+            </span>
+          </div>
+
+          <div className="h-3.5 w-px bg-slate-200" />
+
+          {/* Scale Slider */}
+          <div className="flex items-center space-x-2">
+            <Maximize2 className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Scale:</span>
+            <input
+              type="range"
+              min="40"
+              max="160"
+              value={photoboothScale}
+              onChange={(e) => setPhotoboothScale(Number(e.target.value))}
+              className="w-16 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+              title="Adjust scale of text/logo artwork"
+            />
+            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[32px] text-right">
+              {photoboothScale}%
+            </span>
+          </div>
+
+          {/* Quick Reset Transform */}
+          {(photoboothOffsetY !== 0 || photoboothScale !== 100) && (
+            <>
+              <div className="h-3.5 w-px bg-slate-200" />
+              <button
+                type="button"
+                onClick={() => {
+                  setPhotoboothOffsetY(0);
+                  setPhotoboothScale(100);
+                }}
+                className="text-[10px] font-mono font-bold text-slate-400 hover:text-slate-700 uppercase flex items-center gap-1"
+                title="Reset position & size to default"
+              >
+                <RotateCcw className="w-2.5 h-2.5" />
+                <span>Reset</span>
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

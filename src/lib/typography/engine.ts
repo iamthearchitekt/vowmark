@@ -132,7 +132,7 @@ export class TypographyEngine {
       const botY = centerY + gapY;
 
       const ampTag = ampText
-        ? `<text x="${centerX}" y="${ampY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${ampFontSize}" font-weight="300" font-style="italic" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(ampText)}</text>`
+        ? `<text x="${centerX}" y="${ampY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${ampFontSize}" font-weight="${fontWeight}" font-style="${isItalic}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(ampText)}</text>`
         : "";
 
       elementsSvg = `
@@ -155,11 +155,21 @@ export class TypographyEngine {
         `;
       }
     } else if (options.layout === "horizontal") {
-      const horizontalText = ampText ? `${pText}  ${ampText}  ${sText}` : `${pText}   ${sText}`;
+      if (ampText) {
+        elementsSvg = `
+          <text x="${centerX}" y="${centerY}" font-family="${mainFontConfig.cssFontFamily}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">
+            <tspan font-size="${pFontSize}">${escapeXml(pText)}</tspan>
+            <tspan font-size="${ampFontSize}">  ${escapeXml(ampText)}  </tspan>
+            <tspan font-size="${sFontSize}">${escapeXml(sText)}</tspan>
+          </text>
+        `;
+      } else {
+        const horizontalText = `${pText}   ${sText}`;
+        elementsSvg = `
+          <text x="${centerX}" y="${centerY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${pFontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(horizontalText)}</text>
+        `;
+      }
 
-      elementsSvg = `
-        <text x="${centerX}" y="${centerY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${pFontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(horizontalText)}</text>
-      `;
       if (dateStr) {
         elementsSvg += `
           <text x="${centerX}" y="${centerY + pFontSize * 0.8}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
@@ -176,10 +186,17 @@ export class TypographyEngine {
       const init2 = rawSecondary ? sText.charAt(0) : "P2";
       const monoSize = pFontSize * 2.2;
       const offset = options.initialOverlap || 45;
+      const interlockingAmpSize = monoSize * 0.66 * ampScale;
 
       const ampTag = ampText
-        ? `<text x="${centerX}" y="${centerY + 15}" font-family="${mainFontConfig.cssFontFamily}" font-size="${monoSize * 0.4}" font-weight="300" font-style="italic" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(ampText)}</text>`
+        ? `<text x="${centerX}" y="${centerY + 15}" font-family="${mainFontConfig.cssFontFamily}" font-size="${interlockingAmpSize}" font-weight="300" font-style="italic" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(ampText)}</text>`
         : "";
+
+      elementsSvg = `
+        <text x="${centerX - offset}" y="${centerY + 10}" font-family="${mainFontConfig.cssFontFamily}" font-size="${monoSize}" font-weight="${fontWeight}" font-style="${isItalic}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(init1)}</text>
+        <text x="${centerX + offset}" y="${centerY + 10}" font-family="${mainFontConfig.cssFontFamily}" font-size="${monoSize}" font-weight="${fontWeight}" font-style="${isItalic}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(init2)}</text>
+        ${ampTag}
+      `;
 
       elementsSvg = `
         <text x="${centerX - offset}" y="${centerY + 10}" font-family="${mainFontConfig.cssFontFamily}" font-size="${monoSize}" font-weight="${fontWeight}" font-style="${isItalic}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(init1)}</text>

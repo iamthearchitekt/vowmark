@@ -477,15 +477,31 @@ export function LeftControlPanel() {
             </div>
 
             {ampersandText !== "" && (
-              <div>
-                <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider mb-1">
-                  Ampersand Scale: {Math.round((ampersandScale || 0.6) * 100)}%
-                </label>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
+                    Ampersand Scale
+                  </label>
+                  <div className="flex items-center space-x-1">
+                    <input
+                      type="number"
+                      min="20"
+                      max="200"
+                      value={Math.round((ampersandScale || 0.6) * 100)}
+                      onChange={(e) => {
+                        const val = Math.max(20, Math.min(200, Number(e.target.value) || 20));
+                        setTypographyOptions({ ampersandScale: val / 100 });
+                      }}
+                      className="w-12 bg-white border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                    />
+                    <span className="text-[10px] text-vow-muted font-bold">%</span>
+                  </div>
+                </div>
                 <input
                   type="range"
-                  min="30"
-                  max="100"
-                  value={(ampersandScale || 0.6) * 100}
+                  min="20"
+                  max="200"
+                  value={Math.round((ampersandScale || 0.6) * 100)}
                   onChange={(e) => setTypographyOptions({ ampersandScale: Number(e.target.value) / 100 })}
                   className="w-full accent-vow-dark cursor-pointer"
                 />

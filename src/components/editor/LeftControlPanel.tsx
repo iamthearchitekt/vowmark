@@ -137,75 +137,6 @@ export function LeftControlPanel() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* PROMINENT TOP WIDGET: VECTOR TEXT COLOR PALETTE & EYE DROPPER */}
-        <div className="space-y-3 p-3.5 bg-white border border-vow-border rounded-xl shadow-2xs">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100 text-vow-dark font-bold text-xs uppercase tracking-wider">
-            <div className="flex items-center space-x-2">
-              <Palette className="w-4 h-4 text-vow-accent" />
-              <span>Vector Text Color Palette</span>
-            </div>
-
-            {/* Native Eye Dropper Button */}
-            <button
-              type="button"
-              onClick={handleEyeDropper}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-vow-dark hover:text-white text-slate-800 text-[10px] font-bold rounded-md flex items-center gap-1.5 transition-all border border-slate-300 cursor-pointer shadow-2xs"
-              title="Pick any color directly from your screen with Eye Dropper"
-            >
-              <Pipette className="w-3.5 h-3.5 text-vow-accent" />
-              <span>Eye Dropper</span>
-            </button>
-          </div>
-
-          <div className="flex items-center justify-between gap-2 pt-1">
-            {/* Color Swatches */}
-            <div className="flex items-center space-x-1.5 flex-1 overflow-x-auto pb-1">
-              {[
-                { hex: "#0F172A", label: "Black" },
-                { hex: "#FFFFFF", label: "White" },
-                { hex: "#C9A251", label: "Gold" },
-                { hex: "#1B3B2B", label: "Emerald" },
-                { hex: "#B76E79", label: "Rose Gold" },
-                { hex: "#0F1E36", label: "Navy" },
-                { hex: "#2C1D11", label: "Espresso" },
-                { hex: "#7C6A58", label: "Taupe" },
-              ].map((swatch) => (
-                <button
-                  key={swatch.hex}
-                  type="button"
-                  onClick={() => setTextColor(swatch.hex)}
-                  className={`w-6 h-6 rounded-full border transition-all flex-shrink-0 relative cursor-pointer ${
-                    textColor.toLowerCase() === swatch.hex.toLowerCase()
-                      ? "ring-2 ring-vow-dark ring-offset-1 scale-110"
-                      : "border-slate-300 hover:scale-105"
-                  }`}
-                  style={{ backgroundColor: swatch.hex }}
-                  title={`${swatch.label} (${swatch.hex})`}
-                />
-              ))}
-            </div>
-
-            {/* Custom Hex Color Picker Input */}
-            <div className="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-md border border-slate-200">
-              <input
-                ref={colorPickerRef}
-                type="color"
-                value={textColor}
-                onChange={(e) => setTextColor(e.target.value)}
-                className="w-5 h-5 rounded cursor-pointer border-0 bg-transparent p-0"
-                title="Custom color picker"
-              />
-              <input
-                type="text"
-                value={textColor}
-                onChange={(e) => setTextColor(e.target.value)}
-                className="w-16 bg-white border border-slate-300 rounded px-1.5 py-0.5 font-mono text-[11px] font-bold text-vow-dark focus:outline-none uppercase"
-                placeholder="#0F172A"
-              />
-            </div>
-          </div>
-        </div>
-
         {/* SECTION 1: CONTENT & IDENTITY */}
         <div className="space-y-4">
           <div className="flex items-center space-x-2 pb-2 border-b border-vow-border text-vow-dark font-bold text-xs uppercase tracking-wider">
@@ -541,6 +472,55 @@ export function LeftControlPanel() {
                 />
               </div>
             )}
+          </div>
+        </div>
+
+        {/* SECTION 3: VECTOR TEXT COLOR & EYE DROPPER (FINAL STEP) */}
+        <div className="space-y-3 pt-4 border-t border-vow-border">
+          <div className="flex items-center justify-between pb-1 border-b border-vow-border text-vow-dark font-bold text-xs uppercase tracking-wider">
+            <div className="flex items-center space-x-2">
+              <Palette className="w-3.5 h-3.5 text-vow-accent" />
+              <span>Vector Text Color (Final Step)</span>
+            </div>
+
+            {/* Native Eye Dropper Button */}
+            <button
+              type="button"
+              onClick={handleEyeDropper}
+              className="px-2.5 py-1 bg-slate-100 hover:bg-vow-dark hover:text-white text-slate-800 text-[10px] font-bold rounded-md flex items-center gap-1.5 transition-all border border-slate-300 cursor-pointer shadow-2xs"
+              title="Pick any color directly from your screen with Eye Dropper"
+            >
+              <Pipette className="w-3.5 h-3.5 text-vow-accent" />
+              <span>Eye Dropper</span>
+            </button>
+          </div>
+
+          <div className="p-3 bg-white border border-vow-border rounded-xl flex items-center justify-between">
+            <div className="flex items-center space-x-2.5">
+              <input
+                ref={colorPickerRef}
+                type="color"
+                value={textColor}
+                onChange={(e) => setTextColor(e.target.value)}
+                className="w-8 h-8 rounded border border-slate-300 cursor-pointer p-0 bg-transparent"
+                title="Click to open color palette picker"
+              />
+              <div>
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Active Color</span>
+                <span className="font-mono text-xs font-bold text-vow-dark">{textColor}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-1.5 bg-slate-50 p-1.5 rounded-md border border-slate-200">
+              <span className="text-[10px] font-mono font-bold text-slate-400">HEX:</span>
+              <input
+                type="text"
+                value={textColor}
+                onChange={(e) => setTextColor(e.target.value)}
+                className="w-20 bg-white border border-slate-300 rounded px-2 py-1 font-mono text-xs font-bold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none uppercase"
+                placeholder="#0F172A"
+              />
+            </div>
           </div>
         </div>
       </div>

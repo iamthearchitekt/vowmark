@@ -6,8 +6,7 @@ import { Plus, FolderOpen, ArrowRight } from "lucide-react";
 import { useState } from "react";
 
 export default function DashboardPage() {
-  // Empty projects list by default (no fake example projects)
-  const [projects, setProjects] = useState<Array<{
+  const [projects] = useState<Array<{
     id: string;
     title: string;
     assetType: string;
@@ -17,20 +16,6 @@ export default function DashboardPage() {
     version: string;
   }>>([]);
 
-  const handleCreateSampleProject = () => {
-    setProjects([
-      {
-        id: "proj_claude_alexa",
-        title: "Claude & Alexa Wedding Identity",
-        assetType: "Couple Logo",
-        style: "Editorial Luxury",
-        font: "Cormorant Garamond",
-        updatedAt: "Just now",
-        version: "v1 (Initial Mark)",
-      },
-    ]);
-  };
-
   return (
     <div className="min-h-screen bg-vow-bg flex flex-col font-sans">
       <Header />
@@ -38,29 +23,19 @@ export default function DashboardPage() {
       <main className="flex-1 max-w-6xl w-full mx-auto p-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-serif font-bold text-3xl text-vow-dark">Design Studio Projects</h1>
+            <h1 className="font-serif font-bold text-3xl text-vow-dark">Client Projects</h1>
             <p className="text-xs text-vow-muted font-sans mt-1">
               Manage your active wedding identity assets, font previews, and vector exports.
             </p>
           </div>
 
           <div className="flex items-center space-x-3">
-            {projects.length === 0 && (
-              <button
-                type="button"
-                onClick={handleCreateSampleProject}
-                className="px-4 py-2 bg-white border border-vow-border text-vow-dark hover:bg-slate-50 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-2xs"
-              >
-                + Add Claude &amp; Alexa Project
-              </button>
-            )}
-
             <Link
-              href="/"
-              className="px-5 py-2.5 bg-vow-dark hover:bg-black text-vow-paper rounded-full text-xs font-semibold uppercase tracking-wider transition-colors flex items-center space-x-2 shadow-sm"
+              href="/editor"
+              className="w-10 h-10 bg-vow-dark hover:bg-black text-vow-paper rounded-full flex items-center justify-center transition-all shadow-sm group"
+              title="Create New Project"
             >
-              <Plus className="w-4 h-4 text-vow-champagne" />
-              <span>New Wedding Project</span>
+              <Plus className="w-5 h-5 text-vow-champagne group-hover:scale-110 transition-transform" />
             </Link>
           </div>
         </div>
@@ -73,14 +48,14 @@ export default function DashboardPage() {
             </div>
             <h3 className="font-bold text-base text-vow-dark mb-1">No Client Projects Yet</h3>
             <p className="text-xs text-vow-muted mb-6">
-              Your client projects list is clean. Start a new project or create one for <strong>Claude &amp; Alexa</strong>.
+              Your client projects list is clean. Click below to start a new project.
             </p>
             <Link
-              href="/"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-vow-dark text-white rounded-md text-xs font-bold uppercase tracking-wider hover:bg-black transition-colors"
+              href="/editor"
+              className="w-12 h-12 bg-vow-dark hover:bg-black text-vow-paper rounded-full mx-auto flex items-center justify-center transition-all shadow-md group"
+              title="Create New Project"
             >
-              <Plus className="w-4 h-4 text-vow-accent" />
-              <span>Start Blank Studio Project</span>
+              <Plus className="w-6 h-6 text-vow-accent group-hover:scale-110 transition-transform" />
             </Link>
           </div>
         ) : (
@@ -100,26 +75,16 @@ export default function DashboardPage() {
                   </div>
 
                   <h3 className="font-serif font-bold text-lg text-vow-dark mb-1">{p.title}</h3>
-                  <p className="text-xs text-vow-muted font-sans">
-                    Style: <strong className="text-vow-dark">{p.style}</strong> • Font:{" "}
-                    <strong className="text-vow-dark">{p.font}</strong>
-                  </p>
+                  <p className="text-xs text-vow-muted font-mono">{p.font}</p>
                 </div>
 
-                <div className="my-6 p-6 border border-stone-200/60 rounded-lg bg-white text-center shadow-inner relative overflow-hidden">
-                  <p className="font-serif text-2xl text-vow-dark tracking-wide">
-                    Claude &amp; Alexa
-                  </p>
-                  <p className="text-[9px] text-vow-muted uppercase tracking-widest mt-1">10.24.2026</p>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-vow-border">
-                  <span className="text-[10px] font-mono text-vow-muted">{p.version}</span>
+                <div className="mt-6 pt-4 border-t border-vow-border flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-slate-500">{p.version}</span>
                   <Link
-                    href="/"
-                    className="text-xs font-sans font-bold text-vow-dark hover:text-vow-accent uppercase tracking-wider flex items-center space-x-1"
+                    href={`/editor/${p.id}`}
+                    className="text-xs font-bold text-vow-dark hover:text-vow-accent flex items-center gap-1 uppercase tracking-wider transition-colors"
                   >
-                    <span>Open Studio</span>
+                    <span>Open</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

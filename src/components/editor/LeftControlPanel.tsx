@@ -73,35 +73,6 @@ export function LeftControlPanel() {
         >
           <ChevronRight className="w-4 h-4 text-vow-accent group-hover:scale-110 transition-transform" />
         </button>
-
-        <div className="flex-1 flex flex-col items-center space-y-3 pt-2 text-vow-muted">
-          <button
-            type="button"
-            onClick={() => {
-              if (isGenerativeAi) {
-                setStudioMode("deterministic_vector");
-              }
-              setManualCollapsed(false);
-            }}
-            className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-vow-dark transition-colors"
-            title="Open Vector Typography & Inputs"
-          >
-            <Type className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              if (isGenerativeAi) {
-                setStudioMode("deterministic_vector");
-              }
-              setManualCollapsed(false);
-            }}
-            className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-vow-dark transition-colors"
-            title="Open Layout & Canvas Controls"
-          >
-            <Layout className="w-4 h-4" />
-          </button>
-        </div>
       </div>
     );
   }

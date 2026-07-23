@@ -70,7 +70,7 @@ export interface EditorState {
   previewMode: "white";
   zoomLevel: number; // 100% default zoom scaling
 
-  messages: Array<{ role: "user" | "assistant" | "system"; content: string }>;
+  messages: Array<{ role: "user" | "assistant" | "system"; content: string; flowerOptions?: string[] }>;
   isAiGenerating: boolean;
 
   setStudioMode: (mode: StudioMode) => void;
@@ -104,7 +104,7 @@ export interface EditorState {
   setOrnamentUrl: (url: string | null) => void;
   setPreviewMode: (mode: "white") => void;
   setZoomLevel: (zoom: number) => void;
-  addMessage: (msg: { role: "user" | "assistant" | "system"; content: string }) => void;
+  addMessage: (msg: { role: "user" | "assistant" | "system"; content: string; flowerOptions?: string[] }) => void;
   setIsAiGenerating: (loading: boolean) => void;
   resetFields: () => void;
 }

@@ -75,6 +75,7 @@ export function RightAiPanel() {
   const setAiGenerationType = useEditorStore((state) => state.setAiGenerationType);
   const promptGuidanceConfig = useEditorStore((state) => state.promptGuidanceConfig);
   const activeGuardrailPresetId = useEditorStore((state) => state.activeGuardrailPresetId);
+  const setActiveGuardrailPresetId = useEditorStore((state) => state.setActiveGuardrailPresetId);
   const setIsPromptGuidanceModalOpen = useEditorStore((state) => state.setIsPromptGuidanceModalOpen);
 
   const referenceImages = useEditorStore((state) => state.referenceImages);
@@ -215,7 +216,11 @@ export function RightAiPanel() {
 
         const chatData = await chatRes.json();
         if (chatData.message) {
-          addMessage({ role: "assistant", content: chatData.message });
+          addMessage({
+            role: "assistant",
+            content: chatData.message,
+            flowerOptions: chatData.flowerSuggestions,
+          });
         }
       } catch (err) {
         addMessage({
@@ -224,6 +229,15 @@ export function RightAiPanel() {
         });
       }
     }
+  };
+
+  const handleSelectFlowerSuggestion = (flowerChoice: string) => {
+    if (isBackgroundMode) {
+      setActiveGuardrailPresetId("lush_color_florals");
+    }
+    const flowerPrompt = `Feature ${flowerChoice} with elegant botanical details in the design`;
+    addMessage({ role: "user", content: flowerPrompt });
+    handleSendMessage(flowerPrompt);
   };
 
   const handleVisualizeFromConversation = async () => {
@@ -579,6 +593,27 @@ export function RightAiPanel() {
               </button>
 
               <p className="whitespace-pre-wrap pr-4">{m.content}</p>
+
+              {m.flowerOptions && m.flowerOptions.length > 0 && (
+                <div className="mt-3 pt-2.5 border-t border-stone-200/80 space-y-1.5 font-sans">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-vow-dark flex items-center gap-1">
+                    <span>🌸 Select Flower &amp; Botanical Species:</span>
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {m.flowerOptions.map((opt) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => handleSelectFlowerSuggestion(opt)}
+                        className="px-2.5 py-1 bg-white hover:bg-vow-dark hover:text-vow-accent border border-vow-border text-vow-dark text-[11px] font-bold rounded-lg transition-all cursor-pointer shadow-2xs active:scale-95 flex items-center gap-1"
+                      >
+                        <span className="text-vow-accent font-black">+</span>
+                        <span>{opt}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
           {isAiGenerating && (

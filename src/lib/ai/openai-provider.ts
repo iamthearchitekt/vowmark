@@ -4,13 +4,57 @@ import { DesignBrief, DesignBriefSchema } from "./brief-schema";
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
+  flowerOptions?: string[];
 }
 
 export interface AiChatResponse {
   message: string;
   updatedBrief?: Partial<DesignBrief>;
   suggestedActions?: string[];
+  flowerSuggestions?: string[];
 }
+
+export const FLORAL_SUGGESTIONS = [
+  "English Roses & Peonies",
+  "Eucalyptus & Olive Leaves",
+  "White Anemones & Wildflowers",
+  "Pampas Grass & Dried Botanicals",
+  "Citrus Sprigs & Cypress",
+  "French Lavender & Magnolia",
+];
+
+const FLORAL_KEYWORDS = [
+  "floral",
+  "flower",
+  "flowers",
+  "botanical",
+  "botany",
+  "wreath",
+  "foliage",
+  "leaf",
+  "leaves",
+  "sprig",
+  "sprigs",
+  "bouquet",
+  "bloom",
+  "garden",
+  "garland",
+];
+
+const SPECIFIC_FLOWER_NAMES = [
+  "rose",
+  "peony",
+  "peonies",
+  "eucalyptus",
+  "anemone",
+  "olive",
+  "pampas",
+  "citrus",
+  "lavender",
+  "magnolia",
+  "hydrangea",
+  "ivy",
+];
 
 export class OpenAIProvider {
   private client: OpenAI | null = null;
@@ -28,8 +72,14 @@ export class OpenAIProvider {
     messages: ChatMessage[],
     currentBrief: DesignBrief
   ): Promise<AiChatResponse> {
+    const lastUserMsg = messages[messages.length - 1]?.content || "";
+    const lower = lastUserMsg.toLowerCase();
+
+    const isFloralRequest = FLORAL_KEYWORDS.some((k) => lower.includes(k));
+    const hasSpecificFlower = SPECIFIC_FLOWER_NAMES.some((k) => lower.includes(k));
+
     if (!this.client || process.env.USE_MOCK_AI === "true") {
-      return this.mockChatAssistant(messages, currentBrief);
+      return this.mockChatAssistant(messages, currentBrief, isFloralRequest && !hasSpecificFlower);
     }
 
     try {
@@ -37,8 +87,8 @@ export class OpenAIProvider {
 CRITICAL DIRECTIVES:
 1. NO EMOJIS. Never use emojis in any response.
 2. Be concise, procedural, and professional (1 to 3 short sentences MAX).
-3. Provide direct design advice, style recommendations, font pairings, or layout guidance.
-4. When planning design concepts, inform the user they can type "Make me a..." whenever they are ready to render artwork live on their canvas.`;
+3. If the user mentions florals, flowers, or botanical motifs without specifying exact plant species, ask them what specific flowers or plants they prefer (e.g. English roses, eucalyptus, olive leaves, peonies, anemones).
+4. Provide direct design advice, style recommendations, font pairings, or layout guidance.`;
 
       const completion = await this.client.chat.completions.create({
         model: this.model,
@@ -50,16 +100,19 @@ CRITICAL DIRECTIVES:
         max_tokens: 100,
       });
 
-      const rawContent = completion.choices[0]?.message?.content || "Generation completed. Canvas updated.";
+      const rawContent = completion.choices[0]?.message?.content || "Planning response logged.";
       const cleanContent = rawContent.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "").trim();
 
       return {
-        message: cleanContent,
+        message: isFloralRequest && !hasSpecificFlower 
+          ? `${cleanContent} What specific flowers or plants would you like to feature?`
+          : cleanContent,
         updatedBrief: currentBrief,
+        flowerSuggestions: isFloralRequest && !hasSpecificFlower ? FLORAL_SUGGESTIONS : undefined,
       };
     } catch (err) {
       console.warn("OpenAI API call failed, falling back to mock assistant:", err);
-      return this.mockChatAssistant(messages, currentBrief);
+      return this.mockChatAssistant(messages, currentBrief, isFloralRequest && !hasSpecificFlower);
     }
   }
 
@@ -97,14 +150,17 @@ CRITICAL DIRECTIVES:
 
   private mockChatAssistant(
     messages: ChatMessage[],
-    currentBrief: DesignBrief
+    currentBrief: DesignBrief,
+    needsFloralPrompt = false
   ): AiChatResponse {
     const lastUserMsg = messages[messages.length - 1]?.content || "";
     const lower = lastUserMsg.toLowerCase();
 
-    let message = "Planning response logged. Type 'Make me a...' when ready to generate artwork on canvas.";
+    let message = "Planning response logged. Click 'Visualize' when ready to render artwork on canvas.";
 
-    if (lower.includes("make me") || lower.includes("generate") || lower.includes("create")) {
+    if (needsFloralPrompt) {
+      message = "To sharpen your floral output, what specific flowers or plants would you like to feature in this design?";
+    } else if (lower.includes("make me") || lower.includes("generate") || lower.includes("create")) {
       message = "Generation completed. Canvas updated.";
     } else if (lower.includes("font") || lower.includes("type")) {
       message = "High-contrast editorial serif fonts (Bodoni Moda, Cormorant Garamond) fit formal luxury invitations best. Type 'Make me a...' when ready to generate.";
@@ -117,6 +173,7 @@ CRITICAL DIRECTIVES:
     return {
       message,
       updatedBrief: currentBrief,
+      flowerSuggestions: needsFloralPrompt ? FLORAL_SUGGESTIONS : undefined,
     };
   }
 }

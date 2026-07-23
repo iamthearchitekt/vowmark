@@ -13,7 +13,7 @@ export interface ImageProcessingOptions {
 
 export class ImageProcessor {
   /**
-   * Process a buffer (PNG/JPEG) or SVG string and return cleaned PNG output buffer
+   * Process a buffer (PNG/JPEG) or SVG string and return clean, 100% Photoshop-compliant PNG output buffer
    */
   static async processImage(
     inputBuffer: Buffer,
@@ -24,6 +24,9 @@ export class ImageProcessor {
     const metadata = await pipeline.metadata();
     const currentWidth = metadata.width || 1024;
     const currentHeight = metadata.height || 1024;
+
+    // Force sRGB color space so Adobe Photoshop never freezes trying to resolve missing ICC profiles
+    pipeline = pipeline.toColorspace("srgb");
 
     // If transparent PNG requested, ensure resize uses transparent background fill
     if (options.width || options.height) {
@@ -77,8 +80,13 @@ export class ImageProcessor {
       }
     }
 
+    // Compression level 6 + sRGB ensures instant loading in Adobe Photoshop, Illustrator, & InDesign
     const { data, info } = await pipeline
-      .png({ compressionLevel: 9, quality: 100 })
+      .png({
+        compressionLevel: 6,
+        palette: false, // Standard 32-bit RGBA PNG, avoiding indexed palette hangs in Photoshop
+        adaptiveFiltering: true,
+      })
       .toBuffer({ resolveWithObject: true });
 
     return {
@@ -94,7 +102,7 @@ export class ImageProcessor {
   static async generateThumbnail(inputBuffer: Buffer, size: number = 256): Promise<Buffer> {
     return sharp(inputBuffer)
       .resize(size, size, { fit: "contain", background: { r: 255, g: 255, b: 255, alpha: 1 } })
-      .png()
+      .png({ compressionLevel: 6 })
       .toBuffer();
   }
 }

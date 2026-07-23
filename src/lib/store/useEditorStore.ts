@@ -42,11 +42,12 @@ export interface EditorState {
 
   // Photobooth & Non-Square Strip Frame System
   photoboothMode: boolean;
-  photoboothMode6x4: "mode1" | "mode2"; // Horizontal 6x4 Mode 1 vs Mode 2
+  photoboothMode6x4: "mode1" | "mode2"; // Horizontal 6x4 Mode 1 (1 Box) vs Mode 2 (3 Boxes)
   photoboothFlipH: boolean;            // Flip frame horizontally (scaleX -1)
   photoboothFlipV: boolean;            // Flip frame vertically (scaleY -1)
   photoboothFrameUrl: string | null;   // Custom PNG frame override
-  photoboothOffsetY: number;           // Vertical adjustment in px (-200 to +200) for text/logos
+  photoboothOffsetX: number;           // Horizontal X adjustment in px (-300 to +300) for text/logos
+  photoboothOffsetY: number;           // Vertical Y adjustment in px (-200 to +200) for text/logos
   photoboothScale: number;             // Scale adjustment in percent (40 to 160) for text/logos
 
   brief: DesignBrief;
@@ -79,6 +80,7 @@ export interface EditorState {
   setPhotoboothFlipH: (flip: boolean) => void;
   setPhotoboothFlipV: (flip: boolean) => void;
   setPhotoboothFrameUrl: (url: string | null) => void;
+  setPhotoboothOffsetX: (offset: number) => void;
   setPhotoboothOffsetY: (offset: number) => void;
   setPhotoboothScale: (scale: number) => void;
   setBrief: (brief: Partial<DesignBrief>) => void;
@@ -176,12 +178,13 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   canvasFormat: "square",
 
-  // Photobooth strip mode & vertical adjustment defaults
+  // Photobooth strip mode & non-square adjustment defaults
   photoboothMode: true,
   photoboothMode6x4: "mode1",
   photoboothFlipH: false,
   photoboothFlipV: false,
   photoboothFrameUrl: null,
+  photoboothOffsetX: 0,
   photoboothOffsetY: 0,
   photoboothScale: 100,
 
@@ -237,6 +240,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   setPhotoboothFlipH: (flip) => set({ photoboothFlipH: flip }),
   setPhotoboothFlipV: (flip) => set({ photoboothFlipV: flip }),
   setPhotoboothFrameUrl: (url) => set({ photoboothFrameUrl: url }),
+  setPhotoboothOffsetX: (offset) => set({ photoboothOffsetX: offset }),
   setPhotoboothOffsetY: (offset) => set({ photoboothOffsetY: offset }),
   setPhotoboothScale: (scale) => set({ photoboothScale: scale }),
 
@@ -296,6 +300,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       photoboothFlipH: false,
       photoboothFlipV: false,
       photoboothFrameUrl: null,
+      photoboothOffsetX: 0,
       photoboothOffsetY: 0,
       photoboothScale: 100,
     }),

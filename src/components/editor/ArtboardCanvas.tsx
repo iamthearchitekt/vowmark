@@ -10,6 +10,7 @@ import {
   Image as ImageIcon,
   Layers,
   ArrowUpDown,
+  MoveHorizontal,
   Maximize2,
   RotateCcw,
   FlipHorizontal,
@@ -35,12 +36,14 @@ export function ArtboardCanvas() {
   const photoboothFlipH = useEditorStore((state) => state.photoboothFlipH || false);
   const photoboothFlipV = useEditorStore((state) => state.photoboothFlipV || false);
   const photoboothFrameUrl = useEditorStore((state) => state.photoboothFrameUrl);
+  const photoboothOffsetX = useEditorStore((state) => state.photoboothOffsetX || 0);
   const photoboothOffsetY = useEditorStore((state) => state.photoboothOffsetY || 0);
   const photoboothScale = useEditorStore((state) => state.photoboothScale || 100);
 
   const setPhotoboothMode6x4 = useEditorStore((state) => state.setPhotoboothMode6x4);
   const setPhotoboothFlipH = useEditorStore((state) => state.setPhotoboothFlipH);
   const setPhotoboothFlipV = useEditorStore((state) => state.setPhotoboothFlipV);
+  const setPhotoboothOffsetX = useEditorStore((state) => state.setPhotoboothOffsetX);
   const setPhotoboothOffsetY = useEditorStore((state) => state.setPhotoboothOffsetY);
   const setPhotoboothScale = useEditorStore((state) => state.setPhotoboothScale);
 
@@ -238,7 +241,7 @@ export function ArtboardCanvas() {
           style={{
             transform:
               isNonSquare
-                ? `translateY(${photoboothOffsetY}px) scale(${photoboothScale / 100})`
+                ? `translate(${photoboothOffsetX}px, ${photoboothOffsetY}px) scale(${photoboothScale / 100})`
                 : undefined,
             mixBlendMode: textLayerBlendMode,
           }}
@@ -279,7 +282,7 @@ export function ArtboardCanvas() {
       {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Non-Square Formats) */}
       {isNonSquare && (
         <div className="absolute bottom-6 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-4 text-xs font-sans animate-fadeIn">
-          {/* 6x4 Mode Selector (Horizontal 6x4 only) */}
+          {/* 6x4 Mode Selector (1 Box vs 3 Boxes) */}
           {is6x4Format && photoboothMode && (
             <>
               <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-full border border-slate-200">
@@ -291,8 +294,9 @@ export function ArtboardCanvas() {
                       ? "bg-vow-dark text-white shadow-2xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
+                  title="Single Box photo frame layout"
                 >
-                  Mode 1
+                  1 Box
                 </button>
                 <button
                   type="button"
@@ -302,8 +306,9 @@ export function ArtboardCanvas() {
                       ? "bg-vow-dark text-white shadow-2xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
+                  title="3 Boxes photo frame layout"
                 >
-                  Mode 2
+                  3 Boxes
                 </button>
               </div>
 
@@ -348,10 +353,30 @@ export function ArtboardCanvas() {
             </>
           )}
 
+          {/* Horizontal X-Position Slider */}
+          <div className="flex items-center space-x-2">
+            <MoveHorizontal className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">X Pos:</span>
+            <input
+              type="range"
+              min="-300"
+              max="300"
+              value={photoboothOffsetX}
+              onChange={(e) => setPhotoboothOffsetX(Number(e.target.value))}
+              className="w-20 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+              title="Adjust horizontal X position of text/logo artwork"
+            />
+            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[32px] text-right">
+              {photoboothOffsetX > 0 ? `+${photoboothOffsetX}` : photoboothOffsetX}px
+            </span>
+          </div>
+
+          <div className="h-3.5 w-px bg-slate-200" />
+
           {/* Vertical Y-Position Slider */}
           <div className="flex items-center space-x-2">
             <ArrowUpDown className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
-            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Position:</span>
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Y Pos:</span>
             <input
               type="range"
               min="-200"
@@ -359,7 +384,7 @@ export function ArtboardCanvas() {
               value={photoboothOffsetY}
               onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
               className="w-20 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
-              title="Adjust vertical position of text/logo artwork"
+              title="Adjust vertical Y position of text/logo artwork"
             />
             <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[32px] text-right">
               {photoboothOffsetY > 0 ? `+${photoboothOffsetY}` : photoboothOffsetY}px
@@ -387,19 +412,20 @@ export function ArtboardCanvas() {
           </div>
 
           {/* Quick Reset Transform */}
-          {(photoboothOffsetY !== 0 || photoboothScale !== 100 || photoboothFlipH || photoboothFlipV) && (
+          {(photoboothOffsetX !== 0 || photoboothOffsetY !== 0 || photoboothScale !== 100 || photoboothFlipH || photoboothFlipV) && (
             <>
               <div className="h-3.5 w-px bg-slate-200" />
               <button
                 type="button"
                 onClick={() => {
+                  setPhotoboothOffsetX(0);
                   setPhotoboothOffsetY(0);
                   setPhotoboothScale(100);
                   setPhotoboothFlipH(false);
                   setPhotoboothFlipV(false);
                 }}
                 className="text-[10px] font-mono font-bold text-slate-400 hover:text-slate-700 uppercase flex items-center gap-1"
-                title="Reset position, scale, and flips to default"
+                title="Reset X, Y, scale, and flips to default"
               >
                 <RotateCcw className="w-2.5 h-2.5" />
                 <span>Reset</span>

@@ -96,8 +96,8 @@ export async function POST(req: NextRequest) {
     const mimeType = format === "jpeg" ? "image/jpeg" : "image/png";
     const ext = format === "jpeg" ? "jpg" : "png";
 
-    // Return Buffer directly — wrapping in Uint8Array can corrupt binary in some Next.js builds
-    return new NextResponse(processed.processedBuffer, {
+    // Return as Uint8Array — valid BodyInit, avoids Buffer type mismatch in Next.js
+    return new NextResponse(new Uint8Array(processed.processedBuffer), {
       headers: {
         "Content-Type": mimeType,
         "Content-Disposition": `attachment; filename="vowmark-wedding-asset.${ext}"`,

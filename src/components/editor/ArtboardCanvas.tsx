@@ -111,7 +111,7 @@ export function ArtboardCanvas() {
       ampersandScale,
       layout,
       colorMode: "black_on_white",
-      isTransparent: true, // Guarantees crisp text paths with NO white background box
+      isTransparent: true,
       canvasWidth: dimensions.width,
       canvasHeight: dimensions.height,
     }).svg;
@@ -282,7 +282,7 @@ export function ArtboardCanvas() {
 
       {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Non-Square Formats) */}
       {isNonSquare && (
-        <div className="absolute bottom-6 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-4 text-xs font-sans animate-fadeIn">
+        <div className="absolute bottom-6 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-3.5 text-xs font-sans animate-fadeIn">
           {/* 6x4 Mode Selector (1 Box vs 3 Boxes) */}
           {is6x4Format && photoboothMode && (
             <>
@@ -354,60 +354,107 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal X-Position Slider (-500 to +500) */}
-          <div className="flex items-center space-x-2">
+          {/* Horizontal X-Position Slider with Micro Steppers & Editable Number Box */}
+          <div className="flex items-center space-x-1.5">
             <MoveHorizontal className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
-            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">X Pos:</span>
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">X:</span>
+            <button
+              type="button"
+              onClick={() => setPhotoboothOffsetX(photoboothOffsetX - 2)}
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none"
+              title="Nudge left (-2px)"
+            >
+              -
+            </button>
             <input
               type="range"
-              min="-500"
-              max="500"
+              min="-400"
+              max="400"
+              step="1"
               value={photoboothOffsetX}
               onChange={(e) => setPhotoboothOffsetX(Number(e.target.value))}
               className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
-              title="Adjust horizontal X position of text/logo artwork"
+              title="Adjust horizontal X position"
             />
-            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[36px] text-right">
-              {photoboothOffsetX > 0 ? `+${photoboothOffsetX}` : photoboothOffsetX}px
-            </span>
+            <button
+              type="button"
+              onClick={() => setPhotoboothOffsetX(photoboothOffsetX + 2)}
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none"
+              title="Nudge right (+2px)"
+            >
+              +
+            </button>
+            <input
+              type="number"
+              min="-400"
+              max="400"
+              value={photoboothOffsetX}
+              onChange={(e) => setPhotoboothOffsetX(Number(e.target.value) || 0)}
+              className="w-12 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
+              title="Type exact X position"
+            />
           </div>
 
           <div className="h-3.5 w-px bg-slate-200" />
 
-          {/* Vertical Y-Position Slider (-500 to +500) */}
-          <div className="flex items-center space-x-2">
+          {/* Vertical Y-Position Slider with Micro Steppers & Editable Number Box */}
+          <div className="flex items-center space-x-1.5">
             <ArrowUpDown className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
-            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Y Pos:</span>
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Y:</span>
+            <button
+              type="button"
+              onClick={() => setPhotoboothOffsetY(photoboothOffsetY - 2)}
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none"
+              title="Nudge up (-2px)"
+            >
+              -
+            </button>
             <input
               type="range"
-              min="-500"
-              max="500"
+              min="-400"
+              max="400"
+              step="1"
               value={photoboothOffsetY}
               onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
               className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
-              title="Adjust vertical Y position of text/logo artwork"
+              title="Adjust vertical Y position"
             />
-            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[36px] text-right">
-              {photoboothOffsetY > 0 ? `+${photoboothOffsetY}` : photoboothOffsetY}px
-            </span>
+            <button
+              type="button"
+              onClick={() => setPhotoboothOffsetY(photoboothOffsetY + 2)}
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none"
+              title="Nudge down (+2px)"
+            >
+              +
+            </button>
+            <input
+              type="number"
+              min="-400"
+              max="400"
+              value={photoboothOffsetY}
+              onChange={(e) => setPhotoboothOffsetY(Number(e.target.value) || 0)}
+              className="w-12 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
+              title="Type exact Y position"
+            />
           </div>
 
           <div className="h-3.5 w-px bg-slate-200" />
 
           {/* Scale Slider */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5">
             <Maximize2 className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
-            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Scale:</span>
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Size:</span>
             <input
               type="range"
               min="40"
               max="160"
+              step="1"
               value={photoboothScale}
               onChange={(e) => setPhotoboothScale(Number(e.target.value))}
               className="w-16 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
-              title="Adjust scale of text/logo artwork"
+              title="Adjust scale percentage"
             />
-            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[32px] text-right">
+            <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[28px] text-right">
               {photoboothScale}%
             </span>
           </div>

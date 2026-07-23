@@ -20,6 +20,8 @@ import {
   Paperclip,
   Eye,
   EyeOff,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 function isImageGenerationTrigger(text: string): boolean {
@@ -45,6 +47,7 @@ function isImageGenerationTrigger(text: string): boolean {
 export function RightAiPanel() {
   const [inputMsg, setInputMsg] = useState("");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [isCompositionStackCollapsed, setIsCompositionStackCollapsed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const promptInputRef = useRef<HTMLInputElement>(null);
 
@@ -430,226 +433,248 @@ export function RightAiPanel() {
         </div>
 
         {/* 2-LAYER INDEPENDENT COMPOSITION WIDGET WITH BLENDING MODES & OPACITY SLIDERS */}
-        <div className="p-3.5 bg-stone-100/90 border-b border-vow-border space-y-3 font-sans">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
+        <div className="p-3 bg-stone-100/90 border-b border-vow-border font-sans transition-all">
+          <button
+            type="button"
+            onClick={() => setIsCompositionStackCollapsed(!isCompositionStackCollapsed)}
+            className="w-full flex items-center justify-between cursor-pointer select-none py-0.5 hover:opacity-85 transition-opacity"
+            title={isCompositionStackCollapsed ? "Expand 2-Layer Composition Stack" : "Collapse Composition Stack (Enlarge Chat Box)"}
+          >
+            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-vow-accent" />
               <span>2-Layer Composition Stack</span>
+              {isCompositionStackCollapsed && (
+                <span className="text-[9px] font-normal text-stone-500 font-mono lowercase">
+                  (collapsed)
+                </span>
+              )}
             </span>
-          </div>
-
-          {/* Multi-Format Aspect Ratio Suite Controls */}
-          <div className="p-2 bg-white border border-stone-200 rounded-lg space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-vow-dark flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-vow-accent" />
-                <span>Multi-Format Suite (All Aspect Ratios)</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => setMultiFormatSuiteEnabled(!multiFormatSuiteEnabled)}
-                className={`px-1.5 py-0.5 rounded text-[8px] font-bold border transition-all cursor-pointer ${
-                  multiFormatSuiteEnabled
-                    ? "bg-emerald-50 border-emerald-300 text-emerald-800"
-                    : "bg-stone-100 border-stone-300 text-stone-500"
-                }`}
-                title="Toggle simultaneous generation across all 4 aspect ratios (2x6, 4x6, 6x4, 1:1)"
-              >
-                {multiFormatSuiteEnabled ? "ON (4 Ratios)" : "OFF (Single)"}
-              </button>
+            <div className="flex items-center gap-1 text-[10px] font-bold text-vow-dark px-2 py-0.5 rounded bg-white border border-stone-200 shadow-2xs hover:bg-stone-50 transition-colors">
+              <span>{isCompositionStackCollapsed ? "Expand" : "Collapse"}</span>
+              {isCompositionStackCollapsed ? (
+                <ChevronDown className="w-3.5 h-3.5 text-vow-accent" />
+              ) : (
+                <ChevronUp className="w-3.5 h-3.5 text-vow-accent" />
+              )}
             </div>
+          </button>
 
-            {backgroundSuite && (
-              <div className="grid grid-cols-4 gap-1 pt-1">
-                {(["2_x_6", "4_x_6", "6_x_4", "square"] as CanvasFormat[]).map((fmt) => {
-                  const url = backgroundSuite[fmt];
-                  const isActive = canvasFormat === fmt;
-                  const label = fmt === "2_x_6" ? "2x6" : fmt === "4_x_6" ? "4x6" : fmt === "6_x_4" ? "6x4" : "1:1";
-                  return (
-                    <button
-                      key={fmt}
-                      type="button"
-                      onClick={() => setCanvasFormat(fmt)}
-                      className={`relative rounded border overflow-hidden text-center transition-all cursor-pointer p-0.5 ${
-                        isActive ? "border-vow-dark ring-1 ring-vow-dark bg-amber-50" : "border-stone-200 hover:border-stone-400 bg-stone-50"
-                      }`}
-                      title={`Switch to ${label} aspect ratio`}
-                    >
-                      <div className="h-8 w-full bg-stone-100 rounded overflow-hidden flex items-center justify-center relative">
-                        {url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={url} alt={label} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-[8px] text-stone-400 font-mono">None</span>
-                        )}
-                        {isActive && (
-                          <div className="absolute inset-0 bg-vow-dark/20 flex items-center justify-center">
-                            <span className="text-[7px] font-black text-white bg-vow-dark px-1 rounded uppercase">Active</span>
+          {!isCompositionStackCollapsed && (
+            <div className="space-y-3 pt-3">
+              {/* Multi-Format Aspect Ratio Suite Controls */}
+              <div className="p-2 bg-white border border-stone-200 rounded-lg space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-vow-dark flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-vow-accent" />
+                    <span>Multi-Format Suite (All Aspect Ratios)</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setMultiFormatSuiteEnabled(!multiFormatSuiteEnabled)}
+                    className={`px-1.5 py-0.5 rounded text-[8px] font-bold border transition-all cursor-pointer ${
+                      multiFormatSuiteEnabled
+                        ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                        : "bg-stone-100 border-stone-300 text-stone-500"
+                    }`}
+                    title="Toggle simultaneous generation across all 4 aspect ratios (2x6, 4x6, 6x4, 1:1)"
+                  >
+                    {multiFormatSuiteEnabled ? "ON (4 Ratios)" : "OFF (Single)"}
+                  </button>
+                </div>
+
+                {backgroundSuite && (
+                  <div className="grid grid-cols-4 gap-1 pt-1">
+                    {(["2_x_6", "4_x_6", "6_x_4", "square"] as CanvasFormat[]).map((fmt) => {
+                      const url = backgroundSuite[fmt];
+                      const isActive = canvasFormat === fmt;
+                      const label = fmt === "2_x_6" ? "2x6" : fmt === "4_x_6" ? "4x6" : fmt === "6_x_4" ? "6x4" : "1:1";
+                      return (
+                        <button
+                          key={fmt}
+                          type="button"
+                          onClick={() => setCanvasFormat(fmt)}
+                          className={`relative rounded border overflow-hidden text-center transition-all cursor-pointer p-0.5 ${
+                            isActive ? "border-vow-dark ring-1 ring-vow-dark bg-amber-50" : "border-stone-200 hover:border-stone-400 bg-stone-50"
+                          }`}
+                          title={`Switch to ${label} aspect ratio`}
+                        >
+                          <div className="h-8 w-full bg-stone-100 rounded overflow-hidden flex items-center justify-center relative">
+                            {url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={url} alt={label} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-[8px] text-stone-400 font-mono">None</span>
+                            )}
+                            {isActive && (
+                              <div className="absolute inset-0 bg-vow-dark/20 flex items-center justify-center">
+                                <span className="text-[7px] font-black text-white bg-vow-dark px-1 rounded uppercase">Active</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                      <span className="text-[8px] font-bold font-mono text-stone-700 block mt-0.5 uppercase">{label}</span>
-                    </button>
-                  );
-                })}
+                          <span className="text-[8px] font-bold font-mono text-stone-700 block mt-0.5 uppercase">{label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            {/* Layer 1: Background */}
-            <div className={`p-2 rounded border transition-all ${
-              backgroundPatternAssetUrl ? "bg-white border-stone-300 shadow-2xs" : "bg-stone-50 border-dashed border-stone-300"
-            } ${!layer1Visible ? "opacity-60" : ""}`}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-stone-600">Layer 1: Background</span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setLayer1Visible(!layer1Visible)}
-                    className={`p-0.5 transition-colors cursor-pointer ${
-                      layer1Visible ? "text-stone-600 hover:text-vow-dark" : "text-stone-400 hover:text-stone-600"
-                    }`}
-                    title={layer1Visible ? "Hide Layer 1 Background" : "Show Layer 1 Background"}
-                  >
-                    {layer1Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-stone-400" />}
-                  </button>
-                  {backgroundPatternAssetUrl && (
-                    <button
-                      type="button"
-                      onClick={() => setBackgroundPatternAssetUrl(null)}
-                      className="text-stone-400 hover:text-rose-600 p-0.5 cursor-pointer"
-                      title="Clear Background Layer"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  )}
+              <div className="grid grid-cols-2 gap-2">
+                {/* Layer 1: Background */}
+                <div className={`p-2 rounded border transition-all ${
+                  backgroundPatternAssetUrl ? "bg-white border-stone-300 shadow-2xs" : "bg-stone-50 border-dashed border-stone-300"
+                } ${!layer1Visible ? "opacity-60" : ""}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-stone-600">Layer 1: Background</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setLayer1Visible(!layer1Visible)}
+                        className={`p-0.5 transition-colors cursor-pointer ${
+                          layer1Visible ? "text-stone-600 hover:text-vow-dark" : "text-stone-400 hover:text-stone-600"
+                        }`}
+                        title={layer1Visible ? "Hide Layer 1 Background" : "Show Layer 1 Background"}
+                      >
+                        {layer1Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-stone-400" />}
+                      </button>
+                      {backgroundPatternAssetUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setBackgroundPatternAssetUrl(null)}
+                          className="text-stone-400 hover:text-rose-600 p-0.5 cursor-pointer"
+                          title="Clear Background Layer"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="h-10 rounded overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200 relative">
+                    {backgroundPatternAssetUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={backgroundPatternAssetUrl} alt="Background Layer" className={`w-full h-full object-cover ${!layer1Visible ? "opacity-30 grayscale" : ""}`} />
+                    ) : (
+                      <span className="text-[9px] text-stone-400 italic">Pure White</span>
+                    )}
+                    {!layer1Visible && (
+                      <span className="absolute text-[9px] font-bold text-stone-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="h-10 rounded overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200 relative">
-                {backgroundPatternAssetUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={backgroundPatternAssetUrl} alt="Background Layer" className={`w-full h-full object-cover ${!layer1Visible ? "opacity-30 grayscale" : ""}`} />
-                ) : (
-                  <span className="text-[9px] text-stone-400 italic">Pure White</span>
-                )}
-                {!layer1Visible && (
-                  <span className="absolute text-[9px] font-bold text-stone-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
-                )}
-              </div>
-            </div>
 
-            {/* Layer 2: Text / Logo */}
-            <div className={`p-2 rounded border transition-all ${
-              textLogoAssetUrl ? "bg-white border-stone-300 shadow-2xs" : "bg-stone-50 border-dashed border-stone-300"
-            } ${!layer2Visible ? "opacity-60" : ""}`}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-stone-600">Layer 2: Text &amp; Logo</span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setLayer2Visible(!layer2Visible)}
-                    className={`p-0.5 transition-colors cursor-pointer ${
-                      layer2Visible ? "text-stone-600 hover:text-vow-dark" : "text-stone-400 hover:text-stone-600"
-                    }`}
-                    title={layer2Visible ? "Hide Layer 2 Text & Monogram" : "Show Layer 2 Text & Monogram"}
-                  >
-                    {layer2Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-stone-400" />}
-                  </button>
-                  {textLogoAssetUrl && (
-                    <button
-                      type="button"
-                      onClick={() => setTextLogoAssetUrl(null)}
-                      className="text-stone-400 hover:text-rose-600 p-0.5 cursor-pointer"
-                      title="Clear Text & Monogram Layer"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="h-10 rounded overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200 relative">
-                {textLogoAssetUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={textLogoAssetUrl} alt="Text Logo Layer" className={`w-full h-full object-contain p-0.5 ${!layer2Visible ? "opacity-30 grayscale" : ""}`} />
-                ) : (
-                  <span className={`text-[9px] text-stone-400 italic ${!layer2Visible ? "opacity-50" : ""}`}>Vector Engine Overlay</span>
-                )}
-                {!layer2Visible && (
-                  <span className="absolute text-[9px] font-bold text-stone-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Layer 1 Background Opacity Slider & Layer 2 Blend Mode Controls */}
-          <div className="space-y-2 pt-1 font-sans text-[10px]">
-            {/* Layer 1 Background Opacity Slider */}
-            <div className="flex items-center justify-between">
-              <span className="font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1">
-                <ImageIcon className="w-3 h-3 text-vow-accent" />
-                Layer 1 Opacity:
-              </span>
-              <div className="flex items-center space-x-1.5 bg-stone-200/60 px-2 py-0.5 rounded-md border border-stone-300/70">
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="1"
-                  value={backgroundLayerOpacity}
-                  onChange={(e) => setBackgroundLayerOpacity(Number(e.target.value))}
-                  className="w-20 accent-vow-dark cursor-pointer h-1 bg-stone-300 rounded"
-                  title="Adjust Layer 1 Background Opacity"
-                />
-                <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[28px] text-right">
-                  {backgroundLayerOpacity}%
-                </span>
-              </div>
-            </div>
-
-            {/* Layer 2 Blend Mode Selector & Opacity */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1">
-                <span className="font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1">
-                  <Blend className="w-3 h-3 text-vow-accent" />
-                  L2 Blend:
-                </span>
-                <div className="flex space-x-0.5 bg-stone-200/80 p-0.5 rounded-md border border-stone-300">
-                  {(["normal", "multiply", "overlay"] as const).map((mode) => (
-                    <button
-                      key={mode}
-                      type="button"
-                      onClick={() => setTextLayerBlendMode(mode)}
-                      className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all cursor-pointer ${
-                        textLayerBlendMode === mode
-                          ? "bg-vow-dark text-white shadow-2xs font-extrabold"
-                          : "text-stone-600 hover:text-stone-900"
-                      }`}
-                    >
-                      {mode}
-                    </button>
-                  ))}
+                {/* Layer 2: Text / Logo */}
+                <div className={`p-2 rounded border transition-all ${
+                  textLogoAssetUrl ? "bg-white border-stone-300 shadow-2xs" : "bg-stone-50 border-dashed border-stone-300"
+                } ${!layer2Visible ? "opacity-60" : ""}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-stone-600">Layer 2: Text &amp; Logo</span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setLayer2Visible(!layer2Visible)}
+                        className={`p-0.5 transition-colors cursor-pointer ${
+                          layer2Visible ? "text-stone-600 hover:text-vow-dark" : "text-stone-400 hover:text-stone-600"
+                        }`}
+                        title={layer2Visible ? "Hide Layer 2 Text & Monogram" : "Show Layer 2 Text & Monogram"}
+                      >
+                        {layer2Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-stone-400" />}
+                      </button>
+                      {textLogoAssetUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setTextLogoAssetUrl(null)}
+                          className="text-stone-400 hover:text-rose-600 p-0.5 cursor-pointer"
+                          title="Clear Text & Monogram Layer"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="h-10 rounded overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200 relative">
+                    {textLogoAssetUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={textLogoAssetUrl} alt="Text Logo Layer" className={`w-full h-full object-contain p-0.5 ${!layer2Visible ? "opacity-30 grayscale" : ""}`} />
+                    ) : (
+                      <span className={`text-[9px] text-stone-400 italic ${!layer2Visible ? "opacity-50" : ""}`}>Vector Engine Overlay</span>
+                    )}
+                    {!layer2Visible && (
+                      <span className="absolute text-[9px] font-bold text-stone-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-1.5 bg-stone-200/60 px-2 py-0.5 rounded-md border border-stone-300/70">
-                <span className="text-[9px] font-mono text-stone-500 font-bold uppercase">L2 Op:</span>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="1"
-                  value={textLayerOpacity}
-                  onChange={(e) => setTextLayerOpacity(Number(e.target.value))}
-                  className="w-14 accent-vow-dark cursor-pointer h-1 bg-stone-300 rounded"
-                  title="Adjust Layer 2 Text Opacity"
-                />
-                <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[24px] text-right">
-                  {textLayerOpacity}%
-                </span>
+              {/* Layer 1 Background Opacity Slider & Layer 2 Blend Mode Controls */}
+              <div className="space-y-2 pt-1 font-sans text-[10px]">
+                {/* Layer 1 Background Opacity Slider */}
+                <div className="flex items-center justify-between">
+                  <span className="font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1">
+                    <ImageIcon className="w-3 h-3 text-vow-accent" />
+                    Layer 1 Opacity:
+                  </span>
+                  <div className="flex items-center space-x-1.5 bg-stone-200/60 px-2 py-0.5 rounded-md border border-stone-300/70">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={backgroundLayerOpacity}
+                      onChange={(e) => setBackgroundLayerOpacity(Number(e.target.value))}
+                      className="w-20 accent-vow-dark cursor-pointer h-1 bg-stone-300 rounded"
+                      title="Adjust Layer 1 Background Opacity"
+                    />
+                    <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[28px] text-right">
+                      {backgroundLayerOpacity}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Layer 2 Blend Mode Selector & Opacity */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-1">
+                    <span className="font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1">
+                      <Blend className="w-3 h-3 text-vow-accent" />
+                      L2 Blend:
+                    </span>
+                    <div className="flex space-x-0.5 bg-stone-200/80 p-0.5 rounded-md border border-stone-300">
+                      {(["normal", "multiply", "overlay"] as const).map((mode) => (
+                        <button
+                          key={mode}
+                          type="button"
+                          onClick={() => setTextLayerBlendMode(mode)}
+                          className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all cursor-pointer ${
+                            textLayerBlendMode === mode
+                              ? "bg-vow-dark text-white shadow-2xs font-extrabold"
+                              : "text-stone-600 hover:text-stone-900"
+                          }`}
+                        >
+                          {mode}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-1.5 bg-stone-200/60 px-2 py-0.5 rounded-md border border-stone-300/70">
+                    <span className="text-[9px] font-mono text-stone-500 font-bold uppercase">L2 Op:</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={textLayerOpacity}
+                      onChange={(e) => setTextLayerOpacity(Number(e.target.value))}
+                      className="w-14 accent-vow-dark cursor-pointer h-1 bg-stone-300 rounded"
+                      title="Adjust Layer 2 Text Opacity"
+                    />
+                    <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[24px] text-right">
+                      {textLayerOpacity}%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Chat Messages Container */}

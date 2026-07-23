@@ -21,6 +21,39 @@ export const DEFAULT_PROMPT_GUIDANCE: PromptGuidanceConfig = {
     "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO NAMES, NO LOGOS, NO MONOGRAMS, NO INITIALS. Pure background graphic artwork, no paper texture mockup, no 3D rendering, crisp high-resolution production art.",
 };
 
+export function getAspectRatioInstruction(canvasFormat?: string): {
+  promptInstruction: string;
+  recommendedSize: "1024x1024" | "1024x1792" | "1792x1024";
+} {
+  switch (canvasFormat) {
+    case "2_x_6":
+      return {
+        promptInstruction:
+          "Target Canvas Format: 2x6 tall photo strip (1:3 vertical aspect ratio). Composition: Stack elements vertically in a tall, narrow photo strip format with top and bottom decorative borders.",
+        recommendedSize: "1024x1792",
+      };
+    case "4_x_6":
+      return {
+        promptInstruction:
+          "Target Canvas Format: 4x6 vertical invitation card (2:3 portrait aspect ratio). Composition: Balanced vertical portrait layout centered for a classic 4x6 invitation.",
+        recommendedSize: "1024x1792",
+      };
+    case "6_x_4":
+      return {
+        promptInstruction:
+          "Target Canvas Format: 6x4 horizontal card (3:2 landscape aspect ratio). Composition: Wide horizontal landscape layout with side-by-side elements tailored for a 6x4 landscape card.",
+        recommendedSize: "1792x1024",
+      };
+    case "square":
+    default:
+      return {
+        promptInstruction:
+          "Target Canvas Format: Square 1:1 aspect ratio. Composition: Symmetrical, centered 1:1 square canvas layout.",
+        recommendedSize: "1024x1024",
+      };
+  }
+}
+
 export function applyUniversalPromptAid(
   rawPrompt: string,
   generationType: AiGenerationType = "text_logo",
@@ -41,20 +74,26 @@ export function compileGenerationPrompt(
   options?: {
     generationType?: AiGenerationType;
     guidanceConfig?: Partial<PromptGuidanceConfig>;
+    canvasFormat?: string;
   }
 ): {
   prompt: string;
   negativePrompt: string[];
+  recommendedSize: "1024x1024" | "1024x1792" | "1792x1024";
+  aspectRatioInstruction: string;
 } {
   const genType =
     options?.generationType ||
     (brief.assetType?.includes("background") ? "background_pattern" : "text_logo");
   const guidance = options?.guidanceConfig;
+  const targetFormat = options?.canvasFormat || brief.canvasFormat || "square";
+  const aspectRatioInfo = getAspectRatioInstruction(targetFormat);
   const styleDef = getStyleDefinition(brief.weddingStyle);
 
   if (genType === "background_pattern") {
     const rawPrompt = [
       "Create a luxury wedding stationery background asset.",
+      aspectRatioInfo.promptInstruction,
       "Incorporate botanical florals, filigree borders, and subtle stationery framing.",
       `Style aesthetic: ${styleDef.name}.`,
       "Composition: balanced, elegant, seamless background pattern without central text.",
@@ -87,6 +126,8 @@ export function compileGenerationPrompt(
     return {
       prompt: finalPrompt,
       negativePrompt: negativePrompts,
+      recommendedSize: aspectRatioInfo.recommendedSize,
+      aspectRatioInstruction: aspectRatioInfo.promptInstruction,
     };
   }
 
@@ -122,6 +163,7 @@ export function compileGenerationPrompt(
 
   const rawPrompt = [
     assetInstruction,
+    aspectRatioInfo.promptInstruction,
     fontStyleClause,
     layoutInstruction,
     `Style aesthetic: ${styleDef.name}.`,
@@ -150,5 +192,7 @@ export function compileGenerationPrompt(
   return {
     prompt: finalPrompt,
     negativePrompt: combinedNegativePrompts,
+    recommendedSize: aspectRatioInfo.recommendedSize,
+    aspectRatioInstruction: aspectRatioInfo.promptInstruction,
   };
 }

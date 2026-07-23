@@ -85,6 +85,9 @@ export const DesignBriefSchema = z.object({
   ]),
   outputMode: z.enum(["ai", "vector", "hybrid"]).default("hybrid"),
   aspectRatio: z.enum(["1:1", "4:3", "3:4", "16:9"]).default("1:1"),
+  canvasFormat: z.string().optional(),
+  generationType: z.string().optional(),
+  guidanceConfig: z.any().optional(),
   recommendedFonts: z.array(z.string()).default([]),
   productionNotes: z.array(z.string()).default([]),
 });

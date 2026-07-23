@@ -16,6 +16,7 @@ export function PromptGuidanceModal() {
   const setPromptGuidanceConfig = useEditorStore((state) => state.setPromptGuidanceConfig);
 
   const brief = useEditorStore((state) => state.brief);
+  const canvasFormat = useEditorStore((state) => state.canvasFormat);
 
   const [activeTab, setActiveTab] = useState<"text" | "background" | "compiler">("text");
 
@@ -56,6 +57,7 @@ export function PromptGuidanceModal() {
     { ...brief, generationPrompt: testUserPrompt },
     {
       generationType: aiGenerationType,
+      canvasFormat: canvasFormat,
       guidanceConfig: {
         textLogoPrefix: textPrefix,
         textLogoSuffix: textSuffix,
@@ -280,6 +282,18 @@ export function PromptGuidanceModal() {
                     </span>
                   ))}
                 </div>
+              </div>
+
+              <div className="p-3 bg-amber-50/90 border border-amber-200 rounded-lg space-y-1">
+                <div className="flex items-center justify-between text-[10px] font-bold text-amber-950 uppercase tracking-wider">
+                  <span>Aspect Ratio Prompt Guidance Layer ({canvasFormat})</span>
+                  <span className="font-mono text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
+                    Target API Size: {compiledTest.recommendedSize}
+                  </span>
+                </div>
+                <p className="text-[11px] text-amber-900 font-mono leading-relaxed">
+                  {compiledTest.aspectRatioInstruction}
+                </p>
               </div>
             </div>
           )}

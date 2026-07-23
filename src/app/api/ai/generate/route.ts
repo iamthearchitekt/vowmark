@@ -5,7 +5,7 @@ import { compileGenerationPrompt } from "@/lib/ai/prompt-compiler";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { brief, action } = body;
+    const { brief } = body;
 
     if (!brief) {
       return NextResponse.json({ error: "Missing design brief" }, { status: 400 });
@@ -14,19 +14,22 @@ export async function POST(req: NextRequest) {
     const compiled = compileGenerationPrompt(brief, {
       generationType: brief.generationType,
       guidanceConfig: brief.guidanceConfig,
+      canvasFormat: brief.canvasFormat || body.canvasFormat,
     });
     const userPrompt = compiled.prompt;
 
-    // Trigger OpenAI Image Generation with Universal Prompt Aids
+    // Trigger OpenAI Image Generation with Aspect Ratio Size Matching
     const result = await openAIImageProvider.generateImage({
       prompt: userPrompt,
       quality: "medium",
-      size: "1536x1024",
+      size: compiled.recommendedSize || "1024x1024",
     });
 
     return NextResponse.json({
       compiledPrompt: compiled.prompt,
       negativePrompt: compiled.negativePrompt,
+      recommendedSize: compiled.recommendedSize,
+      aspectRatioInstruction: compiled.aspectRatioInstruction,
       result,
     });
   } catch (err: any) {

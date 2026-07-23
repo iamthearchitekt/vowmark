@@ -29,6 +29,7 @@ export function RightAiPanel() {
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
 
   const aiGenerationType = useEditorStore((state) => state.aiGenerationType);
+  const canvasFormat = useEditorStore((state) => state.canvasFormat);
   const setAiGenerationType = useEditorStore((state) => state.setAiGenerationType);
   const promptGuidanceConfig = useEditorStore((state) => state.promptGuidanceConfig);
   const setIsPromptGuidanceModalOpen = useEditorStore((state) => state.setIsPromptGuidanceModalOpen);
@@ -119,6 +120,7 @@ export function RightAiPanel() {
       ...updatedBriefData,
       generationPrompt: textToSend,
       generationType: aiGenerationType,
+      canvasFormat: canvasFormat,
       guidanceConfig: promptGuidanceConfig,
       referenceImages: referenceImages.map((img) => ({ url: img.url, tag: img.tag })),
     };

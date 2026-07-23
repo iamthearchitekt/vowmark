@@ -166,7 +166,7 @@ const defaultTypography: TypographyOptions = {
   ampersandScale: 0.6,
   ampersandOffsetY: 0,
   colorMode: "black_on_white",
-  textColor: "#0F172A",
+  textColor: "#000000",
 };
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -188,7 +188,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   vectorOverlayEnabled: true,     // Vector text overlay on top of AI backgrounds enabled by default
 
   // Universal Vector Text Color default
-  textColor: "#0F172A",
+  textColor: "#000000",
 
   aiPrompt: "",
 
@@ -325,7 +325,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     set({
       brief: defaultBrief,
       typographyOptions: defaultTypography,
-      textColor: "#0F172A",
+      textColor: "#000000",
       aiGeneratedAssetUrl: null,
       backgroundPatternAssetUrl: null,
       backgroundLayerOpacity: 100,

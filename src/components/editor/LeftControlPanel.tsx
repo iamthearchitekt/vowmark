@@ -23,7 +23,7 @@ export function LeftControlPanel() {
 
   const studioMode = useEditorStore((state) => state.studioMode);
   const setStudioMode = useEditorStore((state) => state.setStudioMode);
-  const textColor = useEditorStore((state) => state.textColor || "#0F172A");
+  const textColor = useEditorStore((state) => state.textColor || "#000000");
   const setTextColor = useEditorStore((state) => state.setTextColor);
 
   // Subscribe to scalar primitive values
@@ -451,7 +451,7 @@ export function LeftControlPanel() {
                 value={textColor}
                 onChange={(e) => setTextColor(e.target.value)}
                 className="w-22 bg-slate-50 border border-slate-300 rounded px-2 py-1 font-mono text-xs font-bold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none uppercase"
-                placeholder="#0F172A"
+                placeholder="#000000"
               />
             </div>
 

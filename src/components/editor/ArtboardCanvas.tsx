@@ -29,7 +29,7 @@ export function ArtboardCanvas() {
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const textLayerOpacity = useEditorStore((state) => state.textLayerOpacity ?? 100);
   const layer2Visible = useEditorStore((state) => state.layer2Visible ?? true);
-  const textColor = useEditorStore((state) => state.textColor || "#0F172A");
+  const textColor = useEditorStore((state) => state.textColor || "#000000");
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
 
   const photoboothMode = useEditorStore((state) => state.photoboothMode);

@@ -46,7 +46,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
   const studioMode          = useEditorStore((s) => s.studioMode);
   const canvasFormat        = useEditorStore((s) => s.canvasFormat);
   const typographyOptions   = useEditorStore((s) => s.typographyOptions);
-  const textColor           = useEditorStore((s) => s.textColor || "#0F172A");
+  const textColor           = useEditorStore((s) => s.textColor || "#000000");
   const textLayerBlendMode  = useEditorStore((s) => s.textLayerBlendMode);
   const textLayerOpacity    = useEditorStore((s) => s.textLayerOpacity ?? 100);
   const backgroundPatternAssetUrl = useEditorStore((s) => s.backgroundPatternAssetUrl);
@@ -109,33 +109,18 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
       const isNonSquare     = canvasFormat !== "square";
       const makeTransparent = resolvedFormat === "transparent_png";
 
-      // ── SVG Export ───────────────────────────────────────────────────────────
+      // ── SVG Export (Pure Vector Path Output for Illustrator & Print) ───────
       if (resolvedFormat === "svg") {
-        if (activeLayer2ImageUrl && studioMode === "generative_ai") {
-          // AI image: wrap in an SVG container at correct dimensions
-          const { width, height } = printDims;
-          const svgWrap = [
-            `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"`,
-            `  width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
-            `  <image href="${activeLayer2ImageUrl}"`,
-            `    x="0" y="0" width="${width}" height="${height}"`,
-            `    preserveAspectRatio="xMidYMid meet"/>`,
-            `</svg>`,
-          ].join("\n");
-          downloadSVG(svgWrap, `vowmark-${slug}.svg`);
-        } else {
-          // Vector typography mode: render SVG at print resolution
-          const dims = getFormatDimensions(canvasFormat);
-          const { svg } = TypographyEngine.renderSvg({
-            ...typographyOptions,
-            colorMode: "custom",
-            textColor,
-            isTransparent: true,
-            canvasWidth:  dims.width,
-            canvasHeight: dims.height,
-          });
-          downloadSVG(svg, `vowmark-${slug}.svg`);
-        }
+        const dims = getFormatDimensions(canvasFormat);
+        const { svg } = TypographyEngine.renderSvg({
+          ...typographyOptions,
+          colorMode: "custom",
+          textColor,
+          isTransparent: true,
+          canvasWidth:  dims.width,
+          canvasHeight: dims.height,
+        });
+        downloadSVG(svg, `vowmark-${slug}.svg`);
         setExportSuccess(true);
         return;
       }

@@ -48,11 +48,11 @@ export class TypographyEngine {
     const centerX = width / 2;
     const centerY = height / 2;
 
-    let fill = options.textColor || "#0F172A";
+    let fill = options.textColor || "#000000";
     let bgFill = "transparent"; // Default to transparent so no giant white rect box is drawn
 
     if (options.colorMode === "black_on_white") {
-      fill = "#0F172A";
+      fill = "#000000";
     } else if (options.colorMode === "white_on_black") {
       fill = "#FFFFFF";
     } else if (options.colorMode === "champagne_on_paper") {
@@ -115,7 +115,7 @@ export class TypographyEngine {
     );
 
     const fontImportTag = fontUrls.length > 0
-      ? `<defs><style>${fontUrls.map((u) => `@import url('${u}');`).join("\n")}</style></defs>`
+      ? `<defs>\n    <style type="text/css"><![CDATA[\n      ${fontUrls.map((u) => `@import url('${u}');`).join("\n      ")}\n    ]]></style>\n  </defs>`
       : "";
 
     let elementsSvg = "";
@@ -194,7 +194,7 @@ export class TypographyEngine {
         `;
       }
     } else {
-      const comboText = ampText ? `${pText} &amp; ${sText}` : `${pText} ${sText}`;
+      const comboText = ampText ? `${pText} ${ampText} ${sText}` : `${pText} ${sText}`;
       elementsSvg = `
         <text x="${centerX}" y="${centerY}" font-family="${mainFontConfig.cssFontFamily}" font-size="${pFontSize}" font-weight="${fontWeight}" font-style="${isItalic}" letter-spacing="${letterSpacing}" fill="${fill}" opacity="${textOpacity}" text-anchor="middle" dominant-baseline="middle">${escapeXml(comboText)}</text>
       `;
@@ -202,7 +202,8 @@ export class TypographyEngine {
 
     const bgRect = bgFill !== "transparent" ? `<rect width="${width}" height="${height}" fill="${bgFill}" />` : "";
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+    const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
   ${fontImportTag}
   ${bgRect}
   <g id="vowmark-typography-layer">

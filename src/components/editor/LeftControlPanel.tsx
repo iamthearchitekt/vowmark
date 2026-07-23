@@ -68,16 +68,39 @@ export function LeftControlPanel() {
             }
             setManualCollapsed(false);
           }}
-          className="p-2 bg-vow-dark text-vow-paper rounded-lg hover:bg-black transition-all shadow-sm"
-          title="Expand Control Panel (Switch to Vector Mode)"
+          className="p-2 bg-vow-dark text-vow-paper rounded-lg hover:bg-black transition-all shadow-sm group"
+          title="Open Vector Typography Controls"
         >
-          <ChevronRight className="w-4 h-4 text-vow-accent" />
+          <ChevronRight className="w-4 h-4 text-vow-accent group-hover:scale-110 transition-transform" />
         </button>
 
-        <div className="flex-1 flex flex-col items-center justify-center space-y-6 text-vow-muted">
-          <div className="writing-mode-vertical rotate-180 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">
-            {isGenerativeAi ? "AI Generator Mode" : "Vector Studio Mode"}
-          </div>
+        <div className="flex-1 flex flex-col items-center space-y-3 pt-2 text-vow-muted">
+          <button
+            type="button"
+            onClick={() => {
+              if (isGenerativeAi) {
+                setStudioMode("deterministic_vector");
+              }
+              setManualCollapsed(false);
+            }}
+            className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-vow-dark transition-colors"
+            title="Open Vector Typography & Inputs"
+          >
+            <Type className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (isGenerativeAi) {
+                setStudioMode("deterministic_vector");
+              }
+              setManualCollapsed(false);
+            }}
+            className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-vow-dark transition-colors"
+            title="Open Layout & Canvas Controls"
+          >
+            <Layout className="w-4 h-4" />
+          </button>
         </div>
       </div>
     );

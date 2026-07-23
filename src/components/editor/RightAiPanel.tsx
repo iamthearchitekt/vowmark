@@ -137,21 +137,6 @@ export function RightAiPanel() {
       guidanceConfig: promptGuidanceConfig,
     };
 
-    if (
-      aiGenerationType === "text_logo" &&
-      intent.primaryText &&
-      intent.primaryText.length <= 15 &&
-      intent.secondaryText &&
-      intent.secondaryText.length <= 15
-    ) {
-      updatedBriefData.primaryText = intent.primaryText;
-      updatedBriefData.secondaryText = intent.secondaryText;
-      setTypographyOptions({
-        primaryText: intent.primaryText,
-        secondaryText: intent.secondaryText,
-      });
-    }
-
     if (intent.assetType) {
       updatedBriefData.assetType = intent.assetType;
     }

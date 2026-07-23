@@ -40,11 +40,14 @@ export interface EditorState {
   // Canvas Format Mode: 2x6, 4x6, 6x4, or basic square mode
   canvasFormat: CanvasFormat;
 
-  // Photobooth & Non-Square Strip Vertical Readjustment Feature
+  // Photobooth & Non-Square Strip Frame System
   photoboothMode: boolean;
-  photoboothFrameUrl: string | null; // Default /photobooth-2x6-frame.png
-  photoboothOffsetY: number;         // Vertical adjustment in px (-200 to +200) for text/logos on non-square formats
-  photoboothScale: number;           // Scale adjustment in percent (40 to 160) for text/logos on non-square formats
+  photoboothMode6x4: "mode1" | "mode2"; // Horizontal 6x4 Mode 1 vs Mode 2
+  photoboothFlipH: boolean;            // Flip frame horizontally (scaleX -1)
+  photoboothFlipV: boolean;            // Flip frame vertically (scaleY -1)
+  photoboothFrameUrl: string | null;   // Custom PNG frame override
+  photoboothOffsetY: number;           // Vertical adjustment in px (-200 to +200) for text/logos
+  photoboothScale: number;             // Scale adjustment in percent (40 to 160) for text/logos
 
   brief: DesignBrief;
   typographyOptions: TypographyOptions;
@@ -72,6 +75,9 @@ export interface EditorState {
   setIsPromptGuidanceModalOpen: (open: boolean) => void;
   setCanvasFormat: (format: CanvasFormat) => void;
   setPhotoboothMode: (enabled: boolean) => void;
+  setPhotoboothMode6x4: (mode: "mode1" | "mode2") => void;
+  setPhotoboothFlipH: (flip: boolean) => void;
+  setPhotoboothFlipV: (flip: boolean) => void;
   setPhotoboothFrameUrl: (url: string | null) => void;
   setPhotoboothOffsetY: (offset: number) => void;
   setPhotoboothScale: (scale: number) => void;
@@ -172,6 +178,9 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   // Photobooth strip mode & vertical adjustment defaults
   photoboothMode: true,
+  photoboothMode6x4: "mode1",
+  photoboothFlipH: false,
+  photoboothFlipV: false,
   photoboothFrameUrl: null,
   photoboothOffsetY: 0,
   photoboothScale: 100,
@@ -214,6 +223,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     const dims = getFormatDimensions(format);
     set((state) => ({
       canvasFormat: format,
+      photoboothMode: format !== "square",
       typographyOptions: {
         ...state.typographyOptions,
         canvasWidth: dims.width,
@@ -223,6 +233,9 @@ export const useEditorStore = create<EditorState>((set) => ({
   },
 
   setPhotoboothMode: (enabled) => set({ photoboothMode: enabled }),
+  setPhotoboothMode6x4: (mode) => set({ photoboothMode6x4: mode }),
+  setPhotoboothFlipH: (flip) => set({ photoboothFlipH: flip }),
+  setPhotoboothFlipV: (flip) => set({ photoboothFlipV: flip }),
   setPhotoboothFrameUrl: (url) => set({ photoboothFrameUrl: url }),
   setPhotoboothOffsetY: (offset) => set({ photoboothOffsetY: offset }),
   setPhotoboothScale: (scale) => set({ photoboothScale: scale }),
@@ -279,6 +292,9 @@ export const useEditorStore = create<EditorState>((set) => ({
       ornamentUrl: null,
       referenceImages: [],
       photoboothMode: true,
+      photoboothMode6x4: "mode1",
+      photoboothFlipH: false,
+      photoboothFlipV: false,
       photoboothFrameUrl: null,
       photoboothOffsetY: 0,
       photoboothScale: 100,

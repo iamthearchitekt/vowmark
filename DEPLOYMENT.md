@@ -1,26 +1,40 @@
 # VOWMARK Studio Production & Custom Domain Deployment Guide
 
-**Target Domain**: `vowmark.studio`
+**Target Domain**: `vowmark.studio` (Registered on GoDaddy)
 
 ---
 
-## 1. Domain & DNS Setup (`vowmark.studio`)
+## 1. Step-by-Step GoDaddy DNS Setup (`vowmark.studio`)
 
-To link your newly purchased domain **`vowmark.studio`** (via Porkbun, Namecheap, GoDaddy, Google Domains, etc.) to your production host (e.g., Vercel):
+To connect your domain registered on **GoDaddy** (`vowmark.studio`) to your host (e.g. Vercel):
 
-### Recommended Vercel DNS Records:
-| Type | Name | Value / Target | Purpose |
-| :--- | :--- | :--- | :--- |
-| **A Record** | `@` | `76.76.21.21` | Apex domain (`vowmark.studio`) |
-| **CNAME** | `www` | `cname.vercel-dns.com` | Subdomain (`www.vowmark.studio`) |
+### Step 1: Open GoDaddy DNS Management
+1. Log in to your [GoDaddy Account Dashboard](https://account.godaddy.com/products).
+2. Go to **My Products** → scroll to **Domains** → click **`vowmark.studio`**.
+3. Select **DNS** (or **Manage DNS / Edit DNS Records**).
 
-*Vercel will automatically issue and renew free SSL / TLS certificates (HTTPS) for `vowmark.studio` upon DNS verification.*
+### Step 2: Add / Edit DNS Records in GoDaddy
+In the DNS Records table, update or add the following records:
+
+| Record Type | Name / Host | Value / Points to | TTL | Purpose |
+| :--- | :--- | :--- | :--- | :--- |
+| **A Record** | `@` | `76.76.21.21` | `1 Hour` (or `600s`) | Directs `vowmark.studio` to Vercel |
+| **CNAME Record** | `www` | `cname.vercel-dns.com` | `1 Hour` | Directs `www.vowmark.studio` to Vercel |
+
+> [!NOTE]
+> If GoDaddy already has an existing **A Record** for `@` (pointing to a GoDaddy parking IP), click **Edit** and replace the IP with `76.76.21.21`.
+
+### Step 3: Verify Domain in Vercel
+1. Go to your **Vercel Dashboard** → select project **vowmark** → **Settings** → **Domains**.
+2. Type `vowmark.studio` and click **Add**.
+3. Select **`vowmark.studio` and `www.vowmark.studio`**.
+4. Vercel will automatically verify the GoDaddy DNS records and issue a free SSL certificate (HTTPS).
 
 ---
 
-## 2. Environment Variables Configuration
+## 2. Production Environment Variables Configuration
 
-Set these production environment variables in your hosting provider dashboard (Vercel Settings → Environment Variables):
+Set these environment variables in your hosting dashboard (Vercel Settings → Environment Variables):
 
 ```env
 # Application URL
@@ -44,7 +58,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
 
 ---
 
-## 3. Build & Deployment Commands
+## 3. Build & Verification Commands
 
 ```bash
 # 1. Typecheck & Verification

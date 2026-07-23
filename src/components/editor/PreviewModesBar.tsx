@@ -16,8 +16,6 @@ export function PreviewModesBar() {
   const studioMode = useEditorStore((state) => state.studioMode);
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
   const zoomLevel = useEditorStore((state) => state.zoomLevel);
-
-  // 2-Layer Composition state
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
 
   const setStudioMode = useEditorStore((state) => state.setStudioMode);
@@ -45,7 +43,7 @@ export function PreviewModesBar() {
             <button
               type="button"
               onClick={() => setStudioMode("generative_ai")}
-              className={`px-3 py-1.5 rounded-md font-bold text-xs transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-md font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
                 studioMode === "generative_ai"
                   ? "bg-vow-dark text-white shadow-sm ring-1 ring-vow-accent"
                   : "text-slate-600 hover:text-slate-900"
@@ -58,7 +56,7 @@ export function PreviewModesBar() {
             <button
               type="button"
               onClick={() => setStudioMode("deterministic_vector")}
-              className={`px-3 py-1.5 rounded-md font-bold text-xs transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-md font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
                 studioMode === "deterministic_vector"
                   ? "bg-vow-dark text-white shadow-sm ring-1 ring-vow-accent"
                   : "text-slate-600 hover:text-slate-900"
@@ -80,7 +78,7 @@ export function PreviewModesBar() {
                 key={mode}
                 type="button"
                 onClick={() => setTextLayerBlendMode(mode)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-all ${
+                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-all cursor-pointer ${
                   textLayerBlendMode === mode
                     ? "bg-vow-dark text-white shadow-2xs font-black"
                     : "text-slate-600 hover:text-slate-900"
@@ -105,7 +103,7 @@ export function PreviewModesBar() {
                   key={fmt.id}
                   type="button"
                   onClick={() => setCanvasFormat(fmt.id as CanvasFormat)}
-                  className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all ${
+                  className={`px-2.5 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
                     isActive
                       ? "bg-stone-800 text-white shadow-2xs"
                       : "bg-vow-surface border border-vow-border text-vow-charcoal hover:bg-slate-200"
@@ -124,7 +122,7 @@ export function PreviewModesBar() {
             <button
               type="button"
               onClick={() => setZoomLevel(Math.max(40, zoomLevel - 10))}
-              className="hover:text-vow-dark p-0.5"
+              className="hover:text-vow-dark p-0.5 cursor-pointer"
               title="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
@@ -133,7 +131,7 @@ export function PreviewModesBar() {
             <button
               type="button"
               onClick={() => setZoomLevel(Math.min(200, zoomLevel + 10))}
-              className="hover:text-vow-dark p-0.5"
+              className="hover:text-vow-dark p-0.5 cursor-pointer"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
@@ -144,7 +142,7 @@ export function PreviewModesBar() {
                 key={z}
                 type="button"
                 onClick={() => setZoomLevel(z)}
-                className={`px-1.5 py-0.5 text-[10px] font-mono rounded font-bold transition-colors ${
+                className={`px-1.5 py-0.5 text-[10px] font-mono rounded font-bold transition-colors cursor-pointer ${
                   zoomLevel === z ? "bg-vow-dark text-white" : "hover:bg-slate-200 text-slate-600"
                 }`}
               >
@@ -156,7 +154,7 @@ export function PreviewModesBar() {
           <button
             type="button"
             onClick={() => setIsExportOpen(true)}
-            className="flex items-center space-x-1.5 px-4 py-1.5 bg-vow-dark text-vow-paper hover:bg-black rounded-md font-bold uppercase tracking-wider text-[11px] transition-colors shadow-sm"
+            className="flex items-center space-x-1.5 px-4 py-1.5 bg-vow-dark text-vow-paper hover:bg-black rounded-md font-bold uppercase tracking-wider text-[11px] transition-colors shadow-sm cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-vow-champagne" />
             <span>Batch Export</span>

@@ -297,7 +297,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setCanvasFormat: (format) => {
     const dims = getFormatDimensions(format);
-    const autoZoom = format === "square" ? 100 : format === "6_x_4" ? 70 : 100;
+    const autoZoom = format === "6_x_4" ? 150 : 100;
     set((state) => {
       const matchingSuiteUrl = state.backgroundSuite ? state.backgroundSuite[format] : null;
       return {

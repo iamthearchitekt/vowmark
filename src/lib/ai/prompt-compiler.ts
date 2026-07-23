@@ -35,6 +35,19 @@ export const GUARDRAIL_PRESETS: GuardrailPreset[] = [
       "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO NAMES, NO INITIALS, NO LOGOS. Clean production backdrop graphic asset.",
   },
   {
+    id: "lush_color_florals",
+    name: "Lush Color Florals (Layer 1 Backdrop)",
+    description: "Strictly handles floral & botanical backdrops (wreath, border, corner sprigs, or full floral clusters). Enforces vibrant color-driven output unless black & white is explicitly asked.",
+    textLogoPrefix:
+      "High-contrast isolated stationery logo asset. Solid black (#000000) or gold (#C9A251) line art on pure white background (#FFFFFF). Crisp line weight.",
+    textLogoSuffix:
+      "No paper texture, no realistic mockups, no 3D rendering, no shadows, high-resolution isolated vector asset.",
+    backgroundPrefix:
+      "Lush color-driven botanical floral background graphic asset for wedding stationery and photobooth backdrops. Vibrant floral color palette, high-fidelity botanical illustration (border frame, floral wreath, or corner sprigs) with an open central photo zone.",
+    backgroundSuffix:
+      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO NAMES, NO INITIALS, NO LOGOS. High-resolution production floral backdrop asset.",
+  },
+  {
     id: "minimal_steering",
     name: "Light & Neutral (Full Creative Control)",
     description: "Ultra-light structural guardrail. Gives 100% creative control to your prompt while enforcing technical isolated asset rules.",

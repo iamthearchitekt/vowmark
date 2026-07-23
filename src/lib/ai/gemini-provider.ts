@@ -106,44 +106,44 @@ export class GeminiNanoBananaProvider implements ImageGenerationProvider {
 
     if (isCrest) {
       innerGraphic = `
-        <g stroke="#0F172A" stroke-linecap="round" stroke-linejoin="round">
+        <g stroke="#000000" stroke-linecap="round" stroke-linejoin="round">
           <!-- Engraved Heraldic Shield Frame -->
           <path d="M 500 140 C 660 140 780 210 780 430 C 780 690 500 840 500 840 C 500 840 220 690 220 430 C 220 210 340 140 500 140 Z" stroke-width="4" fill="none" />
           <path d="M 500 165 C 635 165 755 230 755 430 C 755 665 500 805 500 805 C 500 805 245 665 245 430 C 245 230 365 165 500 165 Z" stroke-dasharray="6 4" stroke-width="1.5" fill="none" />
           <!-- Gold Diamond Crown -->
           <polygon points="500,95 475,118 525,118" fill="#C9A251" stroke="none" />
           <!-- Requested Monogram Initials -->
-          <text x="500" y="460" font-family="Georgia, serif" font-size="${name1.length > 2 ? "72" : "140"}" font-weight="700" letter-spacing="8" fill="#0F172A" text-anchor="middle" dominant-baseline="middle" stroke="none">${name1} &amp; ${name2}</text>
+          <text x="500" y="460" font-family="Georgia, serif" font-size="${name1.length > 2 ? "72" : "140"}" font-weight="700" letter-spacing="8" fill="#000000" text-anchor="middle" dominant-baseline="middle" stroke="none">${name1} &amp; ${name2}</text>
           <line x1="360" y1="560" x2="640" y2="560" stroke-width="1.5" />
-          <text x="500" y="605" font-family="system-ui, sans-serif" font-size="22" font-weight="700" letter-spacing="10" fill="#0F172A" text-anchor="middle" stroke="none">HERALDIC IDENTITY</text>
+          <text x="500" y="605" font-family="system-ui, sans-serif" font-size="22" font-weight="700" letter-spacing="10" fill="#000000" text-anchor="middle" stroke="none">HERALDIC IDENTITY</text>
         </g>
       `;
     } else if (isMinimal) {
       innerGraphic = `
-        <g stroke="#0F172A" stroke-linecap="round" stroke-linejoin="round">
+        <g stroke="#000000" stroke-linecap="round" stroke-linejoin="round">
           <!-- Minimal Interlocking Diamond Frame -->
           <polygon points="500,160 810,470 500,780 190,470" stroke-width="3" fill="none" />
           <polygon points="500,180 790,470 500,760 210,470" stroke-width="1" stroke-dasharray="6 4" fill="none" />
-          <text x="500" y="475" font-family="Georgia, serif" font-size="${name1.length > 2 ? "80" : "150"}" font-weight="700" letter-spacing="12" fill="#0F172A" text-anchor="middle" dominant-baseline="middle" stroke="none">${name1} &amp; ${name2}</text>
-          <text x="500" y="630" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="12" fill="#0F172A" text-anchor="middle" stroke="none">WEDDING MONOGRAM</text>
+          <text x="500" y="475" font-family="Georgia, serif" font-size="${name1.length > 2 ? "80" : "150"}" font-weight="700" letter-spacing="12" fill="#000000" text-anchor="middle" dominant-baseline="middle" stroke="none">${name1} &amp; ${name2}</text>
+          <text x="500" y="630" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="12" fill="#000000" text-anchor="middle" stroke="none">WEDDING MONOGRAM</text>
         </g>
       `;
     } else {
       // Default Solitaire Diamond Ring Logo Mark
       innerGraphic = `
-        <g stroke="#0F172A" stroke-linecap="round" stroke-linejoin="round">
+        <g stroke="#000000" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="500" cy="500" r="360" stroke-width="2" stroke-dasharray="8 6" opacity="0.4" fill="none" />
           <!-- Solitaire Diamond Ring Top Icon -->
           <g transform="translate(430, 180)" stroke="none">
-            <circle cx="70" cy="95" r="55" fill="none" stroke="#0F172A" stroke-width="10" />
+            <circle cx="70" cy="95" r="55" fill="none" stroke="#000000" stroke-width="10" />
             <polygon points="70,5 50,22 90,22" fill="#C9A251" />
-            <polygon points="50,22 70,38 90,22" fill="#0F172A" />
+            <polygon points="50,22 70,38 90,22" fill="#000000" />
           </g>
 
           <!-- Requested Monogram Initials -->
-          <text x="500" y="500" font-family="Georgia, serif" font-size="${name1.length > 2 ? "80" : "150"}" font-weight="700" letter-spacing="12" fill="#0F172A" text-anchor="middle" dominant-baseline="middle" stroke="none">${name1} &amp; ${name2}</text>
+          <text x="500" y="500" font-family="Georgia, serif" font-size="${name1.length > 2 ? "80" : "150"}" font-weight="700" letter-spacing="12" fill="#000000" text-anchor="middle" dominant-baseline="middle" stroke="none">${name1} &amp; ${name2}</text>
           <line x1="300" y1="640" x2="700" y2="640" stroke-width="1.5" opacity="0.6" />
-          <text x="500" y="685" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="12" fill="#0F172A" text-anchor="middle" stroke="none">WEDDING IDENTITY</text>
+          <text x="500" y="685" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="12" fill="#000000" text-anchor="middle" stroke="none">WEDDING IDENTITY</text>
         </g>
       `;
     }

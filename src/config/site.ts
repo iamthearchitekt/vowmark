@@ -12,7 +12,7 @@ export const SITE_CONFIG = {
   },
   defaultBranding: {
     primaryColor: "#C9A251", // Gold Accent Hex: #C9A251
-    secondaryColor: "#0F172A",
+    secondaryColor: "#000000",
     paperColor: "#FFFFFF",
   },
 } as const;

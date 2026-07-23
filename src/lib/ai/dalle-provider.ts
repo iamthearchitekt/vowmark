@@ -84,13 +84,13 @@ export class OpenAIImageProvider {
 
     const rawSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
       <rect width="1000" height="1000" fill="#FFFFFF"/>
-      <g stroke="#0F172A" stroke-width="3" fill="none" stroke-linecap="round">
+      <g stroke="#000000" stroke-width="3" fill="none" stroke-linecap="round">
         <polygon points="500,160 810,470 500,780 190,470" stroke-width="3.5"/>
         <polygon points="500,185 785,470 500,755 215,470" stroke-dasharray="6 4" stroke-width="1.5"/>
         <circle cx="500" cy="470" r="160" stroke-width="2"/>
-        <text x="500" y="480" font-family="'Bodoni Moda', 'Cormorant Garamond', serif" font-size="110" font-weight="700" fill="#0F172A" text-anchor="middle" dominant-baseline="middle" stroke="none">GPT IMAGE 2</text>
+        <text x="500" y="480" font-family="'Bodoni Moda', 'Cormorant Garamond', serif" font-size="110" font-weight="700" fill="#000000" text-anchor="middle" dominant-baseline="middle" stroke="none">GPT IMAGE 2</text>
         <line x1="320" y1="650" x2="680" y2="650" stroke-width="1.5"/>
-        <text x="500" y="690" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="10" fill="#0F172A" text-anchor="middle" stroke="none">OPENAI ENGINE</text>
+        <text x="500" y="690" font-family="system-ui, sans-serif" font-size="20" font-weight="700" letter-spacing="10" fill="#000000" text-anchor="middle" stroke="none">OPENAI ENGINE</text>
       </g>
     </svg>`;
 

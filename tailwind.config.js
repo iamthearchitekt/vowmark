@@ -9,15 +9,15 @@ module.exports = {
     extend: {
       colors: {
         vow: {
-          bg: '#F8FAFC',
+          bg: '#FAFAFA',
           paper: '#FFFFFF',
-          dark: '#0F172A',
-          charcoal: '#1E293B',
+          dark: '#000000',
+          charcoal: '#18181B',
           champagne: '#C9A251',
           accent: '#C9A251', // User Accent Gold Hex: #C9A251
-          muted: '#64748B',
-          border: '#E2E8F0',
-          surface: '#F1F5F9',
+          muted: '#737373',
+          border: '#E5E5E5',
+          surface: '#F5F5F5',
           success: '#16A34A',
         },
       },

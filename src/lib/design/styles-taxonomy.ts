@@ -72,7 +72,7 @@ export const WEDDING_STYLES: Record<string, WeddingStyleDefinition> = {
     ornamentRecommendations: ["Classic double-line border", "Shield crest outline"],
     floralRecommendations: ["Laurel wreath", "Symmetrical olive leaves"],
     colorPalette: {
-      primary: "#0F172A",
+      primary: "#000000",
       secondary: "#475569",
       background: "#FFFFFF",
       accent: "#C5A059",
@@ -112,7 +112,7 @@ export const WEDDING_STYLES: Record<string, WeddingStyleDefinition> = {
     ornamentRecommendations: ["Heritage crest", "Architectural arch", "Ornate coat of arms border"],
     floralRecommendations: ["Olive branches", "Cypress motif", "Vintage citrus sprig"],
     colorPalette: {
-      primary: "#1E293B",
+      primary: "#000000",
       secondary: "#64748B",
       background: "#F8FAFC",
       accent: "#B45309",
@@ -152,7 +152,7 @@ export const WEDDING_STYLES: Record<string, WeddingStyleDefinition> = {
     ornamentRecommendations: ["Traditional formal scroll border"],
     floralRecommendations: ["Subtle ivy border"],
     colorPalette: {
-      primary: "#0F172A",
+      primary: "#000000",
       secondary: "#334155",
       background: "#FFFFFF",
       accent: "#D4AF37",

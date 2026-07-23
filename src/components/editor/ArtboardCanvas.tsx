@@ -195,10 +195,11 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES */}
+        {/* Anchored consistently whether Photo Mock is ON or OFF */}
         {/* ======================================================== */}
         <div
           className={`absolute z-20 flex items-center justify-center transition-all ${
-            is2x6Format && photoboothMode
+            is2x6Format
               ? "bottom-0 left-0 right-0 h-[30%] p-4"
               : "inset-0 p-6 w-full h-full"
           }`}

@@ -33,9 +33,10 @@ export class OpenAIProvider {
     }
 
     try {
-      const systemPrompt = `You are VOWMARK's Senior AI Wedding Logo Architect.
-You help generate bespoke high-fashion wedding logos, monograms, crests, and stationer identities using Google Gemini Nano Banana API.
-When users ask for logos, monograms, or image revisions, enthusiastically acknowledge their request, confirm the compiled style taxonomy rules, and report that the bespoke artwork has been generated on their artboard canvas.`;
+      const systemPrompt = `You are VOWMARK's AI Design Assistant.
+CRITICAL INSTRUCTION: Be extremely concise, direct, and brief (1 to 2 short sentences MAX).
+Do NOT write long paragraphs, lists, or wordy explanations.
+Simply acknowledge the user's request and confirm that the artwork is generated on the canvas.`;
 
       const completion = await this.client.chat.completions.create({
         model: this.model,
@@ -43,10 +44,11 @@ When users ask for logos, monograms, or image revisions, enthusiastically acknow
           { role: "system", content: systemPrompt },
           ...messages,
         ],
-        temperature: 0.7,
+        temperature: 0.5,
+        max_tokens: 60,
       });
 
-      const responseText = completion.choices[0]?.message?.content || "Generated bespoke AI wedding logo artwork on your artboard.";
+      const responseText = completion.choices[0]?.message?.content || "✨ Generated artwork on canvas.";
 
       return {
         message: responseText,
@@ -97,29 +99,21 @@ When users ask for logos, monograms, or image revisions, enthusiastically acknow
     const lastUserMsg = messages[messages.length - 1]?.content || "";
     const lower = lastUserMsg.toLowerCase();
 
-    // Extract initials if present
-    const match = lastUserMsg.match(/([A-Z])\s*(?:&|and|\+)\s*([A-Z])/i);
-    let initialsStr = match ? `${match[1].toUpperCase()} & ${match[2].toUpperCase()}` : "your requested initials";
-
-    let message = `✨ Generated bespoke AI wedding logo artwork for ${initialsStr} using Google Gemini Nano Banana! The new identity mark is loaded live on your artboard canvas.`;
+    let message = "✨ Generated artwork on canvas.";
 
     if (lower.includes("crest") || strokeContains(lower, ["crest", "estate", "shield"])) {
-      message = `🛡️ Compiled European Estate Crest taxonomy rules and generated a bespoke heraldic shield logo for ${initialsStr}. Loaded live on your main artboard!`;
+      message = "🛡️ Generated heraldic crest logo. Canvas updated.";
     } else if (lower.includes("editorial") || strokeContains(lower, ["editorial", "vogue", "luxury"])) {
-      message = `💎 Applied Editorial Luxury design taxonomy and rendered high-contrast Didone/Bodoni typography logo artwork for ${initialsStr}. Canvas updated!`;
+      message = "💎 Applied editorial luxury styling. Canvas updated.";
     } else if (lower.includes("minimal") || lower.includes("clean")) {
-      message = `✨ Generated modern minimal wedding identity mark with clean monogram silhouette for ${initialsStr}. Loaded on canvas!`;
+      message = "✨ Generated minimal identity mark. Loaded on canvas.";
+    } else if (lower.includes("background") || lower.includes("floral") || lower.includes("border")) {
+      message = "🌸 Generated stationery background pattern on canvas.";
     }
 
     return {
       message,
       updatedBrief: currentBrief,
-      suggestedActions: [
-        "Make More Editorial",
-        "Generate Estate Crest",
-        "Convert to High-Contrast B&W",
-        "Simplify Monogram",
-      ],
     };
   }
 }

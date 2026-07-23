@@ -156,21 +156,21 @@ export function ArtboardCanvas() {
   const bgClass = "bg-white border border-slate-300 shadow-xl";
 
   // Scaled High-Res Studio Display Dimensions for 2x6, 4x6, 6x4, and Square
-  let widthPx = 650;
-  let heightPx = 650;
+  let widthPx = 700;
+  let heightPx = 700;
 
   if (canvasFormat === "2_x_6") {
-    widthPx = 280;
-    heightPx = 840;
+    widthPx = 310;
+    heightPx = 930;
   } else if (canvasFormat === "4_x_6") {
-    widthPx = 480;
-    heightPx = 720;
+    widthPx = 520;
+    heightPx = 780;
   } else if (canvasFormat === "6_x_4") {
-    widthPx = 720;
-    heightPx = 480;
+    widthPx = 780;
+    heightPx = 520;
   } else if (canvasFormat === "square") {
-    widthPx = 650;
-    heightPx = 650;
+    widthPx = 700;
+    heightPx = 700;
   }
 
   // Determine active text/logo artwork URL (Layer 2)

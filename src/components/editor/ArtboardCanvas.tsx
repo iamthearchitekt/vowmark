@@ -259,8 +259,7 @@ export function ArtboardCanvas() {
   return (
     <div className="relative flex-1 flex flex-col items-center justify-start pt-16 pb-24 bg-stone-100/90 overflow-y-auto overflow-x-hidden select-none font-sans">
       {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Top of Work Window) */}
-      {(isNonSquare || !!activeLogoAsset) && (
-        <div className="absolute top-3 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-4 py-1.5 flex items-center space-x-3 text-xs font-sans animate-fadeIn">
+      <div className="absolute top-3 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-4 py-1.5 flex items-center space-x-3 text-xs font-sans animate-fadeIn">
           {/* Quick Save Project Button in Floating Bar */}
           <button
             type="button"
@@ -488,7 +487,6 @@ export function ArtboardCanvas() {
             </>
           )}
         </div>
-      )}
 
       {/* Visual Canvas Container */}
       <div

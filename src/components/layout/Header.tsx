@@ -114,30 +114,6 @@ export function Header() {
           <span>Photo Mock: {photoboothMode ? "ON" : "OFF"}</span>
         </button>
 
-        {/* SAVE PROJECT Button — High Visibility Gold Highlight */}
-        <button
-          type="button"
-          onClick={handleSaveProject}
-          className={`text-[11px] font-sans font-extrabold tracking-wider uppercase flex items-center space-x-1.5 px-4 py-1.5 rounded-lg border transition-all shadow-md cursor-pointer ${
-            isSaved
-              ? "bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-400"
-              : "bg-vow-accent text-vow-dark hover:bg-amber-400 border-vow-accent ring-1 ring-stone-900"
-          }`}
-          title="Save active project design & settings to Client Projects"
-        >
-          {isSaved ? (
-            <>
-              <Check className="w-4 h-4 text-white" />
-              <span>Project Saved!</span>
-            </>
-          ) : (
-            <>
-              <Save className="w-4 h-4 text-vow-dark" />
-              <span>SAVE PROJECT</span>
-            </>
-          )}
-        </button>
-
         <button
           type="button"
           onClick={resetFields}

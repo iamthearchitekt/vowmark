@@ -218,6 +218,7 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* PHOTOBOOTH STRIP & FRAME OVERLAY (2x6, 4x6, 6x4 Formats) */}
+        {/* Clean 1:1 photobooth frame rendering matching reference layout */}
         {/* ======================================================== */}
         {isNonSquare && photoboothMode && activeFrameOverlayUrl && (
           <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between overflow-hidden">
@@ -227,9 +228,9 @@ export function ArtboardCanvas() {
               alt="Photobooth Frame Overlay"
               className="absolute inset-0 w-full h-full object-contain z-10 transition-transform duration-200"
               style={{
-                transform: is2x6Format
-                  ? "scale(1.05) translateY(5px)"
-                  : `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined,
+                transform: !is2x6Format
+                  ? `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined
+                  : undefined,
               }}
             />
           </div>
@@ -237,9 +238,14 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
+        {/* For 2x6: Anchored precisely in bottom 28% area under the 3 photo boxes */}
         {/* ======================================================== */}
         <div
-          className="absolute inset-0 z-20 p-4 w-full h-full flex items-center justify-center transition-all"
+          className={`absolute z-20 flex items-center justify-center transition-all ${
+            is2x6Format
+              ? "bottom-0 left-0 right-0 h-[28%] p-3"
+              : "inset-0 p-6 w-full h-full"
+          }`}
           style={{
             transform:
               isNonSquare

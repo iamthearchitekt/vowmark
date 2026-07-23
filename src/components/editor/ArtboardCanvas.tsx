@@ -404,6 +404,101 @@ export function ArtboardCanvas() {
           )}
         </div>
       )}
+
+      {/* Visual Canvas Container */}
+      <div
+        className={`relative rounded transition-all duration-200 overflow-hidden ${bgClass}`}
+        style={{
+          width: `${widthPx}px`,
+          height: `${heightPx}px`,
+          transform: `scale(${zoomLevel / 100})`,
+          transformOrigin: "top center",
+          flexShrink: 0,
+        }}
+      >
+        {/* ======================================================== */}
+        {/* LAYER 1 (BOTTOM): BACKGROUND & PATTERN LAYER WITH OPACITY */}
+        {/* ======================================================== */}
+        {backgroundPatternAssetUrl && layer1Visible && (
+          <div
+            className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-300"
+            style={{ opacity: backgroundLayerOpacity / 100 }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={backgroundPatternAssetUrl}
+              alt="Layer 1 Background & Pattern"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* PHOTOBOOTH STRIP & FRAME OVERLAY (2x6, 4x6, 6x4 Formats) */}
+        {/* ======================================================== */}
+        {isNonSquare && photoboothMode && activeFrameOverlayUrl && (
+          <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={activeFrameOverlayUrl}
+              alt="Photobooth Frame Overlay"
+              className="absolute inset-0 w-full h-full object-fill z-10"
+              style={is2x6Format ? undefined : {
+                transform: `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined,
+              }}
+            />
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
+        {/* ======================================================== */}
+        {layer2Visible && (
+          <div
+            className="absolute z-20 flex items-center justify-center transition-all inset-0 p-6 w-full h-full"
+            style={{
+              transform:
+                isNonSquare && !is2x6Format
+                  ? `translate(${photoboothOffsetX}px, ${photoboothOffsetY}px) scale(${photoboothScale / 100})`
+                  : undefined,
+              mixBlendMode: textLayerBlendMode,
+              opacity: textLayerOpacity / 100,
+            }}
+          >
+            {activeLogoAsset ? (
+              /* When Layer 2 AI image is generated, display AI artwork & hide vector text output completely */
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={activeLogoAsset}
+                alt="Layer 2 AI Text & Monogram Logo Artwork"
+                className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
+              />
+            ) : (
+              /* Deterministic Vector Mode Typography Overlay (Shown ONLY when no Layer 2 AI image is active) */
+              <>
+                {ornamentUrl && (
+                  <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-85">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={ornamentUrl}
+                      alt="Ornament Layer"
+                      className="w-full h-full object-contain filter contrast-125"
+                    />
+                  </div>
+                )}
+
+                <div
+                  className="absolute inset-0 flex items-center justify-center pointer-events-auto w-full h-full"
+                  dangerouslySetInnerHTML={{ __html: renderedVectorSvg }}
+                />
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Safe Area Guide */}
+        <div className="absolute inset-3 border border-dashed border-stone-300/40 pointer-events-none z-30" />
+      </div>
     </div>
   );
 }

@@ -23,68 +23,55 @@ export interface GuardrailPreset {
 export const GUARDRAIL_PRESETS: GuardrailPreset[] = [
   {
     id: "bse_photobooth_master",
-    name: "BSE Photobooth Master (Custom Preset)",
-    description: "Trained on your uploaded photobooth design library: high-contrast luxury framing, crisp vector florals, photo cutouts, and rich gold/black ornaments.",
+    name: "Photobooth Studio Master (Balanced)",
+    description: "Subject-neutral structural guardrail: ensures clean vector isolated output for logos and wide central photo space for backdrops without forcing specific flowers or motifs.",
     textLogoPrefix:
-      "High-fashion luxury photobooth stationery monogram mark. Ultra-clean vector artwork, solid black (#000000) or gold (#C9A251) line art on pure white background (#FFFFFF). Elegant typography, crisp heraldic crest framing, precise line weight.",
+      "High-contrast isolated stationery logo asset. Solid black (#000000) or gold (#C9A251) line art on pure white background (#FFFFFF). Crisp line weight and clean letterforms.",
     textLogoSuffix:
-      "No background clutter, no paper texture, no realistic photobooth mockups, no 3D rendering, no shadows, no gray tones, no color bleed, razor-sharp isolated vector logo.",
+      "No paper texture, no realistic mockups, no 3D rendering, no shadows, no gray background, high-resolution isolated vector asset.",
     backgroundPrefix:
-      "Professional photobooth backdrop asset. Luxury stationery design with elegant border framing (roses, eucalyptus foliage, gold filigree, or gothic scrollwork). Wide open central photo placement area.",
+      "High-resolution production photobooth background graphic asset with balanced border composition and open central photo zone.",
     backgroundSuffix:
-      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO NAMES, NO INITIALS, NO LOGOS. High-resolution production photobooth background graphic asset.",
+      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO NAMES, NO INITIALS, NO LOGOS. Clean production backdrop graphic asset.",
   },
   {
-    id: "editorial_luxury",
-    name: "Editorial Luxury & Monogram",
-    description: "Chic Paris fashion editorial style with high-contrast Didone typography and minimalist luxury line art.",
+    id: "minimal_steering",
+    name: "Light & Neutral (Full Creative Control)",
+    description: "Ultra-light structural guardrail. Gives 100% creative control to your prompt while enforcing technical isolated asset rules.",
     textLogoPrefix:
-      "High-fashion luxury editorial wedding mark. High contrast, pure white background (#FFFFFF), solid black (#000000) artwork. Bodoni style typography, ultra-clean vector paths.",
+      "Isolated graphic logo asset on pure white background (#FFFFFF).",
     textLogoSuffix:
-      "No mockups, no paper grain, no shadows, no gray background, high-resolution isolated vector asset.",
+      "No 3D mockups, no paper texture, high resolution vector asset.",
     backgroundPrefix:
-      "Chic Parisian editorial stationery background graphic asset with minimal line borders and subtle gold accents.",
+      "High-resolution graphic backdrop asset.",
     backgroundSuffix:
-      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO LOGOS, NO MONOGRAMS. Clean production background asset.",
+      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO LOGOS.",
   },
   {
-    id: "botanical_romance",
-    name: "Lush Botanical & Wreath",
-    description: "Soft romantic botanical framing with English roses, eucalyptus sprigs, and fine-line organic florals.",
+    id: "high_contrast_vector",
+    name: "High Contrast Vector Line Art",
+    description: "Enforces crisp 2D vector linework and sharp contrast for engraving / line art designs.",
     textLogoPrefix:
-      "Fine-line botanical wedding monogram asset. Hand-drawn organic line art with delicate rose sprigs and eucalyptus wreath outline.",
+      "Ultra-clean 2D line art asset. Solid black (#000000) on pure white (#FFFFFF), razor-sharp lines.",
     textLogoSuffix:
-      "No 3D rendering, no heavy solid blocks, no clutter, clean isolated line art vector asset.",
+      "No gradients, no realistic shadows, no photo backgrounds, pure vector line art asset.",
     backgroundPrefix:
-      "Lush romantic wedding stationery background asset featuring botanical floral borders, soft roses, and eucalyptus greenery enclosing artboard.",
+      "Line art border stationery background asset.",
     backgroundSuffix:
-      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO LOGOS. Clean production graphic background.",
+      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO LOGOS.",
   },
   {
-    id: "black_and_gold_gothic",
-    name: "Black & Gold Victorian Ornate",
-    description: "Rich Victorian filigree, ornate scrollwork, dark luxury contrast, and gold heraldic border framing.",
+    id: "luxury_gold_accent",
+    name: "Gold Foil & Luxury Accent",
+    description: "Enforces metallic gold accent tones (#C9A251) and luxury stationery contrast.",
     textLogoPrefix:
-      "Victorian ornate black-tie wedding crest mark. Intricate gold filigree scrollwork, heraldic shield outline, luxury monogram lettering.",
+      "Luxury gold foil stationery asset (#C9A251) on pure white background (#FFFFFF). Clean refined line weight.",
     textLogoSuffix:
-      "No blurry edges, no 3D shadows, no paper grain, sharp isolated vector mark.",
+      "No drop shadows, no paper grain, high-resolution vector logo asset.",
     backgroundPrefix:
-      "Victorian ornate black and gold photobooth backdrop asset with intricate filigree corner borders and golden scrollwork frame.",
+      "Luxury wedding backdrop asset with refined golden accents and open layout.",
     backgroundSuffix:
-      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO LOGOS. High-resolution production background asset.",
-  },
-  {
-    id: "minimal_vector",
-    name: "Pure Minimal Vector",
-    description: "Ultra-clean modern architectural line art with zero decorative clutter.",
-    textLogoPrefix:
-      "Minimalist modern wedding logo asset. Ultra-clean geometric line art, solid black (#000000) on pure white (#FFFFFF).",
-    textLogoSuffix:
-      "No textures, no shadows, no gradients, pure vector asset.",
-    backgroundPrefix:
-      "Minimalist architectural wedding stationery background with single thin hairline border frame.",
-    backgroundSuffix:
-      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO LOGOS. Production graphic background.",
+      "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO LOGOS.",
   },
 ];
 

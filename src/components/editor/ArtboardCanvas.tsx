@@ -264,21 +264,21 @@ export function ArtboardCanvas() {
           <button
             type="button"
             onClick={handleSaveProject}
-            className={`px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+            className={`px-3.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer ${
               isSaved
-                ? "bg-stone-800 text-white border border-stone-800"
-                : "bg-vow-dark text-white hover:bg-black border border-vow-dark"
+                ? "bg-vow-dark text-vow-accent border border-vow-dark"
+                : "bg-vow-accent text-vow-dark hover:brightness-105 border border-vow-accent"
             }`}
             title="Save project design to Client Projects"
           >
             {isSaved ? (
               <>
-                <Check className="w-3 h-3 text-vow-accent" />
+                <Check className="w-3.5 h-3.5 text-vow-accent" />
                 <span>Project Saved!</span>
               </>
             ) : (
               <>
-                <Save className="w-3 h-3 text-vow-accent" />
+                <Save className="w-3.5 h-3.5 text-vow-dark" />
                 <span>Save Project</span>
               </>
             )}

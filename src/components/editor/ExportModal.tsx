@@ -64,6 +64,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
   const [isExporting, setIsExporting]       = useState(false);
   const [exportSuccess, setExportSuccess]   = useState(false);
   const [errorMsg, setErrorMsg]             = useState<string | null>(null);
+  const [renderWithPhotoMockup, setRenderWithPhotoMockup] = useState<boolean>(true);
 
   // If a background layer is present AND visible, transparent PNG is not valid —
   // the background IS the design and must be included in the output.
@@ -164,7 +165,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
           ? { assetUrl: backgroundPatternAssetUrl, opacity: backgroundLayerOpacity }
           : null,
 
-        frameOverlay: isNonSquare && photoboothMode && activeFrameOverlayUrl
+        frameOverlay: isNonSquare && photoboothMode && renderWithPhotoMockup && activeFrameOverlayUrl
           ? { assetUrl: activeFrameOverlayUrl, flipH: photoboothFlipH, flipV: photoboothFlipV }
           : null,
 
@@ -231,7 +232,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
         ) : null}
 
         {/* Format picker */}
-        <div className="space-y-2.5 mb-5">
+        <div className="space-y-2.5 mb-4">
           {FORMAT_OPTIONS
             .filter((item) => !(hasBackground && item.id === "transparent_png"))
             .map((item) => (
@@ -263,6 +264,31 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
             </div>
           ))}
         </div>
+
+        {/* Photobooth Frame Overlay / Photo Mockup Checkbox Option */}
+        {canvasFormat !== "square" && activeFrameOverlayUrl && (
+          <div className="mb-4 p-3 bg-stone-50 border border-stone-200 rounded-lg flex items-center justify-between">
+            <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={renderWithPhotoMockup}
+                onChange={(e) => setRenderWithPhotoMockup(e.target.checked)}
+                className="w-4 h-4 accent-vow-dark rounded border-vow-border cursor-pointer"
+              />
+              <div className="flex flex-col">
+                <span className="text-xs font-sans font-bold text-vow-dark flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-vow-accent" />
+                  <span>Render with Photobooth Photo Frame / Mockup ON</span>
+                </span>
+                <span className="text-[10px] font-sans text-vow-muted">
+                  {renderWithPhotoMockup
+                    ? "Includes photobooth frame overlay & photo box cutouts in the exported PNG."
+                    : "Exports clean artwork composite without photo boxes overlay."}
+                </span>
+              </div>
+            </label>
+          </div>
+        )}
 
         {/* Error message */}
         {errorMsg && (

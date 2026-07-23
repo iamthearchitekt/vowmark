@@ -189,7 +189,7 @@ export function ArtboardCanvas() {
   }
 
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center p-8 bg-slate-100/90 overflow-hidden select-none font-sans">
+    <div className="relative flex-1 flex flex-col items-center justify-start pt-8 pb-24 bg-slate-100/90 overflow-y-auto overflow-x-hidden select-none font-sans">
       {/* Visual Canvas Container */}
       <div
         className={`relative rounded transition-all duration-200 overflow-hidden ${bgClass}`}
@@ -197,6 +197,8 @@ export function ArtboardCanvas() {
           width: `${widthPx}px`,
           height: `${heightPx}px`,
           transform: `scale(${zoomLevel / 100})`,
+          transformOrigin: "top center",
+          flexShrink: 0,
         }}
       >
         {/* ======================================================== */}
@@ -284,7 +286,7 @@ export function ArtboardCanvas() {
       {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Non-Square Formats) */}
       {isNonSquare && (
         <div className="absolute bottom-6 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-3.5 text-xs font-sans animate-fadeIn">
-          {/* 6x4 Mode Selector (1 Box vs 3 Boxes) */}
+          {/* 6x4 Mode Selector — mode1 = 3 Boxes, mode2 = 1 Box */}
           {is6x4Format && photoboothMode && (
             <>
               <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-full border border-slate-200">
@@ -296,9 +298,9 @@ export function ArtboardCanvas() {
                       ? "bg-vow-dark text-white shadow-2xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
-                  title="Single Box photo frame layout"
+                  title="3 Boxes photo frame layout"
                 >
-                  1 Box
+                  3 Boxes
                 </button>
                 <button
                   type="button"
@@ -308,9 +310,9 @@ export function ArtboardCanvas() {
                       ? "bg-vow-dark text-white shadow-2xs"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
-                  title="3 Boxes photo frame layout"
+                  title="1 Box photo frame layout"
                 >
-                  3 Boxes
+                  1 Box
                 </button>
               </div>
 
@@ -318,8 +320,8 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal / Vertical Flip Controls — hidden for 2x6 (not needed) */}
-          {photoboothMode && !is2x6Format && (
+          {/* Flip H/V — only shown for 6x4 3-box mode (mode1); 1-box and 2x6 don't need it */}
+          {photoboothMode && !is2x6Format && !(is6x4Format && photoboothMode6x4 === "mode2") && (
             <>
               <div className="flex items-center space-x-1">
                 <button

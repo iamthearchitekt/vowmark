@@ -63,6 +63,7 @@ export interface EditorState {
   setZoomLevel: (zoom: number) => void;
   addMessage: (msg: { role: "user" | "assistant" | "system"; content: string }) => void;
   setIsAiGenerating: (loading: boolean) => void;
+  resetFields: () => void;
 }
 
 export function getFormatDimensions(format: CanvasFormat): { width: number; height: number; aspectRatio: string } {
@@ -222,4 +223,13 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   addMessage: (msg) => set((state) => ({ messages: [...state.messages, msg] })),
   setIsAiGenerating: (loading) => set({ isAiGenerating: loading }),
+
+  resetFields: () =>
+    set({
+      brief: defaultBrief,
+      typographyOptions: defaultTypography,
+      aiGeneratedAssetUrl: null,
+      ornamentUrl: null,
+      referenceImages: [],
+    }),
 }));

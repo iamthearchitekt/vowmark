@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import { SITE_CONFIG } from "@/config/site";
+import { useEditorStore } from "@/lib/store/useEditorStore";
+import { RotateCcw } from "lucide-react";
 
 export function Header() {
+  const resetFields = useEditorStore((state) => state.resetFields);
+
   return (
     <header className="sticky top-0 z-40 bg-vow-paper border-b border-vow-border px-6 py-3.5 flex items-center justify-between font-sans">
       <div className="flex items-center space-x-8">
@@ -30,6 +34,18 @@ export function Header() {
             Fonts Library
           </Link>
         </nav>
+      </div>
+
+      <div className="flex items-center space-x-3">
+        <button
+          type="button"
+          onClick={resetFields}
+          className="text-[11px] font-sans font-medium text-slate-500 hover:text-slate-800 flex items-center space-x-1.5 px-2.5 py-1 rounded border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-colors shadow-2xs"
+          title="Reset all form fields & artboard to initial state"
+        >
+          <RotateCcw className="w-3 h-3 text-slate-400" />
+          <span>Reset Fields</span>
+        </button>
       </div>
     </header>
   );

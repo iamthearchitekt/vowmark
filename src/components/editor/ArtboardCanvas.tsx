@@ -5,10 +5,6 @@ import { TypographyEngine } from "@/lib/typography/engine";
 import { resolveFontConfig } from "@/lib/typography/font-resolver";
 import { useEffect, useState, useMemo } from "react";
 import {
-  Sparkles,
-  Camera,
-  Image as ImageIcon,
-  Layers,
   ArrowUpDown,
   MoveHorizontal,
   Maximize2,
@@ -222,7 +218,6 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* PHOTOBOOTH STRIP & FRAME OVERLAY (2x6, 4x6, 6x4 Formats) */}
-        {/* 2x6 frame is scaled slightly larger & brought down 5px to fill canvas */}
         {/* ======================================================== */}
         {isNonSquare && photoboothMode && activeFrameOverlayUrl && (
           <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between overflow-hidden">
@@ -324,7 +319,7 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal / Vertical Flip Controls (Disabled/Hidden for 2x6) */}
+          {/* Horizontal / Vertical Flip Controls (Disabled for 2x6) */}
           {!is2x6Format && photoboothMode && (
             <>
               <div className="flex items-center space-x-1">
@@ -361,7 +356,7 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal X-Position Slider (Disabled/Hidden for 2x6) */}
+          {/* Horizontal X-Position Slider (Disabled for 2x6) */}
           {!is2x6Format && (
             <>
               <div className="flex items-center space-x-1.5">

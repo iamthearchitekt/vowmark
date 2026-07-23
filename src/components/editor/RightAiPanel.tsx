@@ -194,9 +194,6 @@ export function RightAiPanel() {
             >
               <Sliders className="w-3.5 h-3.5 text-vow-accent" />
             </button>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-900 border border-amber-300 font-bold">
-              {studioMode === "generative_ai" ? "OpenAI AI" : "Vector"}
-            </span>
           </div>
         </div>
 

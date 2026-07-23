@@ -11,8 +11,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing design brief" }, { status: 400 });
     }
 
-    const compiled = compileGenerationPrompt(brief);
-    const userPrompt = brief.generationPrompt || compiled.prompt;
+    const compiled = compileGenerationPrompt(brief, {
+      generationType: brief.generationType,
+      guidanceConfig: brief.guidanceConfig,
+    });
+    const userPrompt = compiled.prompt;
 
     // Trigger OpenAI Image Generation with Universal Prompt Aids
     const result = await openAIImageProvider.generateImage({

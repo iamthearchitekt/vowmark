@@ -13,6 +13,8 @@ export interface ReferenceImage {
   tag: "Invitation" | "Layout" | "Typography" | "Ornament" | "General";
 }
 
+import { AiGenerationType, PromptGuidanceConfig, DEFAULT_PROMPT_GUIDANCE } from "../ai/prompt-compiler";
+
 export interface EditorState {
   projectId: string;
   projectTitle: string;
@@ -22,6 +24,11 @@ export interface EditorState {
   studioMode: StudioMode;
   aiGeneratedAssetUrl: string | null;
   aiPrompt: string;
+
+  // AI Generation Type: Text & Logo vs Background & Pattern
+  aiGenerationType: AiGenerationType;
+  promptGuidanceConfig: PromptGuidanceConfig;
+  isPromptGuidanceModalOpen: boolean;
 
   // Canvas Format Mode: 2x6, 4x6, 6x4, or basic square mode
   canvasFormat: CanvasFormat;
@@ -43,6 +50,9 @@ export interface EditorState {
 
   setStudioMode: (mode: StudioMode) => void;
   setAiGeneratedAssetUrl: (url: string | null) => void;
+  setAiGenerationType: (type: AiGenerationType) => void;
+  setPromptGuidanceConfig: (config: Partial<PromptGuidanceConfig>) => void;
+  setIsPromptGuidanceModalOpen: (open: boolean) => void;
   setCanvasFormat: (format: CanvasFormat) => void;
   setBrief: (brief: Partial<DesignBrief>) => void;
   setTypographyOptions: (options: Partial<TypographyOptions>) => void;
@@ -125,6 +135,10 @@ export const useEditorStore = create<EditorState>((set) => ({
   aiGeneratedAssetUrl: null,
   aiPrompt: "",
 
+  aiGenerationType: "text_logo",
+  promptGuidanceConfig: DEFAULT_PROMPT_GUIDANCE,
+  isPromptGuidanceModalOpen: false,
+
   canvasFormat: "square",
 
   brief: defaultBrief,
@@ -150,6 +164,10 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setStudioMode: (mode) => set({ studioMode: mode }),
   setAiGeneratedAssetUrl: (url) => set({ aiGeneratedAssetUrl: url }),
+  setAiGenerationType: (type) => set({ aiGenerationType: type }),
+  setPromptGuidanceConfig: (config) =>
+    set((state) => ({ promptGuidanceConfig: { ...state.promptGuidanceConfig, ...config } })),
+  setIsPromptGuidanceModalOpen: (open) => set({ isPromptGuidanceModalOpen: open }),
   addReferenceImage: (img) => set((state) => ({ referenceImages: [...state.referenceImages, img] })),
   removeReferenceImage: (id) =>
     set((state) => ({ referenceImages: state.referenceImages.filter((img) => img.id !== id) })),

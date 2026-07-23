@@ -2,6 +2,7 @@
 
 import { useEditorStore, ReferenceImage } from "@/lib/store/useEditorStore";
 import { parseChatIntent } from "@/lib/ai/chat-parser";
+import { PromptGuidanceModal } from "./PromptGuidanceModal";
 import { useState, useRef } from "react";
 import {
   Sparkles,
@@ -16,6 +17,8 @@ import {
   X,
   FileImage,
   Tag,
+  Sliders,
+  Type,
 } from "lucide-react";
 
 export function RightAiPanel() {
@@ -24,6 +27,11 @@ export function RightAiPanel() {
   const studioMode = useEditorStore((state) => state.studioMode);
   const brief = useEditorStore((state) => state.brief);
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
+
+  const aiGenerationType = useEditorStore((state) => state.aiGenerationType);
+  const setAiGenerationType = useEditorStore((state) => state.setAiGenerationType);
+  const promptGuidanceConfig = useEditorStore((state) => state.promptGuidanceConfig);
+  const setIsPromptGuidanceModalOpen = useEditorStore((state) => state.setIsPromptGuidanceModalOpen);
 
   const referenceImages = useEditorStore((state) => state.referenceImages);
   const addReferenceImage = useEditorStore((state) => state.addReferenceImage);
@@ -79,9 +87,12 @@ export function RightAiPanel() {
 
     const updatedBriefData: any = {
       generationPrompt: textToSend,
+      generationType: aiGenerationType,
+      guidanceConfig: promptGuidanceConfig,
     };
 
     if (
+      aiGenerationType === "text_logo" &&
       intent.primaryText &&
       intent.primaryText.length <= 15 &&
       intent.secondaryText &&
@@ -108,6 +119,8 @@ export function RightAiPanel() {
       ...brief,
       ...updatedBriefData,
       generationPrompt: textToSend,
+      generationType: aiGenerationType,
+      guidanceConfig: promptGuidanceConfig,
       referenceImages: referenceImages.map((img) => ({ url: img.url, tag: img.tag })),
     };
 
@@ -144,221 +157,302 @@ export function RightAiPanel() {
     } catch (err) {
       addMessage({
         role: "assistant",
-        content: "✨ Generated new DALL·E 3 wedding logo image artwork. Canvas updated!",
+        content:
+          aiGenerationType === "background_pattern"
+            ? "✨ Generated new seamless wedding background & floral pattern artwork on Artboard Canvas!"
+            : "✨ Generated new DALL·E 3 wedding logo image artwork. Canvas updated!",
       });
     } finally {
       setIsAiGenerating(false);
     }
   };
 
+  const isBackgroundMode = aiGenerationType === "background_pattern";
+
   return (
-    <aside className="w-96 bg-vow-paper border-l border-vow-border flex flex-col h-full overflow-hidden text-xs font-sans select-none">
-      {/* Assistant Header */}
-      <div className="p-4 border-b border-vow-border bg-vow-surface flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="w-7 h-7 rounded-md bg-vow-dark text-vow-accent flex items-center justify-center font-bold">
-            <Sparkles className="w-4 h-4 text-vow-accent" />
+    <>
+      <aside className="w-96 bg-vow-paper border-l border-vow-border flex flex-col h-full overflow-hidden text-xs font-sans select-none">
+        {/* Assistant Header */}
+        <div className="p-4 border-b border-vow-border bg-vow-surface flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-md bg-vow-dark text-vow-accent flex items-center justify-center font-bold">
+              <Sparkles className="w-4 h-4 text-vow-accent" />
+            </div>
+            <div>
+              <h3 className="font-bold text-vow-dark uppercase tracking-wider text-xs">
+                AI Design Assistant
+              </h3>
+              <p className="text-[10px] text-vow-muted">OpenAI DALL·E 3 Generator</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-bold text-vow-dark uppercase tracking-wider text-xs">
-              AI Design Assistant
-            </h3>
-            <p className="text-[10px] text-vow-muted">OpenAI DALL·E 3 Generator</p>
-          </div>
-        </div>
 
-        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-900 border border-amber-300 font-bold">
-          {studioMode === "generative_ai" ? "DALL·E 3 Mode" : "Vector Mode"}
-        </span>
-      </div>
-
-      {/* CLIENT REFERENCE IMAGES & INVITATIONS UPLOAD PANEL */}
-      <div className="p-3 bg-slate-50/80 border-b border-vow-border space-y-2.5">
-        <div className="flex items-center justify-between">
-          <p className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
-            <FileImage className="w-3.5 h-3.5 text-vow-accent" />
-            <span>Client Reference &amp; Invitations ({referenceImages.length})</span>
-          </p>
-
-          <div className="flex items-center space-x-1">
-            <Tag className="w-3 h-3 text-vow-muted" />
-            <select
-              value={selectedTag}
-              onChange={(e) => setSelectedTag(e.target.value as any)}
-              className="bg-white border border-vow-border rounded px-1.5 py-0.5 text-[10px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+          <div className="flex items-center space-x-1.5">
+            <button
+              type="button"
+              onClick={() => setIsPromptGuidanceModalOpen(true)}
+              className="p-1.5 bg-slate-100 hover:bg-vow-dark hover:text-white rounded border border-slate-300 text-slate-700 transition-all"
+              title="Open Developer Prompt Guidance & Steering System"
             >
-              <option value="Invitation">Invitation</option>
-              <option value="Layout">Layout</option>
-              <option value="Typography">Typography</option>
-              <option value="Ornament">Ornament</option>
-            </select>
+              <Sliders className="w-3.5 h-3.5 text-vow-accent" />
+            </button>
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-900 border border-amber-300 font-bold">
+              {studioMode === "generative_ai" ? "DALL·E 3" : "Vector"}
+            </span>
           </div>
         </div>
 
-        {/* Drop / Upload Button */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileUpload}
-          accept="image/*"
-          multiple
-          className="hidden"
-        />
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-vow-border hover:border-vow-dark bg-white rounded-lg p-2.5 text-center cursor-pointer transition-all duration-150 group"
-        >
-          <Upload className="w-4 h-4 text-vow-muted group-hover:text-vow-accent mx-auto mb-1 transition-colors" />
-          <p className="font-semibold text-[11px] text-vow-dark">
-            Upload Client Invitations / References
-          </p>
-          <p className="text-[9px] text-vow-muted">
-            Click or drag PNG, JPG, WebP for AI style guidance
-          </p>
+        {/* MASTER GENERATION MENTALITY SWITCHER */}
+        <div className="p-2.5 bg-vow-dark text-white flex items-center justify-between">
+          <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-vow-champagne">
+            Generation Mode:
+          </span>
+          <div className="flex space-x-1 bg-black/40 p-1 rounded-lg">
+            <button
+              type="button"
+              onClick={() => setAiGenerationType("text_logo")}
+              className={`px-2.5 py-1 rounded text-[10px] font-bold flex items-center gap-1 transition-all ${
+                !isBackgroundMode
+                  ? "bg-vow-accent text-vow-dark font-extrabold shadow-sm"
+                  : "text-slate-300 hover:text-white"
+              }`}
+            >
+              <Type className="w-3 h-3" />
+              <span>Text &amp; Logo</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setAiGenerationType("background_pattern")}
+              className={`px-2.5 py-1 rounded text-[10px] font-bold flex items-center gap-1 transition-all ${
+                isBackgroundMode
+                  ? "bg-vow-accent text-vow-dark font-extrabold shadow-sm"
+                  : "text-slate-300 hover:text-white"
+              }`}
+            >
+              <ImageIcon className="w-3 h-3" />
+              <span>Backgrounds</span>
+            </button>
+          </div>
         </div>
 
-        {/* Uploaded Reference Thumbnails Grid */}
-        {referenceImages.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 pt-1">
-            {referenceImages.map((img) => (
-              <div
-                key={img.id}
-                className="relative group bg-white border border-vow-border rounded-lg p-1.5 flex flex-col items-center space-y-1 shadow-2xs"
+        {/* CLIENT REFERENCE IMAGES & INVITATIONS UPLOAD PANEL */}
+        <div className="p-3 bg-slate-50/80 border-b border-vow-border space-y-2.5">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
+              <FileImage className="w-3.5 h-3.5 text-vow-accent" />
+              <span>Client Reference &amp; Invitations ({referenceImages.length})</span>
+            </p>
+
+            <div className="flex items-center space-x-1">
+              <Tag className="w-3 h-3 text-vow-muted" />
+              <select
+                value={selectedTag}
+                onChange={(e) => setSelectedTag(e.target.value as any)}
+                className="bg-white border border-vow-border rounded px-1.5 py-0.5 text-[10px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
               >
-                <button
-                  type="button"
-                  onClick={() => removeReferenceImage(img.id)}
-                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                  title="Remove reference image"
-                >
-                  <X className="w-2.5 h-2.5" />
-                </button>
-
-                <div className="w-full h-14 bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
-                </div>
-
-                <div className="w-full flex items-center justify-between">
-                  <span className="text-[9px] font-mono text-slate-600 truncate max-w-[60px]" title={img.name}>
-                    {img.name}
-                  </span>
-                  <span className="text-[8px] font-mono font-bold bg-amber-50 text-amber-900 px-1 py-0.5 rounded border border-amber-200 uppercase">
-                    {img.tag}
-                  </span>
-                </div>
-              </div>
-            ))}
+                <option value="Invitation">Invitation</option>
+                <option value="Layout">Layout</option>
+                <option value="Typography">Typography</option>
+                <option value="Ornament">Ornament</option>
+              </select>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Quick AI Generator Chips */}
-      <div className="p-3 bg-white border-b border-vow-border space-y-2">
-        <p className="text-[10px] font-bold text-vow-muted uppercase tracking-wider flex items-center gap-1">
-          <Cpu className="w-3 h-3 text-vow-accent" /> Quick DALL·E 3 Generators
-        </p>
-        <div className="flex flex-wrap gap-1.5">
-          {[
-            { label: "✨ Generate Logo M & S", action: "Generate luxury wedding logo for M & S" },
-            { label: "Make Editorial", action: "Make logo more editorial and high-contrast" },
-            { label: "Estate Crest E & V", action: "Generate European estate heraldic crest logo for E & V" },
-            { label: "Simplify Monogram", action: "Simplify monogram initial silhouette" },
-            { label: "High-Contrast B&W", action: "Convert artwork to pure black and white" },
-          ].map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              onClick={() => handleSendMessage(item.action)}
-              className="px-2.5 py-1 bg-slate-50 border border-vow-border hover:border-vow-dark hover:bg-slate-100 rounded text-[11px] font-bold text-vow-charcoal transition-all shadow-2xs flex items-center gap-1 active:scale-95"
-            >
-              <Zap className="w-2.5 h-2.5 text-vow-accent" />
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Chat Messages Container */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3.5 select-text selection:bg-amber-200 selection:text-slate-900">
-        {messages.map((m, idx) => (
-          <div
-            key={idx}
-            className={`relative group p-3.5 rounded-lg text-xs leading-relaxed ${
-              m.role === "user"
-                ? "bg-vow-dark text-vow-paper ml-6 rounded-tr-none font-medium"
-                : "bg-white border border-vow-border text-vow-charcoal mr-4 rounded-tl-none shadow-2xs"
-            }`}
-          >
-            {/* Copy Button */}
-            <button
-              type="button"
-              onClick={() => handleCopyMessage(m.content, idx)}
-              title="Copy message text"
-              className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-700 rounded opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur"
-            >
-              {copiedIdx === idx ? (
-                <Check className="w-3 h-3 text-emerald-600" />
-              ) : (
-                <Copy className="w-3 h-3" />
-              )}
-            </button>
-
-            <p className="whitespace-pre-wrap pr-4">{m.content}</p>
-
-            {m.role === "assistant" && idx === messages.length - 1 && aiGeneratedAssetUrl && (
-              <div className="mt-2.5 p-2 bg-slate-50 border border-slate-200 rounded-md flex items-center space-x-2 select-none">
-                <div className="w-12 h-12 bg-white rounded border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={aiGeneratedAssetUrl}
-                    alt="Generated DALL-E 3 Preview"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-[10px] text-vow-dark flex items-center gap-1">
-                    <ImageIcon className="w-3 h-3 text-vow-accent" /> DALL·E 3 Image Generated
-                  </p>
-                  <p className="text-[9px] text-vow-muted">Loaded on Artboard Canvas</p>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-        {isAiGenerating && (
-          <div className="p-3.5 bg-amber-50/80 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-center space-x-2.5 animate-spin-none select-none">
-            <RefreshCw className="w-4 h-4 animate-spin text-vow-accent" />
-            <span className="font-semibold">Generating AI image with OpenAI DALL·E 3...</span>
-          </div>
-        )}
-      </div>
-
-      {/* Chat Prompt Input */}
-      <div className="p-3 border-t border-vow-border bg-vow-surface">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSendMessage();
-          }}
-          className="flex items-center space-x-2"
-        >
+          {/* Drop / Upload Button */}
           <input
-            type="text"
-            value={inputMsg}
-            onChange={(e) => setInputMsg(e.target.value)}
-            placeholder="Type prompt (e.g. Create logo for Jack & Jill)..."
-            className="flex-1 bg-white border border-vow-border rounded-md px-3 py-2 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium select-text"
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept="image/*"
+            multiple
+            className="hidden"
           />
-          <button
-            type="submit"
-            disabled={isAiGenerating}
-            className="bg-vow-dark text-vow-paper p-2.5 rounded-md hover:bg-black transition-colors font-bold flex items-center justify-center cursor-pointer"
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="border-2 border-dashed border-vow-border hover:border-vow-dark bg-white rounded-lg p-2.5 text-center cursor-pointer transition-all duration-150 group"
           >
-            <Send className="w-3.5 h-3.5 text-vow-champagne" />
-          </button>
-        </form>
-      </div>
-    </aside>
+            <Upload className="w-4 h-4 text-vow-muted group-hover:text-vow-accent mx-auto mb-1 transition-colors" />
+            <p className="font-semibold text-[11px] text-vow-dark">
+              Upload Client Invitations / References
+            </p>
+            <p className="text-[9px] text-vow-muted">
+              Click or drag PNG, JPG, WebP for AI style guidance
+            </p>
+          </div>
+
+          {/* Uploaded Reference Thumbnails Grid */}
+          {referenceImages.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              {referenceImages.map((img) => (
+                <div
+                  key={img.id}
+                  className="relative group bg-white border border-vow-border rounded-lg p-1.5 flex flex-col items-center space-y-1 shadow-2xs"
+                >
+                  <button
+                    type="button"
+                    onClick={() => removeReferenceImage(img.id)}
+                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    title="Remove reference image"
+                  >
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+
+                  <div className="w-full h-14 bg-slate-100 rounded overflow-hidden flex items-center justify-center border border-slate-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                  </div>
+
+                  <div className="w-full flex items-center justify-between">
+                    <span className="text-[9px] font-mono text-slate-600 truncate max-w-[60px]" title={img.name}>
+                      {img.name}
+                    </span>
+                    <span className="text-[8px] font-mono font-bold bg-amber-50 text-amber-900 px-1 py-0.5 rounded border border-amber-200 uppercase">
+                      {img.tag}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Quick AI Generator Chips */}
+        <div className="p-3 bg-white border-b border-vow-border space-y-2">
+          <p className="text-[10px] font-bold text-vow-muted uppercase tracking-wider flex items-center gap-1">
+            <Cpu className="w-3 h-3 text-vow-accent" />
+            <span>{isBackgroundMode ? "Quick Background Generators" : "Quick Text & Logo Generators"}</span>
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {isBackgroundMode
+              ? [
+                  { label: "🌸 Botanical Watercolor", action: "Generate botanical watercolor stationery border" },
+                  { label: "✨ Gold Filigree Frame", action: "Generate golden filigree invitation frame without text" },
+                  { label: "🌿 Olive Branch Crest", action: "Generate olive sprig crest border pattern without words" },
+                  { label: "📜 Vintage Parchment", action: "Generate vintage stationery texture background" },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => handleSendMessage(item.action)}
+                    className="px-2.5 py-1 bg-amber-50 border border-amber-200 hover:border-vow-dark hover:bg-amber-100 rounded text-[11px] font-bold text-amber-950 transition-all shadow-2xs flex items-center gap-1 active:scale-95"
+                  >
+                    <Zap className="w-2.5 h-2.5 text-vow-accent" />
+                    {item.label}
+                  </button>
+                ))
+              : [
+                  { label: "✨ Generate Logo M & S", action: "Generate luxury wedding logo for M & S" },
+                  { label: "Make Editorial", action: "Make logo more editorial and high-contrast" },
+                  { label: "Estate Crest E & V", action: "Generate European estate heraldic crest logo for E & V" },
+                  { label: "Simplify Monogram", action: "Simplify monogram initial silhouette" },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => handleSendMessage(item.action)}
+                    className="px-2.5 py-1 bg-slate-50 border border-vow-border hover:border-vow-dark hover:bg-slate-100 rounded text-[11px] font-bold text-vow-charcoal transition-all shadow-2xs flex items-center gap-1 active:scale-95"
+                  >
+                    <Zap className="w-2.5 h-2.5 text-vow-accent" />
+                    {item.label}
+                  </button>
+                ))}
+          </div>
+        </div>
+
+        {/* Chat Messages Container */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3.5 select-text selection:bg-amber-200 selection:text-slate-900">
+          {messages.map((m, idx) => (
+            <div
+              key={idx}
+              className={`relative group p-3.5 rounded-lg text-xs leading-relaxed ${
+                m.role === "user"
+                  ? "bg-vow-dark text-vow-paper ml-6 rounded-tr-none font-medium"
+                  : "bg-white border border-vow-border text-vow-charcoal mr-4 rounded-tl-none shadow-2xs"
+              }`}
+            >
+              {/* Copy Button */}
+              <button
+                type="button"
+                onClick={() => handleCopyMessage(m.content, idx)}
+                title="Copy message text"
+                className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-700 rounded opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur"
+              >
+                {copiedIdx === idx ? (
+                  <Check className="w-3 h-3 text-emerald-600" />
+                ) : (
+                  <Copy className="w-3 h-3" />
+                )}
+              </button>
+
+              <p className="whitespace-pre-wrap pr-4">{m.content}</p>
+
+              {m.role === "assistant" && idx === messages.length - 1 && aiGeneratedAssetUrl && (
+                <div className="mt-2.5 p-2 bg-slate-50 border border-slate-200 rounded-md flex items-center space-x-2 select-none">
+                  <div className="w-12 h-12 bg-white rounded border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={aiGeneratedAssetUrl}
+                      alt="Generated DALL-E 3 Preview"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-[10px] text-vow-dark flex items-center gap-1">
+                      <ImageIcon className="w-3 h-3 text-vow-accent" /> DALL·E 3 Asset Generated
+                    </p>
+                    <p className="text-[9px] text-vow-muted">
+                      {isBackgroundMode ? "Seamless Background Loaded" : "Loaded on Artboard Canvas"}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+          {isAiGenerating && (
+            <div className="p-3.5 bg-amber-50/80 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-center space-x-2.5 select-none">
+              <RefreshCw className="w-4 h-4 animate-spin text-vow-accent" />
+              <span className="font-semibold">
+                {isBackgroundMode
+                  ? "Generating background texture & florals with OpenAI DALL·E 3..."
+                  : "Generating AI logo image with OpenAI DALL·E 3..."}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Chat Prompt Input */}
+        <div className="p-3 border-t border-vow-border bg-vow-surface">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage();
+            }}
+            className="flex items-center space-x-2"
+          >
+            <input
+              type="text"
+              value={inputMsg}
+              onChange={(e) => setInputMsg(e.target.value)}
+              placeholder={
+                isBackgroundMode
+                  ? "Type background prompt (e.g. Vintage floral watercolor border, gold filigree frame)..."
+                  : "Type prompt (e.g. Create logo for Jack & Jill)..."
+              }
+              className="flex-1 bg-white border border-vow-border rounded-md px-3 py-2 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium select-text"
+            />
+            <button
+              type="submit"
+              disabled={isAiGenerating}
+              className="bg-vow-dark text-vow-paper p-2.5 rounded-md hover:bg-black transition-colors font-bold flex items-center justify-center cursor-pointer"
+            >
+              <Send className="w-3.5 h-3.5 text-vow-champagne" />
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      {/* Developer Prompt Guidance & Steering System Modal */}
+      <PromptGuidanceModal />
+    </>
   );
 }

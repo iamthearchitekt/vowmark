@@ -7,7 +7,19 @@ import { X, Download, FileCode, Image as ImageIcon, ShieldCheck, Check } from "l
 export function ExportModal({ onClose }: { onClose: () => void }) {
   const typographyOptions = useEditorStore((state) => state.typographyOptions);
   const studioMode = useEditorStore((state) => state.studioMode);
+  const canvasFormat = useEditorStore((state) => state.canvasFormat);
+  const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
+  const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
+  const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
+
+  const photoboothMode = useEditorStore((state) => state.photoboothMode);
+  const photoboothMode6x4 = useEditorStore((state) => state.photoboothMode6x4);
+  const photoboothFlipH = useEditorStore((state) => state.photoboothFlipH);
+  const photoboothFlipV = useEditorStore((state) => state.photoboothFlipV);
+  const photoboothOffsetX = useEditorStore((state) => state.photoboothOffsetX);
+  const photoboothOffsetY = useEditorStore((state) => state.photoboothOffsetY);
+  const photoboothScale = useEditorStore((state) => state.photoboothScale);
 
   const [selectedFormat, setSelectedFormat] = useState<"svg" | "transparent_png" | "png" | "jpeg">("transparent_png");
   const [isExporting, setIsExporting] = useState(false);
@@ -22,8 +34,19 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
         body: JSON.stringify({
           format: selectedFormat,
           studioMode,
+          canvasFormat,
+          backgroundPatternAssetUrl,
+          textLogoAssetUrl,
+          textLayerBlendMode,
           aiGeneratedAssetUrl,
           typographyOptions,
+          photoboothMode,
+          photoboothMode6x4,
+          photoboothFlipH,
+          photoboothFlipV,
+          photoboothOffsetX,
+          photoboothOffsetY,
+          photoboothScale,
           isTransparent: selectedFormat === "transparent_png",
         }),
       });
@@ -46,7 +69,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-vow-paper border border-vow-border rounded-xl w-full max-w-lg overflow-hidden shadow-2xl p-6 relative">
+      <div className="bg-vow-paper border border-vow-border rounded-xl w-full max-w-lg overflow-hidden shadow-2xl p-6 relative select-none">
         <button onClick={onClose} className="absolute top-4 right-4 text-vow-muted hover:text-vow-dark">
           <X className="w-5 h-5" />
         </button>
@@ -54,7 +77,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
         <div className="mb-6">
           <h2 className="font-serif font-bold text-xl text-vow-dark">Production Asset Export</h2>
           <p className="text-xs text-vow-muted font-sans mt-1">
-            Download production-ready print &amp; digital files with true vector typography.
+            Download production-ready print &amp; digital files encoded in 100% Photoshop-compatible sRGB format.
           </p>
         </div>
 
@@ -68,9 +91,9 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
             },
             {
               id: "transparent_png",
-              title: "Transparent PNG (2048x2048)",
-              desc: "Isolated high-res raster graphic for stationery mockups and digital overlays.",
-              tag: "Digital & Stationery",
+              title: "Transparent PNG (High-Res 300 DPI)",
+              desc: "Isolated high-res raster graphic formatted for Adobe Photoshop, Illustrator & InDesign.",
+              tag: "Photoshop Ready",
             },
             {
               id: "png",
@@ -106,7 +129,7 @@ export function ExportModal({ onClose }: { onClose: () => void }) {
           <button
             onClick={handleExport}
             disabled={isExporting}
-            className="px-6 py-2 bg-vow-dark text-vow-paper hover:bg-black rounded-md text-xs font-sans font-semibold uppercase tracking-wider transition-colors flex items-center space-x-2 shadow-sm"
+            className="px-6 py-2 bg-vow-dark text-vow-paper hover:bg-black rounded-md text-xs font-sans font-semibold uppercase tracking-wider transition-colors flex items-center space-x-2 shadow-sm cursor-pointer"
           >
             {exportSuccess ? <Check className="w-4 h-4 text-vow-champagne" /> : <Download className="w-4 h-4 text-vow-champagne" />}
             <span>{isExporting ? "Exporting..." : exportSuccess ? "Downloaded!" : "Download File"}</span>

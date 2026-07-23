@@ -13,24 +13,29 @@ export interface ImageProcessingOptions {
 
 export class ImageProcessor {
   /**
-   * Process a buffer (PNG/JPEG) or SVG string and return clean, 100% Photoshop-compliant PNG output buffer
+   * Process a buffer (PNG/JPEG/SVG) and return clean, 100% Photoshop-compliant PNG output buffer
    */
   static async processImage(
     inputBuffer: Buffer,
     options: ImageProcessingOptions = {}
   ): Promise<{ processedBuffer: Buffer; width: number; height: number }> {
-    let pipeline = sharp(inputBuffer);
+    // Sanitize SVG input to strip @import url(...) stylesheets that cause librsvg hangs in Sharp
+    let sanitizedBuffer = inputBuffer;
+    const strContent = inputBuffer.toString("utf-8").trim();
+    if (strContent.includes("<svg")) {
+      const cleanSvg = strContent.replace(/@import\s+url\([^)]+\);?/gi, "");
+      sanitizedBuffer = Buffer.from(cleanSvg, "utf-8");
+    }
 
-    const metadata = await pipeline.metadata();
-    const currentWidth = metadata.width || 1024;
-    const currentHeight = metadata.height || 1024;
+    let pipeline = sharp(sanitizedBuffer, { density: 300 });
 
-    // Force sRGB color space so Adobe Photoshop never freezes trying to resolve missing ICC profiles
-    pipeline = pipeline.toColorspace("srgb");
+    const metadata = await pipeline.metadata().catch(() => ({ width: 2048, height: 2048 }));
+    const currentWidth = options.width || metadata.width || 2048;
+    const currentHeight = options.height || metadata.height || 2048;
 
-    // If transparent PNG requested, ensure resize uses transparent background fill
+    // Resize pipeline if dimensions specified
     if (options.width || options.height) {
-      pipeline = pipeline.resize(options.width || currentWidth, options.height || currentHeight, {
+      pipeline = pipeline.resize(currentWidth, currentHeight, {
         fit: "contain",
         background: options.makeTransparent
           ? { r: 0, g: 0, b: 0, alpha: 0 }
@@ -49,7 +54,7 @@ export class ImageProcessor {
 
     // Transparent Background White Keying for Raster Images
     if (options.makeTransparent) {
-      const isSvg = inputBuffer.toString("utf-8").trim().startsWith("<svg");
+      const isSvg = strContent.includes("<svg");
       if (!isSvg) {
         // Extract raw RGBA pixels from pipeline
         const { data, info } = await pipeline
@@ -80,11 +85,13 @@ export class ImageProcessor {
       }
     }
 
-    // Compression level 6 + sRGB ensures instant loading in Adobe Photoshop, Illustrator, & InDesign
+    // Force sRGB color space & output standard unindexed 32-bit RGBA PNG
     const { data, info } = await pipeline
+      .toColorspace("srgb")
       .png({
         compressionLevel: 6,
-        palette: false, // Standard 32-bit RGBA PNG, avoiding indexed palette hangs in Photoshop
+        palette: false, // Prevents indexed palette hangs in Adobe Photoshop/Illustrator
+        effort: 6,
         adaptiveFiltering: true,
       })
       .toBuffer({ resolveWithObject: true });
@@ -100,8 +107,16 @@ export class ImageProcessor {
    * Generate a small square thumbnail buffer
    */
   static async generateThumbnail(inputBuffer: Buffer, size: number = 256): Promise<Buffer> {
-    return sharp(inputBuffer)
+    let sanitizedBuffer = inputBuffer;
+    const strContent = inputBuffer.toString("utf-8").trim();
+    if (strContent.includes("<svg")) {
+      const cleanSvg = strContent.replace(/@import\s+url\([^)]+\);?/gi, "");
+      sanitizedBuffer = Buffer.from(cleanSvg, "utf-8");
+    }
+
+    return sharp(sanitizedBuffer, { density: 150 })
       .resize(size, size, { fit: "contain", background: { r: 255, g: 255, b: 255, alpha: 1 } })
+      .toColorspace("srgb")
       .png({ compressionLevel: 6 })
       .toBuffer();
   }

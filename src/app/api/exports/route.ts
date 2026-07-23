@@ -7,7 +7,16 @@ import path from "path";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { format, studioMode, aiGeneratedAssetUrl, typographyOptions, isTransparent, pureBlackAndWhite } = body;
+    const {
+      format,
+      studioMode,
+      canvasFormat,
+      aiGeneratedAssetUrl,
+      typographyOptions,
+      isTransparent,
+      pureBlackAndWhite,
+    } = body;
+
     const shouldBeTransparent = format === "transparent_png" || isTransparent === true;
 
     let inputBuffer: Buffer;
@@ -28,7 +37,7 @@ export async function POST(req: NextRequest) {
           if (fs.existsSync(localPath)) {
             inputBuffer = fs.readFileSync(localPath);
           } else {
-            // Fallback to SVG render
+            // Fallback to clean SVG render
             const svgResult = TypographyEngine.renderSvg({
               ...typographyOptions,
               isTransparent: shouldBeTransparent,
@@ -54,7 +63,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (format === "svg") {
-      const isSvg = inputBuffer.toString("utf-8").trim().startsWith("<svg");
+      const isSvg = inputBuffer.toString("utf-8").trim().includes("<svg");
       const svgContent = isSvg
         ? inputBuffer.toString("utf-8")
         : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><image href="${aiGeneratedAssetUrl}" width="1024" height="1024"/></svg>`;
@@ -67,7 +76,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Convert via Sharp ImageProcessor to guaranteed 100% Photoshop-compliant PNG or JPEG with alpha transparency keying
+    // Convert via Sharp ImageProcessor to guaranteed 100% Photoshop-compliant sRGB 32-bit RGBA PNG
     const processed = await ImageProcessor.processImage(inputBuffer, {
       makeTransparent: shouldBeTransparent,
       pureBlackAndWhite,

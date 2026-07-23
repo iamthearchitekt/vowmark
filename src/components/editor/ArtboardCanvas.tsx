@@ -176,6 +176,7 @@ export function ArtboardCanvas() {
   // Determine active text/logo artwork URL (Layer 2)
   const activeLogoAsset = textLogoAssetUrl || (studioMode === "generative_ai" ? aiGeneratedAssetUrl : null);
 
+  const is2x6Format = canvasFormat === "2_x_6";
   const is6x4Format = canvasFormat === "6_x_4";
   const isNonSquare = canvasFormat !== "square";
 
@@ -221,16 +222,19 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* PHOTOBOOTH STRIP & FRAME OVERLAY (2x6, 4x6, 6x4 Formats) */}
+        {/* 2x6 frame is scaled slightly larger & brought down 5px to fill canvas */}
         {/* ======================================================== */}
         {isNonSquare && photoboothMode && activeFrameOverlayUrl && (
-          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between">
+          <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={activeFrameOverlayUrl}
               alt="Photobooth Frame Overlay"
               className="absolute inset-0 w-full h-full object-contain z-10 transition-transform duration-200"
               style={{
-                transform: `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined,
+                transform: is2x6Format
+                  ? "scale(1.05) translateY(5px)"
+                  : `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined,
               }}
             />
           </div>
@@ -238,7 +242,6 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
-        {/* Unconstrained full-canvas bounds for 100% position & flip freedom */}
         {/* ======================================================== */}
         <div
           className="absolute inset-0 z-20 p-4 w-full h-full flex items-center justify-center transition-all"
@@ -321,8 +324,8 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal / Vertical Flip Controls */}
-          {photoboothMode && (
+          {/* Horizontal / Vertical Flip Controls (Disabled/Hidden for 2x6) */}
+          {!is2x6Format && photoboothMode && (
             <>
               <div className="flex items-center space-x-1">
                 <button
@@ -358,50 +361,54 @@ export function ArtboardCanvas() {
             </>
           )}
 
-          {/* Horizontal X-Position Slider with Micro Steppers & Editable Number Box */}
-          <div className="flex items-center space-x-1.5">
-            <MoveHorizontal className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
-            <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">X:</span>
-            <button
-              type="button"
-              onClick={() => setPhotoboothOffsetX(photoboothOffsetX - 2)}
-              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
-              title="Nudge left (-2px)"
-            >
-              -
-            </button>
-            <input
-              type="range"
-              min="-400"
-              max="400"
-              step="1"
-              value={photoboothOffsetX}
-              onChange={(e) => setPhotoboothOffsetX(Number(e.target.value))}
-              className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
-              title="Adjust horizontal X position"
-            />
-            <button
-              type="button"
-              onClick={() => setPhotoboothOffsetX(photoboothOffsetX + 2)}
-              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
-              title="Nudge right (+2px)"
-            >
-              +
-            </button>
-            <input
-              type="number"
-              min="-400"
-              max="400"
-              value={photoboothOffsetX}
-              onChange={(e) => setPhotoboothOffsetX(Number(e.target.value) || 0)}
-              className="w-12 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
-              title="Type exact X position"
-            />
-          </div>
+          {/* Horizontal X-Position Slider (Disabled/Hidden for 2x6) */}
+          {!is2x6Format && (
+            <>
+              <div className="flex items-center space-x-1.5">
+                <MoveHorizontal className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
+                <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">X:</span>
+                <button
+                  type="button"
+                  onClick={() => setPhotoboothOffsetX(photoboothOffsetX - 2)}
+                  className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
+                  title="Nudge left (-2px)"
+                >
+                  -
+                </button>
+                <input
+                  type="range"
+                  min="-400"
+                  max="400"
+                  step="1"
+                  value={photoboothOffsetX}
+                  onChange={(e) => setPhotoboothOffsetX(Number(e.target.value))}
+                  className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+                  title="Adjust horizontal X position"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPhotoboothOffsetX(photoboothOffsetX + 2)}
+                  className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
+                  title="Nudge right (+2px)"
+                >
+                  +
+                </button>
+                <input
+                  type="number"
+                  min="-400"
+                  max="400"
+                  value={photoboothOffsetX}
+                  onChange={(e) => setPhotoboothOffsetX(Number(e.target.value) || 0)}
+                  className="w-12 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
+                  title="Type exact X position"
+                />
+              </div>
 
-          <div className="h-3.5 w-px bg-slate-200" />
+              <div className="h-3.5 w-px bg-slate-200" />
+            </>
+          )}
 
-          {/* Vertical Y-Position Slider with Micro Steppers & Editable Number Box */}
+          {/* Vertical Y-Position Slider */}
           <div className="flex items-center space-x-1.5">
             <ArrowUpDown className="w-3.5 h-3.5 text-vow-accent flex-shrink-0" />
             <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider">Y:</span>

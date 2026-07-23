@@ -26,6 +26,7 @@ export interface EditorState {
 
   // 2-Layer Composition System
   backgroundPatternAssetUrl: string | null; // Layer 1: Background & Pattern
+  backgroundLayerOpacity: number;          // Layer 1 Opacity in percent (0 to 100, default 100)
   textLogoAssetUrl: string | null;          // Layer 2: Text & Monogram Logo
   textLayerBlendMode: TextBlendMode;         // Layer 2 Blend Mode: normal | multiply | overlay
   textLayerOpacity: number;                 // Layer 2 Opacity in percent (0 to 100, default 100)
@@ -72,6 +73,7 @@ export interface EditorState {
   setStudioMode: (mode: StudioMode) => void;
   setAiGeneratedAssetUrl: (url: string | null) => void;
   setBackgroundPatternAssetUrl: (url: string | null) => void;
+  setBackgroundLayerOpacity: (opacity: number) => void;
   setTextLogoAssetUrl: (url: string | null) => void;
   setTextLayerBlendMode: (mode: TextBlendMode) => void;
   setTextLayerOpacity: (opacity: number) => void;
@@ -171,11 +173,12 @@ export const useEditorStore = create<EditorState>((set) => ({
   studioMode: "generative_ai",
   aiGeneratedAssetUrl: null,
 
-  // 2-Layer Composition System defaults with blend mode and opacity
+  // 2-Layer Composition System defaults with blend mode and opacities
   backgroundPatternAssetUrl: null,
+  backgroundLayerOpacity: 100,     // Default 100% opacity for Layer 1 Background
   textLogoAssetUrl: null,
   textLayerBlendMode: "multiply", // Default to multiply for seamless print blending
-  textLayerOpacity: 100,          // Default 100% opacity
+  textLayerOpacity: 100,          // Default 100% opacity for Layer 2 Text
   vectorOverlayEnabled: true,     // Vector text overlay on top of AI backgrounds enabled by default
 
   // Universal Vector Text Color default
@@ -222,6 +225,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   setStudioMode: (mode) => set({ studioMode: mode }),
   setAiGeneratedAssetUrl: (url) => set({ aiGeneratedAssetUrl: url, textLogoAssetUrl: url }),
   setBackgroundPatternAssetUrl: (url) => set({ backgroundPatternAssetUrl: url }),
+  setBackgroundLayerOpacity: (opacity) => set({ backgroundLayerOpacity: opacity }),
   setTextLogoAssetUrl: (url) => set({ textLogoAssetUrl: url, aiGeneratedAssetUrl: url }),
   setTextLayerBlendMode: (mode) => set({ textLayerBlendMode: mode }),
   setTextLayerOpacity: (opacity) => set({ textLayerOpacity: opacity }),
@@ -313,6 +317,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       textColor: "#0F172A",
       aiGeneratedAssetUrl: null,
       backgroundPatternAssetUrl: null,
+      backgroundLayerOpacity: 100,
       textLogoAssetUrl: null,
       textLayerBlendMode: "multiply",
       textLayerOpacity: 100,

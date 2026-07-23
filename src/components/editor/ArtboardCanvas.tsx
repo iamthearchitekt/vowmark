@@ -27,6 +27,7 @@ export function ArtboardCanvas() {
   // Subscribe to studio mode, 2-layer composition state, color, and photobooth state
   const studioMode = useEditorStore((state) => state.studioMode);
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
+  const backgroundLayerOpacity = useEditorStore((state) => state.backgroundLayerOpacity ?? 100);
   const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const textLayerOpacity = useEditorStore((state) => state.textLayerOpacity ?? 100);
@@ -203,15 +204,18 @@ export function ArtboardCanvas() {
         }}
       >
         {/* ======================================================== */}
-        {/* LAYER 1 (BOTTOM): BACKGROUND & PATTERN LAYER */}
+        {/* LAYER 1 (BOTTOM): BACKGROUND & PATTERN LAYER WITH OPACITY */}
         {/* ======================================================== */}
         {backgroundPatternAssetUrl && (
-          <div className="absolute inset-0 z-0 pointer-events-none">
+          <div
+            className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-300"
+            style={{ opacity: backgroundLayerOpacity / 100 }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={backgroundPatternAssetUrl}
               alt="Layer 1 Background & Pattern"
-              className="w-full h-full object-cover transition-opacity duration-300"
+              className="w-full h-full object-cover"
             />
           </div>
         )}

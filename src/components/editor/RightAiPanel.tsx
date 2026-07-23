@@ -58,11 +58,13 @@ export function RightAiPanel() {
 
   // 2-Layer Composition State
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
+  const backgroundLayerOpacity = useEditorStore((state) => state.backgroundLayerOpacity ?? 100);
   const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
   const textLayerOpacity = useEditorStore((state) => state.textLayerOpacity ?? 100);
 
   const setBackgroundPatternAssetUrl = useEditorStore((state) => state.setBackgroundPatternAssetUrl);
+  const setBackgroundLayerOpacity = useEditorStore((state) => state.setBackgroundLayerOpacity);
   const setTextLogoAssetUrl = useEditorStore((state) => state.setTextLogoAssetUrl);
   const setTextLayerBlendMode = useEditorStore((state) => state.setTextLayerBlendMode);
   const setTextLayerOpacity = useEditorStore((state) => state.setTextLayerOpacity);
@@ -382,7 +384,7 @@ export function RightAiPanel() {
           </div>
         </div>
 
-        {/* 2-LAYER INDEPENDENT COMPOSITION WIDGET WITH BLENDING MODES & SUBTLE OPACITY SLIDER */}
+        {/* 2-LAYER INDEPENDENT COMPOSITION WIDGET WITH BLENDING MODES & OPACITY SLIDERS */}
         <div className="p-3.5 bg-slate-100/90 border-b border-vow-border space-y-3 font-sans">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
@@ -447,47 +449,72 @@ export function RightAiPanel() {
             </div>
           </div>
 
-          {/* Layer 2 Blending Mode & Subtle Opacity Slider */}
-          <div className="flex items-center justify-between pt-1 text-[10px] font-sans">
-            <div className="flex items-center space-x-1">
+          {/* Layer 1 Background Opacity Slider & Layer 2 Blend Mode Controls */}
+          <div className="space-y-2 pt-1 font-sans text-[10px]">
+            {/* Layer 1 Background Opacity Slider */}
+            <div className="flex items-center justify-between">
               <span className="font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1">
-                <Blend className="w-3 h-3 text-vow-accent" />
-                Blend:
+                <ImageIcon className="w-3 h-3 text-vow-accent" />
+                Layer 1 Background Opacity:
               </span>
-              <div className="flex space-x-0.5 bg-slate-200/80 p-0.5 rounded-md border border-slate-300">
-                {(["normal", "multiply", "overlay"] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => setTextLayerBlendMode(mode)}
-                    className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all cursor-pointer ${
-                      textLayerBlendMode === mode
-                        ? "bg-vow-dark text-white shadow-2xs font-extrabold"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    {mode}
-                  </button>
-                ))}
+              <div className="flex items-center space-x-1.5 bg-slate-200/60 px-2 py-0.5 rounded-md border border-slate-300/70">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={backgroundLayerOpacity}
+                  onChange={(e) => setBackgroundLayerOpacity(Number(e.target.value))}
+                  className="w-20 accent-vow-dark cursor-pointer h-1 bg-slate-300 rounded"
+                  title="Adjust Layer 1 Background Opacity (0% to 100%)"
+                />
+                <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[28px] text-right">
+                  {backgroundLayerOpacity}%
+                </span>
               </div>
             </div>
 
-            {/* Small & Subtle Layer 2 Opacity Slider */}
-            <div className="flex items-center space-x-1.5 bg-slate-200/60 px-2 py-0.5 rounded-md border border-slate-300/70">
-              <span className="text-[9px] font-mono text-slate-500 font-bold uppercase">Opacity:</span>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="1"
-                value={textLayerOpacity}
-                onChange={(e) => setTextLayerOpacity(Number(e.target.value))}
-                className="w-14 accent-vow-dark cursor-pointer h-1 bg-slate-300 rounded"
-                title="Adjust Layer 2 Opacity (0% to 100%)"
-              />
-              <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[24px] text-right">
-                {textLayerOpacity}%
-              </span>
+            {/* Layer 2 Blend Mode Selector & Opacity */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-1">
+                <span className="font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1">
+                  <Blend className="w-3 h-3 text-vow-accent" />
+                  L2 Blend:
+                </span>
+                <div className="flex space-x-0.5 bg-slate-200/80 p-0.5 rounded-md border border-slate-300">
+                  {(["normal", "multiply", "overlay"] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setTextLayerBlendMode(mode)}
+                      className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all cursor-pointer ${
+                        textLayerBlendMode === mode
+                          ? "bg-vow-dark text-white shadow-2xs font-extrabold"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      {mode}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-1.5 bg-slate-200/60 px-2 py-0.5 rounded-md border border-slate-300/70">
+                <span className="text-[9px] font-mono text-slate-500 font-bold uppercase">L2 Op:</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={textLayerOpacity}
+                  onChange={(e) => setTextLayerOpacity(Number(e.target.value))}
+                  className="w-14 accent-vow-dark cursor-pointer h-1 bg-slate-300 rounded"
+                  title="Adjust Layer 2 Text Opacity (0% to 100%)"
+                />
+                <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[24px] text-right">
+                  {textLayerOpacity}%
+                </span>
+              </div>
             </div>
           </div>
         </div>

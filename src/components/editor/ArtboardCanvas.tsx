@@ -155,22 +155,22 @@ export function ArtboardCanvas() {
   // Always pure flat white background container
   const bgClass = "bg-white border border-slate-300 shadow-xl";
 
-  // Scaled High-Res Studio Display Dimensions for 2x6, 4x6, 6x4, and Square
-  let widthPx = 700;
-  let heightPx = 700;
+  // Natively correctly sized Studio Display Dimensions for 2x6, 4x6, 6x4, and Square
+  let widthPx = 750;
+  let heightPx = 750;
 
   if (canvasFormat === "2_x_6") {
-    widthPx = 310;
-    heightPx = 930;
+    widthPx = 350;
+    heightPx = 1050;
   } else if (canvasFormat === "4_x_6") {
-    widthPx = 520;
-    heightPx = 780;
+    widthPx = 600;
+    heightPx = 900;
   } else if (canvasFormat === "6_x_4") {
-    widthPx = 780;
-    heightPx = 520;
+    widthPx = 900;
+    heightPx = 600;
   } else if (canvasFormat === "square") {
-    widthPx = 700;
-    heightPx = 700;
+    widthPx = 750;
+    heightPx = 750;
   }
 
   // Determine active text/logo artwork URL (Layer 2)
@@ -244,7 +244,7 @@ export function ArtboardCanvas() {
         <div
           className={`absolute z-20 flex items-center justify-center transition-all ${
             is2x6Format
-              ? "bottom-0 left-0 right-0 h-[30%] p-4"
+              ? "bottom-0 left-0 right-0 h-[28%] p-4"
               : "inset-0 p-6 w-full h-full"
           }`}
           style={{

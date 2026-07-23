@@ -156,8 +156,8 @@ export function ArtboardCanvas() {
   let heightPx = 650;
 
   if (canvasFormat === "2_x_6") {
-    widthPx = 600;
-    heightPx = 1800;
+    widthPx = 280;
+    heightPx = 840;
   } else if (canvasFormat === "4_x_6") {
     widthPx = 480;
     heightPx = 720;

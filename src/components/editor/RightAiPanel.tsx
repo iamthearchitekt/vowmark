@@ -21,7 +21,31 @@ import {
   Type,
 } from "lucide-react";
 
+function isImageGenerationTrigger(text: string): boolean {
+  const lower = text.toLowerCase().trim();
+  return (
+    lower.startsWith("make me") ||
+    lower.startsWith("make a") ||
+    lower.startsWith("generate") ||
+    lower.startsWith("create") ||
+    lower.startsWith("draw") ||
+    lower.startsWith("design a") ||
+    lower.startsWith("build") ||
+    lower.startsWith("render") ||
+    lower.includes("make me a") ||
+    lower.includes("make a ") ||
+    lower.includes("generate a") ||
+    lower.includes("create a") ||
+    lower.includes("make background") ||
+    lower.includes("generate background")
+  );
+}
+
 export function RightAiPanel() {
+  const [inputMsg, setInputMsg] = useState("");
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const messages = useEditorStore((state) => state.messages);
   const isAiGenerating = useEditorStore((state) => state.isAiGenerating);
   const studioMode = useEditorStore((state) => state.studioMode);
@@ -43,10 +67,6 @@ export function RightAiPanel() {
   const setAiGeneratedAssetUrl = useEditorStore((state) => state.setAiGeneratedAssetUrl);
   const setBrief = useEditorStore((state) => state.setBrief);
   const setTypographyOptions = useEditorStore((state) => state.setTypographyOptions);
-
-  const [inputMsg, setInputMsg] = useState("");
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCopyMessage = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -80,7 +100,8 @@ export function RightAiPanel() {
 
     addMessage({ role: "user", content: textToSend });
     if (!customPrompt) setInputMsg("");
-    setIsAiGenerating(true);
+
+    const isGeneration = isImageGenerationTrigger(textToSend);
 
     // Parse intent cleanly
     const intent = parseChatIntent(textToSend);
@@ -125,46 +146,60 @@ export function RightAiPanel() {
       referenceImages: referenceImages.map((img) => ({ url: img.url, tag: img.tag })),
     };
 
-    try {
-      // Trigger OpenAI DALL-E 3 Image Generation
-      const genRes = await fetch("/api/ai/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          brief: mergedBrief,
-          action: "generate",
-        }),
-      });
+    if (isGeneration) {
+      // Trigger OpenAI Image Generation mode
+      setIsAiGenerating(true);
+      try {
+        const genRes = await fetch("/api/ai/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            brief: mergedBrief,
+            action: "generate",
+          }),
+        });
 
-      const genData = await genRes.json();
-      const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
+        const genData = await genRes.json();
+        const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
 
-      setAiGeneratedAssetUrl(generatedUrl);
-
-      // Call OpenAI Chat Assistant for conversational response
-      const chatRes = await fetch("/api/ai/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...messages, { role: "user", content: textToSend }],
-          currentBrief: mergedBrief,
-        }),
-      });
-
-      const chatData = await chatRes.json();
-      if (chatData.message) {
-        addMessage({ role: "assistant", content: chatData.message });
+        setAiGeneratedAssetUrl(generatedUrl);
+        addMessage({
+          role: "assistant",
+          content:
+            aiGenerationType === "background_pattern"
+              ? "Background pattern generation completed. Canvas updated."
+              : "Logo generation completed. Canvas updated.",
+        });
+      } catch (err) {
+        addMessage({
+          role: "assistant",
+          content: "Generation failed. Please try again.",
+        });
+      } finally {
+        setIsAiGenerating(false);
       }
-    } catch (err) {
-      addMessage({
-        role: "assistant",
-        content:
-          aiGenerationType === "background_pattern"
-            ? "Background pattern generation completed. Canvas updated."
-            : "Logo generation completed. Canvas updated.",
-      });
-    } finally {
-      setIsAiGenerating(false);
+    } else {
+      // Conversational Design Planning Mode (Instant ChatGPT Response)
+      try {
+        const chatRes = await fetch("/api/ai/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [...messages, { role: "user", content: textToSend }],
+            currentBrief: mergedBrief,
+          }),
+        });
+
+        const chatData = await chatRes.json();
+        if (chatData.message) {
+          addMessage({ role: "assistant", content: chatData.message });
+        }
+      } catch (err) {
+        addMessage({
+          role: "assistant",
+          content: "Design planning response logged. Type 'Make me a...' when ready to render artwork on canvas.",
+        });
+      }
     }
   };
 

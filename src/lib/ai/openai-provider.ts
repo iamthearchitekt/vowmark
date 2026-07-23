@@ -33,11 +33,12 @@ export class OpenAIProvider {
     }
 
     try {
-      const systemPrompt = `You are VOWMARK's System AI Assistant.
+      const systemPrompt = `You are VOWMARK's Senior AI Wedding Design Consultant.
 CRITICAL DIRECTIVES:
-1. NO EMOJIS. Never use emojis or cheerful fluff in any response.
-2. Be strictly procedural, concise, and direct (max 5-10 words).
-3. State procedural status directly, e.g. "Generation completed. Canvas updated." or "Generation failed."`;
+1. NO EMOJIS. Never use emojis in any response.
+2. Be concise, procedural, and professional (1 to 3 short sentences MAX).
+3. Provide direct design advice, style recommendations, font pairings, or layout guidance.
+4. When planning design concepts, inform the user they can type "Make me a..." whenever they are ready to render artwork live on their canvas.`;
 
       const completion = await this.client.chat.completions.create({
         model: this.model,
@@ -45,14 +46,15 @@ CRITICAL DIRECTIVES:
           { role: "system", content: systemPrompt },
           ...messages,
         ],
-        temperature: 0.3,
-        max_tokens: 30,
+        temperature: 0.5,
+        max_tokens: 100,
       });
 
-      const responseText = completion.choices[0]?.message?.content?.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "").trim() || "Generation completed. Canvas updated.";
+      const rawContent = completion.choices[0]?.message?.content || "Generation completed. Canvas updated.";
+      const cleanContent = rawContent.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "").trim();
 
       return {
-        message: responseText,
+        message: cleanContent,
         updatedBrief: currentBrief,
       };
     } catch (err) {
@@ -100,16 +102,16 @@ CRITICAL DIRECTIVES:
     const lastUserMsg = messages[messages.length - 1]?.content || "";
     const lower = lastUserMsg.toLowerCase();
 
-    let message = "Generation completed. Canvas updated.";
+    let message = "Planning response logged. Type 'Make me a...' when ready to generate artwork on canvas.";
 
-    if (lower.includes("crest") || strokeContains(lower, ["crest", "estate", "shield"])) {
-      message = "Heraldic crest generation completed. Canvas updated.";
-    } else if (lower.includes("editorial") || strokeContains(lower, ["editorial", "vogue", "luxury"])) {
-      message = "Editorial luxury styling applied. Canvas updated.";
-    } else if (lower.includes("minimal") || lower.includes("clean")) {
-      message = "Minimal identity mark generated. Canvas updated.";
-    } else if (lower.includes("background") || lower.includes("floral") || lower.includes("border")) {
-      message = "Background pattern generation completed. Canvas updated.";
+    if (lower.includes("make me") || lower.includes("generate") || lower.includes("create")) {
+      message = "Generation completed. Canvas updated.";
+    } else if (lower.includes("font") || lower.includes("type")) {
+      message = "High-contrast editorial serif fonts (Bodoni Moda, Cormorant Garamond) fit formal luxury invitations best. Type 'Make me a...' when ready to generate.";
+    } else if (lower.includes("crest") || lower.includes("shield")) {
+      message = "European heraldic crests with fine line engraving complement estate venues. Type 'Make me an estate crest...' to render live.";
+    } else if (lower.includes("color") || lower.includes("palette")) {
+      message = "High-contrast black-on-white or champagne gold accents provide optimal print clarity.";
     }
 
     return {

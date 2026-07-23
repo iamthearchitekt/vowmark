@@ -157,6 +157,7 @@ const defaultTypography: TypographyOptions = {
   primaryFontSize: 150,
   secondaryFontSize: 150,
   dateFontSize: 42,
+  dateLetterSpacing: 4,
   hashtagFontSize: 36,
   fontWeight: 400,
   letterSpacing: -1, // Set to -1px default

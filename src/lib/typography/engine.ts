@@ -7,6 +7,7 @@ export interface TypographyOptions {
   dateText?: string;
   dateFontFamily?: string;
   dateFontSize?: number;
+  dateLetterSpacing?: number;
   hashtagText?: string;
   hashtagFontFamily?: string;
   hashtagFontSize?: number;
@@ -95,6 +96,7 @@ export class TypographyEngine {
     const dFontSize = options.dateFontSize !== undefined ? options.dateFontSize : Math.round(pFontSize * 0.28);
     const hFontSize = options.hashtagFontSize !== undefined ? options.hashtagFontSize : Math.round(pFontSize * 0.24);
 
+    const dLetterSpacing = options.dateLetterSpacing !== undefined ? options.dateLetterSpacing : 4;
     const letterSpacing = options.letterSpacing || 6;
     const ampScale = options.ampersandScale || 0.6;
     const ampFontSize = pFontSize * ampScale;
@@ -140,14 +142,14 @@ export class TypographyEngine {
       if (dateStr) {
         const dateY = botY + sFontSize * 0.9;
         elementsSvg += `
-          <text x="${centerX}" y="${dateY}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" font-weight="400" letter-spacing="4" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
+          <text x="${centerX}" y="${dateY}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" font-weight="400" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
         `;
       }
 
       if (hashtagStr) {
         const hashtagY = botY + sFontSize * (dateStr ? 1.35 : 0.9);
         elementsSvg += `
-          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" font-weight="400" letter-spacing="3" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" font-weight="400" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
         `;
       }
     } else if (options.layout === "horizontal") {
@@ -158,13 +160,13 @@ export class TypographyEngine {
       `;
       if (dateStr) {
         elementsSvg += `
-          <text x="${centerX}" y="${centerY + pFontSize * 0.8}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" letter-spacing="4" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
+          <text x="${centerX}" y="${centerY + pFontSize * 0.8}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
         `;
       }
       if (hashtagStr) {
         const hashtagY = centerY + pFontSize * (dateStr ? 1.25 : 0.8);
         elementsSvg += `
-          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="3" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
         `;
       }
     } else if (options.layout === "interlocking") {
@@ -184,13 +186,13 @@ export class TypographyEngine {
       `;
       if (dateStr) {
         elementsSvg += `
-          <text x="${centerX}" y="${centerY + monoSize * 0.65}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" letter-spacing="4" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
+          <text x="${centerX}" y="${centerY + monoSize * 0.65}" font-family="${dateFontConfig.cssFontFamily}" font-size="${dFontSize}" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.85">${escapeXml(dateStr)}</text>
         `;
       }
       if (hashtagStr) {
         const hashtagY = centerY + monoSize * (dateStr ? 0.82 : 0.65);
         elementsSvg += `
-          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="3" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
+          <text x="${centerX}" y="${hashtagY}" font-family="${hashtagFontConfig.cssFontFamily}" font-size="${hFontSize}" letter-spacing="${dLetterSpacing}" fill="${fill}" text-anchor="middle" opacity="0.8">${escapeXml(hashtagStr)}</text>
         `;
       }
     } else {

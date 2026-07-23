@@ -40,6 +40,7 @@ export function LeftControlPanel() {
   const dateFontSize = useEditorStore((state) => state.typographyOptions.dateFontSize || 42);
   const hashtagFontSize = useEditorStore((state) => state.typographyOptions.hashtagFontSize || 36);
   const letterSpacing = useEditorStore((state) => state.typographyOptions.letterSpacing);
+  const dateLetterSpacing = useEditorStore((state) => state.typographyOptions.dateLetterSpacing ?? 4);
   const nameGap = useEditorStore((state) => state.typographyOptions.nameGap);
   const ampersandScale = useEditorStore((state) => state.typographyOptions.ampersandScale);
   const ampersandText = useEditorStore((state) => state.typographyOptions.ampersandText);
@@ -368,6 +369,22 @@ export function LeftControlPanel() {
               max="24"
               value={letterSpacing}
               onChange={(e) => setTypographyOptions({ letterSpacing: Number(e.target.value) })}
+              className="w-full accent-vow-dark cursor-pointer"
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
+                Date &amp; Location Spacing: {dateLetterSpacing}px
+              </label>
+            </div>
+            <input
+              type="range"
+              min="-2"
+              max="30"
+              value={dateLetterSpacing}
+              onChange={(e) => setTypographyOptions({ dateLetterSpacing: Number(e.target.value) })}
               className="w-full accent-vow-dark cursor-pointer"
             />
           </div>

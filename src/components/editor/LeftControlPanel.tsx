@@ -92,20 +92,6 @@ export function LeftControlPanel() {
         >
           <ChevronRight className="w-4 h-4 text-vow-accent group-hover:scale-110 transition-transform" />
         </button>
-
-        {/* Quick Color Swatch Preview Button in Collapsed Mode */}
-        <button
-          type="button"
-          onClick={() => {
-            if (isGenerativeAi) {
-              setStudioMode("deterministic_vector");
-            }
-            setManualCollapsed(false);
-          }}
-          className="w-7 h-7 rounded-full border border-slate-300 shadow-2xs cursor-pointer hover:scale-110 transition-transform"
-          style={{ backgroundColor: textColor }}
-          title={`Vector Text Color: ${textColor}. Click to expand controls.`}
-        />
       </div>
     );
   }

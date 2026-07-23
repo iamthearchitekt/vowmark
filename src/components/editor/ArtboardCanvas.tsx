@@ -29,6 +29,7 @@ export function ArtboardCanvas() {
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
   const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
+  const textLayerOpacity = useEditorStore((state) => state.textLayerOpacity ?? 100);
   const textColor = useEditorStore((state) => state.textColor || "#0F172A");
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
 
@@ -233,7 +234,7 @@ export function ArtboardCanvas() {
         )}
 
         {/* ======================================================== */}
-        {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES */}
+        {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
         {/* Anchored consistently whether Photo Mock is ON or OFF */}
         {/* ======================================================== */}
         <div
@@ -248,6 +249,7 @@ export function ArtboardCanvas() {
                 ? `translate(${photoboothOffsetX}px, ${photoboothOffsetY}px) scale(${photoboothScale / 100})`
                 : undefined,
             mixBlendMode: textLayerBlendMode,
+            opacity: textLayerOpacity / 100,
           }}
         >
           {studioMode === "generative_ai" && activeLogoAsset ? (
@@ -364,7 +366,7 @@ export function ArtboardCanvas() {
             <button
               type="button"
               onClick={() => setPhotoboothOffsetX(photoboothOffsetX - 2)}
-              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none"
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
               title="Nudge left (-2px)"
             >
               -
@@ -382,7 +384,7 @@ export function ArtboardCanvas() {
             <button
               type="button"
               onClick={() => setPhotoboothOffsetX(photoboothOffsetX + 2)}
-              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none"
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
               title="Nudge right (+2px)"
             >
               +
@@ -407,7 +409,7 @@ export function ArtboardCanvas() {
             <button
               type="button"
               onClick={() => setPhotoboothOffsetY(photoboothOffsetY - 2)}
-              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none"
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
               title="Nudge up (-2px)"
             >
               -
@@ -425,7 +427,7 @@ export function ArtboardCanvas() {
             <button
               type="button"
               onClick={() => setPhotoboothOffsetY(photoboothOffsetY + 2)}
-              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none"
+              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
               title="Nudge down (+2px)"
             >
               +
@@ -475,7 +477,7 @@ export function ArtboardCanvas() {
                   setPhotoboothFlipH(false);
                   setPhotoboothFlipV(false);
                 }}
-                className="text-[10px] font-mono font-bold text-slate-400 hover:text-slate-700 uppercase flex items-center gap-1"
+                className="text-[10px] font-mono font-bold text-slate-400 hover:text-slate-700 uppercase flex items-center gap-1 cursor-pointer"
                 title="Reset X, Y, scale, and flips to default"
               >
                 <RotateCcw className="w-2.5 h-2.5" />

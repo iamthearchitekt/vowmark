@@ -155,22 +155,22 @@ export function ArtboardCanvas() {
   // Always pure flat white background container
   const bgClass = "bg-white border border-slate-300 shadow-xl";
 
-  // Natively correctly sized Studio Display Dimensions for 2x6, 4x6, 6x4, and Square
-  let widthPx = 750;
-  let heightPx = 750;
+  // Standard Canvas Dimensions for 2x6, 4x6, 6x4, and Square
+  let widthPx = 650;
+  let heightPx = 650;
 
   if (canvasFormat === "2_x_6") {
-    widthPx = 350;
-    heightPx = 1050;
+    widthPx = 280;
+    heightPx = 840;
   } else if (canvasFormat === "4_x_6") {
-    widthPx = 600;
-    heightPx = 900;
+    widthPx = 480;
+    heightPx = 720;
   } else if (canvasFormat === "6_x_4") {
-    widthPx = 900;
-    heightPx = 600;
+    widthPx = 720;
+    heightPx = 480;
   } else if (canvasFormat === "square") {
-    widthPx = 750;
-    heightPx = 750;
+    widthPx = 650;
+    heightPx = 650;
   }
 
   // Determine active text/logo artwork URL (Layer 2)
@@ -222,6 +222,7 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* PHOTOBOOTH STRIP & FRAME OVERLAY (2x6, 4x6, 6x4 Formats) */}
+        {/* Full Edge-to-Edge Photo Mock Fitting */}
         {/* ======================================================== */}
         {isNonSquare && photoboothMode && activeFrameOverlayUrl && (
           <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between">
@@ -229,7 +230,7 @@ export function ArtboardCanvas() {
             <img
               src={activeFrameOverlayUrl}
               alt="Photobooth Frame Overlay"
-              className="absolute inset-0 w-full h-full object-contain z-10 transition-transform duration-200"
+              className="absolute inset-0 w-full h-full object-cover z-10 transition-transform duration-200"
               style={{
                 transform: `${photoboothFlipH ? "scaleX(-1)" : ""} ${photoboothFlipV ? "scaleY(-1)" : ""}`.trim() || undefined,
               }}
@@ -239,12 +240,12 @@ export function ArtboardCanvas() {
 
         {/* ======================================================== */}
         {/* LAYER 2 (TOP): TEXT & MONOGRAM LOGO LAYER WITH BLEND MODES & OPACITY */}
-        {/* Anchored consistently whether Photo Mock is ON or OFF */}
+        {/* Anchored consistently in bottom section for 2x6 strip */}
         {/* ======================================================== */}
         <div
           className={`absolute z-20 flex items-center justify-center transition-all ${
             is2x6Format
-              ? "bottom-0 left-0 right-0 h-[28%] p-4"
+              ? "bottom-0 left-0 right-0 h-[25%] p-3"
               : "inset-0 p-6 w-full h-full"
           }`}
           style={{
@@ -264,7 +265,7 @@ export function ArtboardCanvas() {
               className="w-full h-full object-contain filter contrast-125 transition-opacity duration-300"
             />
           ) : (
-            /* Deterministic Vector Mode Typography Overlay (Can overlay on top of AI backgrounds!) */
+            /* Deterministic Vector Mode Typography Overlay */
             <>
               {ornamentUrl && (
                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-85">

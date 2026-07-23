@@ -240,7 +240,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   setAiGenerationType: (type) => set({ aiGenerationType: type }),
   setPromptGuidanceConfig: (config) =>
     set((state) => ({ promptGuidanceConfig: { ...state.promptGuidanceConfig, ...config } })),
-  setIsPromptGuidanceModalOpen: (open) => set({ setIsPromptGuidanceModalOpen: open }),
+  setIsPromptGuidanceModalOpen: (open) => set({ isPromptGuidanceModalOpen: open }),
   addReferenceImage: (img) => set((state) => ({ referenceImages: [...state.referenceImages, img] })),
   removeReferenceImage: (id) =>
     set((state) => ({ referenceImages: state.referenceImages.filter((img) => img.id !== id) })),

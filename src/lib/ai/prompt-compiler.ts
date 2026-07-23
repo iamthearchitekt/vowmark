@@ -175,10 +175,8 @@ export function compileGenerationPrompt(
         "initials",
         "logo",
         "alphabet",
-        "paper texture",
         "shadows",
         "mockup",
-        "gray background",
       ])
     );
 

@@ -159,7 +159,7 @@ export function RightAiPanel() {
         content:
           aiGenerationType === "background_pattern"
             ? "✨ Generated new seamless wedding background & floral pattern artwork on Artboard Canvas!"
-            : "✨ Generated new DALL·E 3 wedding logo image artwork. Canvas updated!",
+            : "✨ Generated new OpenAI wedding logo image artwork. Canvas updated!",
       });
     } finally {
       setIsAiGenerating(false);
@@ -181,7 +181,7 @@ export function RightAiPanel() {
               <h3 className="font-bold text-vow-dark uppercase tracking-wider text-xs">
                 AI Design Assistant
               </h3>
-              <p className="text-[10px] text-vow-muted">OpenAI DALL·E 3 Generator</p>
+              <p className="text-[10px] text-vow-muted">OpenAI Image AI (gpt-image-2)</p>
             </div>
           </div>
 
@@ -195,7 +195,7 @@ export function RightAiPanel() {
               <Sliders className="w-3.5 h-3.5 text-vow-accent" />
             </button>
             <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-900 border border-amber-300 font-bold">
-              {studioMode === "generative_ai" ? "DALL·E 3" : "Vector"}
+              {studioMode === "generative_ai" ? "OpenAI AI" : "Vector"}
             </span>
           </div>
         </div>
@@ -374,13 +374,13 @@ export function RightAiPanel() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={aiGeneratedAssetUrl}
-                      alt="Generated DALL-E 3 Preview"
+                      alt="Generated OpenAI Image AI Preview"
                       className="w-full h-full object-contain"
                     />
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-[10px] text-vow-dark flex items-center gap-1">
-                      <ImageIcon className="w-3 h-3 text-vow-accent" /> DALL·E 3 Asset Generated
+                      <ImageIcon className="w-3 h-3 text-vow-accent" /> OpenAI Asset Generated
                     </p>
                     <p className="text-[9px] text-vow-muted">
                       {isBackgroundMode ? "Seamless Background Loaded" : "Loaded on Artboard Canvas"}
@@ -395,8 +395,8 @@ export function RightAiPanel() {
               <RefreshCw className="w-4 h-4 animate-spin text-vow-accent" />
               <span className="font-semibold">
                 {isBackgroundMode
-                  ? "Generating background texture & florals with OpenAI DALL·E 3..."
-                  : "Generating AI logo image with OpenAI DALL·E 3..."}
+                  ? "Generating background texture & florals with OpenAI Image AI..."
+                  : "Generating AI logo image with OpenAI Image AI..."}
               </span>
             </div>
           )}

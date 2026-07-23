@@ -263,7 +263,7 @@ export function PromptGuidanceModal() {
 
               <div className="p-4 bg-slate-900 text-slate-100 rounded-xl space-y-2 select-text font-mono text-[11px]">
                 <div className="flex items-center justify-between text-vow-champagne font-bold uppercase tracking-wider text-[10px]">
-                  <span>Compiled OpenAI DALL·E 3 Final Prompt ({aiGenerationType})</span>
+                  <span>Compiled OpenAI Image AI Final Prompt ({aiGenerationType})</span>
                   <Sparkles className="w-3.5 h-3.5" />
                 </div>
                 <p className="whitespace-pre-wrap leading-relaxed">{compiledTest.prompt}</p>

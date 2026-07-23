@@ -30,6 +30,9 @@ export interface EditorState {
   textLayerBlendMode: TextBlendMode;         // Layer 2 Blend Mode: normal | multiply | overlay
   vectorOverlayEnabled: boolean;            // Enable Vector Typography overlay over AI backgrounds
 
+  // Universal Vector Text Color
+  textColor: string;
+
   aiPrompt: string;
 
   // AI Generation Type: Text & Logo vs Background & Pattern
@@ -46,8 +49,8 @@ export interface EditorState {
   photoboothFlipH: boolean;            // Flip frame horizontally (scaleX -1)
   photoboothFlipV: boolean;            // Flip frame vertically (scaleY -1)
   photoboothFrameUrl: string | null;   // Custom PNG frame override
-  photoboothOffsetX: number;           // Horizontal X adjustment in px (-300 to +300) for text/logos
-  photoboothOffsetY: number;           // Vertical Y adjustment in px (-200 to +200) for text/logos
+  photoboothOffsetX: number;           // Horizontal X adjustment in px (-400 to +400) for text/logos
+  photoboothOffsetY: number;           // Vertical Y adjustment in px (-400 to +400) for text/logos
   photoboothScale: number;             // Scale adjustment in percent (40 to 160) for text/logos
 
   brief: DesignBrief;
@@ -71,6 +74,7 @@ export interface EditorState {
   setTextLogoAssetUrl: (url: string | null) => void;
   setTextLayerBlendMode: (mode: TextBlendMode) => void;
   setVectorOverlayEnabled: (enabled: boolean) => void;
+  setTextColor: (color: string) => void;
   setAiGenerationType: (type: AiGenerationType) => void;
   setPromptGuidanceConfig: (config: Partial<PromptGuidanceConfig>) => void;
   setIsPromptGuidanceModalOpen: (open: boolean) => void;
@@ -154,6 +158,7 @@ const defaultTypography: TypographyOptions = {
   ampersandScale: 0.6,
   ampersandOffsetY: 0,
   colorMode: "black_on_white",
+  textColor: "#0F172A",
 };
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -169,6 +174,9 @@ export const useEditorStore = create<EditorState>((set) => ({
   textLogoAssetUrl: null,
   textLayerBlendMode: "multiply", // Default to multiply for seamless print blending
   vectorOverlayEnabled: true,     // Vector text overlay on top of AI backgrounds enabled by default
+
+  // Universal Vector Text Color default
+  textColor: "#0F172A",
 
   aiPrompt: "",
 
@@ -214,10 +222,17 @@ export const useEditorStore = create<EditorState>((set) => ({
   setTextLogoAssetUrl: (url) => set({ textLogoAssetUrl: url, aiGeneratedAssetUrl: url }),
   setTextLayerBlendMode: (mode) => set({ textLayerBlendMode: mode }),
   setVectorOverlayEnabled: (enabled) => set({ vectorOverlayEnabled: enabled }),
+
+  setTextColor: (color) =>
+    set((state) => ({
+      textColor: color,
+      typographyOptions: { ...state.typographyOptions, textColor: color },
+    })),
+
   setAiGenerationType: (type) => set({ aiGenerationType: type }),
   setPromptGuidanceConfig: (config) =>
     set((state) => ({ promptGuidanceConfig: { ...state.promptGuidanceConfig, ...config } })),
-  setIsPromptGuidanceModalOpen: (open) => set({ isPromptGuidanceModalOpen: open }),
+  setIsPromptGuidanceModalOpen: (open) => set({ setIsPromptGuidanceModalOpen: open }),
   addReferenceImage: (img) => set((state) => ({ referenceImages: [...state.referenceImages, img] })),
   removeReferenceImage: (id) =>
     set((state) => ({ referenceImages: state.referenceImages.filter((img) => img.id !== id) })),
@@ -274,7 +289,10 @@ export const useEditorStore = create<EditorState>((set) => ({
         }
       }
 
-      return { typographyOptions: updatedOpts };
+      return {
+        typographyOptions: updatedOpts,
+        textColor: opts.textColor || state.textColor,
+      };
     }),
 
   setOrnamentUrl: (url) => set({ ornamentUrl: url }),
@@ -288,6 +306,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     set({
       brief: defaultBrief,
       typographyOptions: defaultTypography,
+      textColor: "#0F172A",
       aiGeneratedAssetUrl: null,
       backgroundPatternAssetUrl: null,
       textLogoAssetUrl: null,

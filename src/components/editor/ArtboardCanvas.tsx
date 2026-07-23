@@ -24,11 +24,12 @@ export function ArtboardCanvas() {
     setMounted(true);
   }, []);
 
-  // Subscribe to studio mode, 2-layer composition state, and photobooth state
+  // Subscribe to studio mode, 2-layer composition state, color, and photobooth state
   const studioMode = useEditorStore((state) => state.studioMode);
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);
   const textLogoAssetUrl = useEditorStore((state) => state.textLogoAssetUrl);
   const textLayerBlendMode = useEditorStore((state) => state.textLayerBlendMode);
+  const textColor = useEditorStore((state) => state.textColor || "#0F172A");
   const aiGeneratedAssetUrl = useEditorStore((state) => state.aiGeneratedAssetUrl);
 
   const photoboothMode = useEditorStore((state) => state.photoboothMode);
@@ -110,7 +111,8 @@ export function ArtboardCanvas() {
       nameGap,
       ampersandScale,
       layout,
-      colorMode: "black_on_white",
+      colorMode: "custom",
+      textColor: textColor,
       isTransparent: true,
       canvasWidth: dimensions.width,
       canvasHeight: dimensions.height,
@@ -133,6 +135,7 @@ export function ArtboardCanvas() {
     nameGap,
     ampersandScale,
     layout,
+    textColor,
     dimensions.width,
     dimensions.height,
   ]);

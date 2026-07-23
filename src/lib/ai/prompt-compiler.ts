@@ -16,9 +16,9 @@ export const DEFAULT_PROMPT_GUIDANCE: PromptGuidanceConfig = {
   textLogoSuffix:
     "No paper texture, no realistic mockups, no 3D rendering, no shadows, no gray background, no color bleed, no blurry edges, high-resolution artwork.",
   backgroundPrefix:
-    "High-fashion luxury wedding stationery background graphic asset. Seamless pattern, elegant botanical florals, delicate watercolor wash, fine line filigree frame, gold accent flourishes on a pure white background (#FFFFFF).",
+    "Luxury wedding stationery background graphic asset.",
   backgroundSuffix:
-    "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO NAMES, NO LOGOS, NO MONOGRAMS, NO INITIALS. Pure background graphic artwork, no paper texture mockup, no 3D rendering, crisp high-resolution production art.",
+    "STRICTLY NO TEXT, NO LETTERS, NO WORDS, NO NAMES, NO LOGOS, NO MONOGRAMS, NO INITIALS. High-resolution production background graphic asset.",
 };
 
 export function getAspectRatioInstruction(canvasFormat?: string): {
@@ -94,10 +94,8 @@ export function compileGenerationPrompt(
     const rawPrompt = [
       "Create a luxury wedding stationery background asset.",
       aspectRatioInfo.promptInstruction,
-      "Incorporate botanical florals, filigree borders, and subtle stationery framing.",
-      `Style aesthetic: ${styleDef.name}.`,
-      "Composition: balanced, elegant, seamless background pattern without central text.",
-      brief.generationPrompt ? `User background instructions: ${brief.generationPrompt}` : "",
+      brief.generationPrompt ? `User instructions: ${brief.generationPrompt}` : "",
+      "Composition: elegant background pattern without central text.",
     ]
       .filter(Boolean)
       .join(" ");

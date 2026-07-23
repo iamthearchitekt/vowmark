@@ -111,6 +111,7 @@ export function ArtboardCanvas() {
       ampersandScale,
       layout,
       colorMode: "black_on_white",
+      isTransparent: true, // Guarantees crisp text paths with NO white background box
       canvasWidth: dimensions.width,
       canvasHeight: dimensions.height,
     }).svg;

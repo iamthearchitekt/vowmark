@@ -49,21 +49,19 @@ export class TypographyEngine {
     const centerY = height / 2;
 
     let fill = options.textColor || "#0F172A";
-    let bgFill = options.backgroundColor || "#FFFFFF";
+    let bgFill = "transparent"; // Default to transparent so no giant white rect box is drawn
 
     if (options.colorMode === "black_on_white") {
       fill = "#0F172A";
-      bgFill = "#FFFFFF";
     } else if (options.colorMode === "white_on_black") {
       fill = "#FFFFFF";
-      bgFill = "#0F172A";
     } else if (options.colorMode === "champagne_on_paper") {
       fill = "#C9A251";
-      bgFill = "#FFFFFF";
     }
 
-    if (options.isTransparent) {
-      bgFill = "transparent";
+    // Only draw solid background rect if explicitly requested and isTransparent is false
+    if (options.isTransparent === false && options.backgroundColor) {
+      bgFill = options.backgroundColor;
     }
 
     const transformText = (txt: string) => {

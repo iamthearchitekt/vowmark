@@ -97,7 +97,7 @@ export function FontSpecimenCard({
           {font.weddingTags.map((tag) => (
             <span
               key={tag}
-              className="text-[9px] font-mono font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full border border-slate-200 uppercase"
+              className="text-[9px] font-mono font-semibold bg-stone-100 text-stone-700 px-2 py-0.5 rounded-full border border-stone-200 uppercase"
             >
               {tag}
             </span>
@@ -128,7 +128,7 @@ export function FontSpecimenCard({
             <button
               type="button"
               onClick={handleRemoveFont}
-              className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded border border-slate-200 hover:border-rose-200 transition-all cursor-pointer"
+              className="p-1 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded border border-stone-200 hover:border-rose-200 transition-all cursor-pointer"
               title="Remove Font from Studio Library"
             >
               <Trash2 className="w-3.5 h-3.5" />

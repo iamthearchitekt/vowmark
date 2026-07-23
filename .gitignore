@@ -19,3 +19,8 @@ yarn-error.log*
 # system files
 .DS_Store
 Thumbs.db
+
+# scratch working files & downloads
+scratch/
+*.zip
+*.psd

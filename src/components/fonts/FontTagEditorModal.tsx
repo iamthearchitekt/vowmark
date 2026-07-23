@@ -69,7 +69,7 @@ export function FontTagEditorModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 font-sans select-none animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 font-sans select-none animate-in fade-in duration-200">
       <div className="bg-white border border-vow-border w-full max-w-lg rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="p-5 border-b border-vow-border bg-vow-paper flex items-center justify-between">
@@ -90,7 +90,7 @@ export function FontTagEditorModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-vow-muted hover:text-vow-dark rounded-lg hover:bg-slate-100 transition-colors"
+            className="p-1.5 text-vow-muted hover:text-vow-dark rounded-lg hover:bg-stone-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -107,7 +107,7 @@ export function FontTagEditorModal({
               type="text"
               value={subclass}
               onChange={(e) => setSubclass(e.target.value)}
-              className="w-full bg-slate-50 border border-vow-border rounded-lg px-3 py-2 text-xs font-medium focus:ring-1 focus:ring-vow-dark focus:outline-none"
+              className="w-full bg-stone-50 border border-vow-border rounded-lg px-3 py-2 text-xs font-medium focus:ring-1 focus:ring-vow-dark focus:outline-none"
               placeholder="e.g. high_contrast_serif, didone, classical_roman"
             />
           </div>
@@ -117,7 +117,7 @@ export function FontTagEditorModal({
             <label className="block text-xs font-bold text-vow-dark uppercase tracking-wider mb-2">
               Active Tags ({tags.length})
             </label>
-            <div className="flex flex-wrap gap-1.5 p-3 bg-slate-50 border border-vow-border rounded-xl min-h-[60px]">
+            <div className="flex flex-wrap gap-1.5 p-3 bg-stone-50 border border-vow-border rounded-xl min-h-[60px]">
               {tags.map((t) => (
                 <span
                   key={t}
@@ -127,7 +127,7 @@ export function FontTagEditorModal({
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(t)}
-                    className="text-slate-400 hover:text-rose-600 transition-colors"
+                    className="text-stone-400 hover:text-rose-600 transition-colors"
                     title={`Remove tag ${t}`}
                   >
                     <X className="w-3 h-3" />
@@ -135,7 +135,7 @@ export function FontTagEditorModal({
                 </span>
               ))}
               {tags.length === 0 && (
-                <span className="text-xs text-slate-400 italic">No tags assigned yet. Add some below!</span>
+                <span className="text-xs text-stone-400 italic">No tags assigned yet. Add some below!</span>
               )}
             </div>
           </div>
@@ -157,7 +157,7 @@ export function FontTagEditorModal({
                 value={newTagInput}
                 onChange={(e) => setNewTagInput(e.target.value)}
                 placeholder="Type tag name and press Enter..."
-                className="flex-1 bg-slate-50 border border-vow-border rounded-lg px-3 py-2 text-xs font-medium focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                className="flex-1 bg-stone-50 border border-vow-border rounded-lg px-3 py-2 text-xs font-medium focus:ring-1 focus:ring-vow-dark focus:outline-none"
               />
               <button
                 type="submit"
@@ -187,7 +187,7 @@ export function FontTagEditorModal({
                     onClick={() => handleAddTag(preset)}
                     className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
                       isAdded
-                        ? "bg-slate-200 text-slate-500 cursor-default opacity-60"
+                        ? "bg-stone-200 text-stone-500 cursor-default opacity-60"
                         : "bg-amber-50 text-amber-950 border border-amber-200 hover:border-vow-dark hover:bg-amber-100 cursor-pointer active:scale-95"
                     }`}
                   >
@@ -204,7 +204,7 @@ export function FontTagEditorModal({
           <button
             type="button"
             onClick={() => setTags(font.weddingTags || [])}
-            className="px-3 py-1.5 text-xs text-slate-500 hover:text-vow-dark transition-colors flex items-center gap-1"
+            className="px-3 py-1.5 text-xs text-stone-500 hover:text-vow-dark transition-colors flex items-center gap-1"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Reset Tags</span>
@@ -214,7 +214,7 @@ export function FontTagEditorModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-white border border-vow-border text-vow-dark rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 bg-white border border-vow-border text-vow-dark rounded-lg text-xs font-bold hover:bg-stone-50 transition-colors"
             >
               Cancel
             </button>

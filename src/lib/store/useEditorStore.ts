@@ -42,6 +42,7 @@ export interface EditorState {
   // AI Generation Type: Text & Logo vs Background & Pattern
   aiGenerationType: AiGenerationType;
   promptGuidanceConfig: PromptGuidanceConfig;
+  activeGuardrailPresetId: string;
   isPromptGuidanceModalOpen: boolean;
 
   // Canvas Format Mode: 2x6, 4x6, 6x4, or basic square mode
@@ -85,6 +86,7 @@ export interface EditorState {
   setTextColor: (color: string) => void;
   setAiGenerationType: (type: AiGenerationType) => void;
   setPromptGuidanceConfig: (config: Partial<PromptGuidanceConfig>) => void;
+  setActiveGuardrailPresetId: (presetId: string) => void;
   setIsPromptGuidanceModalOpen: (open: boolean) => void;
   setCanvasFormat: (format: CanvasFormat) => void;
   setPhotoboothMode: (enabled: boolean) => void;
@@ -195,6 +197,7 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   aiGenerationType: "text_logo",
   promptGuidanceConfig: DEFAULT_PROMPT_GUIDANCE,
+  activeGuardrailPresetId: "bse_photobooth_master",
   isPromptGuidanceModalOpen: false,
 
   canvasFormat: "square",
@@ -249,6 +252,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   setAiGenerationType: (type) => set({ aiGenerationType: type }),
   setPromptGuidanceConfig: (config) =>
     set((state) => ({ promptGuidanceConfig: { ...state.promptGuidanceConfig, ...config } })),
+  setActiveGuardrailPresetId: (presetId) => set({ activeGuardrailPresetId: presetId }),
   setIsPromptGuidanceModalOpen: (open) => set({ isPromptGuidanceModalOpen: open }),
   addReferenceImage: (img) => set((state) => ({ referenceImages: [...state.referenceImages, img] })),
   removeReferenceImage: (id) =>

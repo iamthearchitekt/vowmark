@@ -93,7 +93,7 @@ export function LeftControlPanel() {
   if (!mounted) {
     return (
       <aside className="w-[400px] bg-vow-paper border-r border-vow-border h-full p-6 text-xs font-sans select-none z-20">
-        <div className="text-slate-400">Loading Studio Controls...</div>
+        <div className="text-stone-400">Loading Studio Controls...</div>
       </aside>
     );
   }
@@ -109,7 +109,7 @@ export function LeftControlPanel() {
         <button
           type="button"
           onClick={() => setManualCollapsed(true)}
-          className="p-1 text-vow-muted hover:text-vow-dark rounded hover:bg-slate-100 transition-colors cursor-pointer"
+          className="p-1 text-vow-muted hover:text-vow-dark rounded hover:bg-stone-100 transition-colors cursor-pointer"
           title="Collapse Panel"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -138,7 +138,7 @@ export function LeftControlPanel() {
                     setBrief({ primaryText: e.target.value });
                     setTypographyOptions({ primaryText: e.target.value });
                   }}
-                  className="w-full bg-slate-50 border border-vow-border rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
+                  className="w-full bg-stone-50 border border-vow-border rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
                   placeholder="Input 1"
                 />
               </div>
@@ -154,13 +154,13 @@ export function LeftControlPanel() {
                     setBrief({ secondaryText: e.target.value });
                     setTypographyOptions({ secondaryText: e.target.value });
                   }}
-                  className="w-full bg-slate-50 border border-vow-border rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
+                  className="w-full bg-stone-50 border border-vow-border rounded-md px-3 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
                   placeholder="Input 2"
                 />
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-100">
+            <div className="pt-2 border-t border-stone-100">
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-[11px] font-sans font-semibold text-vow-charcoal uppercase tracking-wider">
                   Inputs Size
@@ -175,7 +175,7 @@ export function LeftControlPanel() {
                       const val = Math.max(12, Math.min(400, Number(e.target.value) || 12));
                       setTypographyOptions({ primaryFontSize: val, secondaryFontSize: val, fontSize: val });
                     }}
-                    className="w-14 bg-slate-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                    className="w-14 bg-stone-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
                   />
                   <span className="text-[10px] text-vow-muted font-bold">px</span>
                 </div>
@@ -199,7 +199,7 @@ export function LeftControlPanel() {
                 <select
                   value={fontFamily}
                   onChange={(e) => setTypographyOptions({ fontFamily: e.target.value })}
-                  className="w-full bg-slate-50 border border-vow-border rounded-md px-3 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  className="w-full bg-stone-50 border border-vow-border rounded-md px-3 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
                 >
                   {fontsList.map((f) => (
                     <option key={f.id} value={f.familyName}>
@@ -227,7 +227,7 @@ export function LeftControlPanel() {
                     const val = Math.max(10, Math.min(200, Number(e.target.value) || 10));
                     setTypographyOptions({ dateFontSize: val });
                   }}
-                  className="w-14 bg-slate-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  className="w-14 bg-stone-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
                 />
                 <span className="text-[10px] text-vow-muted font-bold">px</span>
               </div>
@@ -241,13 +241,13 @@ export function LeftControlPanel() {
                   setBrief({ date: e.target.value });
                   setTypographyOptions({ dateText: e.target.value });
                 }}
-                className="w-full bg-slate-50 border border-vow-border rounded-md px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
+                className="w-full bg-stone-50 border border-vow-border rounded-md px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
                 placeholder="OCTOBER 24, 2026"
               />
               <select
                 value={dateFontFamily || fontFamily}
                 onChange={(e) => setTypographyOptions({ dateFontFamily: e.target.value })}
-                className="w-full bg-slate-50 border border-vow-border rounded-md px-2 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                className="w-full bg-stone-50 border border-vow-border rounded-md px-2 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
               >
                 {fontsList.map((f) => (
                   <option key={f.id} value={f.familyName}>
@@ -283,7 +283,7 @@ export function LeftControlPanel() {
                     const val = Math.max(10, Math.min(200, Number(e.target.value) || 10));
                     setTypographyOptions({ hashtagFontSize: val });
                   }}
-                  className="w-14 bg-slate-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  className="w-14 bg-stone-50 border border-vow-border rounded px-1 py-0.5 text-right font-mono text-[11px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
                 />
                 <span className="text-[10px] text-vow-muted font-bold">px</span>
               </div>
@@ -294,13 +294,13 @@ export function LeftControlPanel() {
                 type="text"
                 value={hashtagText || ""}
                 onChange={(e) => setTypographyOptions({ hashtagText: e.target.value })}
-                className="w-full bg-slate-50 border border-vow-border rounded-md px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
+                className="w-full bg-stone-50 border border-vow-border rounded-md px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium"
                 placeholder="#Hashtag"
               />
               <select
                 value={hashtagFontFamily || fontFamily}
                 onChange={(e) => setTypographyOptions({ hashtagFontFamily: e.target.value })}
-                className="w-full bg-slate-50 border border-vow-border rounded-md px-2 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                className="w-full bg-stone-50 border border-vow-border rounded-md px-2 py-1.5 text-xs font-sans font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
               >
                 {fontsList.map((f) => (
                   <option key={f.id} value={f.familyName}>
@@ -340,7 +340,7 @@ export function LeftControlPanel() {
                   className={`py-2 px-3 rounded border text-left font-sans text-xs transition-colors font-semibold cursor-pointer ${
                     layout === l.id
                       ? "bg-vow-dark text-vow-paper border-vow-dark shadow-2xs"
-                      : "bg-white border-vow-border text-vow-charcoal hover:bg-slate-50"
+                      : "bg-white border-vow-border text-vow-charcoal hover:bg-stone-50"
                   }`}
                 >
                   {l.label}
@@ -430,7 +430,7 @@ export function LeftControlPanel() {
           )}
 
           <div>
-            <div className="flex items-center justify-between mb-2 bg-slate-50 p-2.5 rounded-lg border border-vow-border">
+            <div className="flex items-center justify-between mb-2 bg-stone-50 p-2.5 rounded-lg border border-vow-border">
               <label className="flex items-center space-x-2.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -471,14 +471,14 @@ export function LeftControlPanel() {
                 type="color"
                 value={textColor}
                 onChange={(e) => setTextColor(e.target.value)}
-                className="w-8 h-8 rounded border border-slate-300 cursor-pointer p-0 bg-transparent"
+                className="w-8 h-8 rounded border border-stone-300 cursor-pointer p-0 bg-transparent"
                 title="Color Picker"
               />
               <input
                 type="text"
                 value={textColor}
                 onChange={(e) => setTextColor(e.target.value)}
-                className="w-22 bg-slate-50 border border-slate-300 rounded px-2 py-1 font-mono text-xs font-bold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none uppercase"
+                className="w-22 bg-stone-50 border border-stone-300 rounded px-2 py-1 font-mono text-xs font-bold text-vow-dark focus:ring-1 focus:ring-vow-dark focus:outline-none uppercase"
                 placeholder="#000000"
               />
             </div>
@@ -486,7 +486,7 @@ export function LeftControlPanel() {
             <button
               type="button"
               onClick={handleEyeDropper}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-vow-dark hover:text-white text-slate-800 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all border border-slate-300 cursor-pointer shadow-2xs"
+              className="px-3 py-1.5 bg-stone-100 hover:bg-vow-dark hover:text-white text-stone-800 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all border border-stone-300 cursor-pointer shadow-2xs"
               title="Eye Dropper"
             >
               <Pipette className="w-4 h-4 text-vow-accent" />

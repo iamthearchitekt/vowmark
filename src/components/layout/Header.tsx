@@ -46,21 +46,21 @@ export function Header() {
           className={`text-[11px] font-sans font-bold flex items-center space-x-1.5 px-3 py-1 rounded border transition-all shadow-2xs ${
             photoboothMode
               ? "bg-vow-dark text-white border-vow-dark ring-1 ring-vow-accent"
-              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"
           }`}
           title="Toggle Universal Photo Mock Frame Overlay"
         >
-          <Camera className={`w-3.5 h-3.5 ${photoboothMode ? "text-vow-accent" : "text-slate-400"}`} />
+          <Camera className={`w-3.5 h-3.5 ${photoboothMode ? "text-vow-accent" : "text-stone-400"}`} />
           <span>Photo Mock: {photoboothMode ? "ON" : "OFF"}</span>
         </button>
 
         <button
           type="button"
           onClick={resetFields}
-          className="text-[11px] font-sans font-medium text-slate-500 hover:text-slate-800 flex items-center space-x-1.5 px-2.5 py-1 rounded border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-colors shadow-2xs"
+          className="text-[11px] font-sans font-medium text-stone-500 hover:text-stone-800 flex items-center space-x-1.5 px-2.5 py-1 rounded border border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-colors shadow-2xs"
           title="Reset all form fields & artboard to initial state"
         >
-          <RotateCcw className="w-3 h-3 text-slate-400" />
+          <RotateCcw className="w-3 h-3 text-stone-400" />
           <span>Reset Fields</span>
         </button>
       </div>

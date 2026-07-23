@@ -57,7 +57,7 @@ export function FontDetailModal({
   ];
 
   return (
-    <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6 font-sans select-none overflow-y-auto">
+    <div className="fixed inset-0 bg-stone-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6 font-sans select-none overflow-y-auto">
       <div className="bg-vow-paper border border-vow-border rounded-2xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="px-6 py-4 border-b border-vow-border bg-white flex items-center justify-between z-10">
@@ -68,7 +68,7 @@ export function FontDetailModal({
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="font-serif font-bold text-2xl text-vow-dark">{font.familyName}</h2>
-                <span className="text-[10px] font-mono uppercase bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-vow-charcoal font-semibold">
+                <span className="text-[10px] font-mono uppercase bg-stone-100 border border-stone-200 px-2 py-0.5 rounded text-vow-charcoal font-semibold">
                   {font.classification}
                 </span>
               </div>
@@ -81,7 +81,7 @@ export function FontDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-vow-muted hover:text-vow-dark rounded-full hover:bg-slate-100 transition-colors"
+            className="p-2 text-vow-muted hover:text-vow-dark rounded-full hover:bg-stone-100 transition-colors"
             title="Close Specimen Preview"
           >
             <X className="w-5 h-5" />
@@ -89,7 +89,7 @@ export function FontDetailModal({
         </div>
 
         {/* Custom Tester Controls Topbar */}
-        <div className="bg-slate-50 border-b border-vow-border p-4 px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="bg-stone-50 border-b border-vow-border p-4 px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex-1 w-full relative">
             <label className="block text-[10px] font-bold text-vow-muted uppercase tracking-wider mb-1">
               Test Preview Text (Type to preview live)
@@ -99,7 +99,7 @@ export function FontDetailModal({
               value={previewText}
               onChange={(e) => setPreviewText(e.target.value)}
               placeholder="Type your custom text here..."
-              className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-sm font-semibold text-vow-dark focus:ring-2 focus:ring-vow-accent focus:outline-none shadow-2xs"
+              className="w-full bg-white border border-stone-300 rounded-lg px-3.5 py-2 text-sm font-semibold text-vow-dark focus:ring-2 focus:ring-vow-accent focus:outline-none shadow-2xs"
             />
           </div>
 
@@ -132,23 +132,23 @@ export function FontDetailModal({
             </div>
 
             {/* Dark Mode & Style Toggles */}
-            <div className="flex items-center space-x-1.5 bg-white p-1 rounded-lg border border-slate-200 shadow-2xs">
+            <div className="flex items-center space-x-1.5 bg-white p-1 rounded-lg border border-stone-200 shadow-2xs">
               <button
                 type="button"
                 onClick={() => setIsItalic(!isItalic)}
                 className={`px-2.5 py-1 text-xs font-serif font-bold italic rounded transition-colors ${
-                  isItalic ? "bg-vow-dark text-white" : "text-slate-600 hover:bg-slate-100"
+                  isItalic ? "bg-vow-dark text-white" : "text-stone-600 hover:bg-stone-100"
                 }`}
                 title="Toggle Italic"
               >
                 I
               </button>
-              <div className="w-px h-4 bg-slate-200" />
+              <div className="w-px h-4 bg-stone-200" />
               <button
                 type="button"
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className={`p-1.5 rounded transition-colors ${
-                  isDarkMode ? "bg-slate-900 text-amber-300" : "text-slate-600 hover:bg-slate-100"
+                  isDarkMode ? "bg-stone-900 text-amber-300" : "text-stone-600 hover:bg-stone-100"
                 }`}
                 title="Toggle Dark Background"
               >
@@ -168,7 +168,7 @@ export function FontDetailModal({
                 key={preset}
                 type="button"
                 onClick={() => setPreviewText(preset)}
-                className="px-3 py-1 rounded-full text-xs font-sans bg-white border border-vow-border hover:bg-slate-100 text-vow-dark whitespace-nowrap transition-colors shadow-2xs"
+                className="px-3 py-1 rounded-full text-xs font-sans bg-white border border-vow-border hover:bg-stone-100 text-vow-dark whitespace-nowrap transition-colors shadow-2xs"
               >
                 {preset}
               </button>
@@ -179,7 +179,7 @@ export function FontDetailModal({
           <div
             className={`p-10 rounded-2xl border transition-all duration-300 flex items-center justify-center text-center min-h-[220px] shadow-inner overflow-hidden ${
               isDarkMode
-                ? "bg-slate-950 border-slate-800 text-white"
+                ? "bg-stone-950 border-stone-800 text-white"
                 : "bg-white border-vow-border text-vow-dark"
             }`}
           >
@@ -254,7 +254,7 @@ export function FontDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 border border-vow-border rounded-xl text-xs font-bold uppercase tracking-wider text-vow-muted hover:bg-slate-50 transition-colors"
+              className="px-4 py-2.5 border border-vow-border rounded-xl text-xs font-bold uppercase tracking-wider text-vow-muted hover:bg-stone-50 transition-colors"
             >
               Close
             </button>

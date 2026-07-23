@@ -145,8 +145,8 @@ export function ArtboardCanvas() {
 
   if (!mounted) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8 bg-slate-100/90 font-sans">
-        <div className="w-[500px] h-[500px] bg-white border border-slate-200 rounded flex items-center justify-center text-xs text-slate-400">
+      <div className="flex-1 flex items-center justify-center p-8 bg-stone-100/90 font-sans">
+        <div className="w-[500px] h-[500px] bg-white border border-stone-200 rounded flex items-center justify-center text-xs text-stone-400">
           Loading Creator Studio Canvas...
         </div>
       </div>
@@ -154,7 +154,7 @@ export function ArtboardCanvas() {
   }
 
   // Always pure flat white background container
-  const bgClass = "bg-white border border-slate-300 shadow-xl";
+  const bgClass = "bg-white border border-stone-300 shadow-xl";
 
   // Standard Canvas Dimensions for 2x6, 4x6, 6x4, and Square
   let widthPx = 650;
@@ -194,7 +194,7 @@ export function ArtboardCanvas() {
   }
 
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-start pt-8 pb-24 bg-slate-100/90 overflow-y-auto overflow-x-hidden select-none font-sans">
+    <div className="relative flex-1 flex flex-col items-center justify-start pt-8 pb-24 bg-stone-100/90 overflow-y-auto overflow-x-hidden select-none font-sans">
       {/* Visual Canvas Container */}
       <div
         className={`relative rounded transition-all duration-200 overflow-hidden ${bgClass}`}
@@ -287,23 +287,23 @@ export function ArtboardCanvas() {
         )}
 
         {/* Safe Area Guide */}
-        <div className="absolute inset-3 border border-dashed border-slate-300/40 pointer-events-none z-30" />
+        <div className="absolute inset-3 border border-dashed border-stone-300/40 pointer-events-none z-30" />
       </div>
 
       {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Non-Square Formats) */}
       {isNonSquare && (
-        <div className="absolute bottom-6 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-3.5 text-xs font-sans animate-fadeIn">
+        <div className="absolute bottom-6 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-5 py-2 flex items-center space-x-3.5 text-xs font-sans animate-fadeIn">
           {/* 6x4 Mode Selector — mode1 = 3 Boxes, mode2 = 1 Box */}
           {is6x4Format && photoboothMode && (
             <>
-              <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-full border border-slate-200">
+              <div className="flex items-center space-x-1 bg-stone-100 p-0.5 rounded-full border border-stone-200">
                 <button
                   type="button"
                   onClick={() => setPhotoboothMode6x4("mode1")}
                   className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase transition-all ${
                     photoboothMode6x4 === "mode1"
                       ? "bg-vow-dark text-white shadow-2xs"
-                      : "text-slate-600 hover:text-slate-900"
+                      : "text-stone-600 hover:text-stone-900"
                   }`}
                   title="3 Boxes photo frame layout"
                 >
@@ -315,7 +315,7 @@ export function ArtboardCanvas() {
                   className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase transition-all ${
                     photoboothMode6x4 === "mode2"
                       ? "bg-vow-dark text-white shadow-2xs"
-                      : "text-slate-600 hover:text-slate-900"
+                      : "text-stone-600 hover:text-stone-900"
                   }`}
                   title="1 Box photo frame layout"
                 >
@@ -323,7 +323,7 @@ export function ArtboardCanvas() {
                 </button>
               </div>
 
-              <div className="h-3.5 w-px bg-slate-200" />
+              <div className="h-3.5 w-px bg-stone-200" />
             </>
           )}
 
@@ -337,7 +337,7 @@ export function ArtboardCanvas() {
                   className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 transition-all border ${
                     photoboothFlipH
                       ? "bg-vow-dark text-white border-vow-dark shadow-2xs"
-                      : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                      : "bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100"
                   }`}
                   title="Flip photo frame horizontally"
                 >
@@ -351,7 +351,7 @@ export function ArtboardCanvas() {
                   className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 transition-all border ${
                     photoboothFlipV
                       ? "bg-vow-dark text-white border-vow-dark shadow-2xs"
-                      : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                      : "bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100"
                   }`}
                   title="Flip photo frame vertically"
                 >
@@ -360,7 +360,7 @@ export function ArtboardCanvas() {
                 </button>
               </div>
 
-              <div className="h-3.5 w-px bg-slate-200" />
+              <div className="h-3.5 w-px bg-stone-200" />
             </>
           )}
 
@@ -373,7 +373,7 @@ export function ArtboardCanvas() {
                 <button
                   type="button"
                   onClick={() => setPhotoboothOffsetX(photoboothOffsetX - 2)}
-                  className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
+                  className="w-4 h-4 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
                   title="Nudge left (-2px)"
                 >
                   -
@@ -385,13 +385,13 @@ export function ArtboardCanvas() {
                   step="1"
                   value={photoboothOffsetX}
                   onChange={(e) => setPhotoboothOffsetX(Number(e.target.value))}
-                  className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+                  className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-stone-200 rounded-lg"
                   title="Adjust horizontal X position"
                 />
                 <button
                   type="button"
                   onClick={() => setPhotoboothOffsetX(photoboothOffsetX + 2)}
-                  className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
+                  className="w-4 h-4 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
                   title="Nudge right (+2px)"
                 >
                   +
@@ -402,12 +402,12 @@ export function ArtboardCanvas() {
                   max="400"
                   value={photoboothOffsetX}
                   onChange={(e) => setPhotoboothOffsetX(Number(e.target.value) || 0)}
-                  className="w-12 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
+                  className="w-12 bg-stone-100 border border-stone-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
                   title="Type exact X position"
                 />
               </div>
 
-              <div className="h-3.5 w-px bg-slate-200" />
+              <div className="h-3.5 w-px bg-stone-200" />
             </>
           )}
 
@@ -418,7 +418,7 @@ export function ArtboardCanvas() {
             <button
               type="button"
               onClick={() => setPhotoboothOffsetY(photoboothOffsetY - 2)}
-              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
+              className="w-4 h-4 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
               title="Nudge up (-2px)"
             >
               -
@@ -430,13 +430,13 @@ export function ArtboardCanvas() {
               step="1"
               value={photoboothOffsetY}
               onChange={(e) => setPhotoboothOffsetY(Number(e.target.value))}
-              className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+              className="w-24 accent-vow-dark cursor-pointer h-1.5 bg-stone-200 rounded-lg"
               title="Adjust vertical Y position"
             />
             <button
               type="button"
               onClick={() => setPhotoboothOffsetY(photoboothOffsetY + 2)}
-              className="w-4 h-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
+              className="w-4 h-4 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded flex items-center justify-center text-[11px] leading-none cursor-pointer"
               title="Nudge down (+2px)"
             >
               +
@@ -447,12 +447,12 @@ export function ArtboardCanvas() {
               max="400"
               value={photoboothOffsetY}
               onChange={(e) => setPhotoboothOffsetY(Number(e.target.value) || 0)}
-              className="w-12 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
+              className="w-12 bg-stone-100 border border-stone-200 rounded px-1 py-0.5 text-right font-mono text-[10px] font-bold text-vow-accent focus:outline-none"
               title="Type exact Y position"
             />
           </div>
 
-          <div className="h-3.5 w-px bg-slate-200" />
+          <div className="h-3.5 w-px bg-stone-200" />
 
           {/* Scale Slider */}
           <div className="flex items-center space-x-1.5">
@@ -465,7 +465,7 @@ export function ArtboardCanvas() {
               step="1"
               value={photoboothScale}
               onChange={(e) => setPhotoboothScale(Number(e.target.value))}
-              className="w-16 accent-vow-dark cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+              className="w-16 accent-vow-dark cursor-pointer h-1.5 bg-stone-200 rounded-lg"
               title="Adjust scale percentage"
             />
             <span className="font-mono text-[10px] font-bold text-vow-accent min-w-[28px] text-right">
@@ -476,7 +476,7 @@ export function ArtboardCanvas() {
           {/* Quick Reset Transform */}
           {(photoboothOffsetX !== 0 || photoboothOffsetY !== 0 || photoboothScale !== 100 || photoboothFlipH || photoboothFlipV) && (
             <>
-              <div className="h-3.5 w-px bg-slate-200" />
+              <div className="h-3.5 w-px bg-stone-200" />
               <button
                 type="button"
                 onClick={() => {
@@ -486,7 +486,7 @@ export function ArtboardCanvas() {
                   setPhotoboothFlipH(false);
                   setPhotoboothFlipV(false);
                 }}
-                className="text-[10px] font-mono font-bold text-slate-400 hover:text-slate-700 uppercase flex items-center gap-1 cursor-pointer"
+                className="text-[10px] font-mono font-bold text-stone-400 hover:text-stone-700 uppercase flex items-center gap-1 cursor-pointer"
                 title="Reset X, Y, scale, and flips to default"
               >
                 <RotateCcw className="w-2.5 h-2.5" />

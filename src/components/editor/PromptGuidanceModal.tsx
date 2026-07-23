@@ -1,9 +1,9 @@
 "use client";
 
 import { useEditorStore } from "@/lib/store/useEditorStore";
-import { DEFAULT_PROMPT_GUIDANCE, compileGenerationPrompt } from "@/lib/ai/prompt-compiler";
+import { DEFAULT_PROMPT_GUIDANCE, GUARDRAIL_PRESETS, compileGenerationPrompt } from "@/lib/ai/prompt-compiler";
 import { useState } from "react";
-import { Sliders, X, RotateCcw, Check, Sparkles, Type, Image as ImageIcon, Code2 } from "lucide-react";
+import { Sliders, X, RotateCcw, Check, Sparkles, Type, Image as ImageIcon, Code2, Bookmark } from "lucide-react";
 
 export function PromptGuidanceModal() {
   const isOpen = useEditorStore((state) => state.isPromptGuidanceModalOpen);
@@ -14,6 +14,8 @@ export function PromptGuidanceModal() {
 
   const guidanceConfig = useEditorStore((state) => state.promptGuidanceConfig);
   const setPromptGuidanceConfig = useEditorStore((state) => state.setPromptGuidanceConfig);
+  const activeGuardrailPresetId = useEditorStore((state) => state.activeGuardrailPresetId);
+  const setActiveGuardrailPresetId = useEditorStore((state) => state.setActiveGuardrailPresetId);
 
   const brief = useEditorStore((state) => state.brief);
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
@@ -30,6 +32,23 @@ export function PromptGuidanceModal() {
 
   if (!isOpen) return null;
 
+  const handleSelectPreset = (presetId: string) => {
+    setActiveGuardrailPresetId(presetId);
+    const selected = GUARDRAIL_PRESETS.find((p) => p.id === presetId);
+    if (selected) {
+      setTextPrefix(selected.textLogoPrefix);
+      setTextSuffix(selected.textLogoSuffix);
+      setBgPrefix(selected.backgroundPrefix);
+      setBgSuffix(selected.backgroundSuffix);
+      setPromptGuidanceConfig({
+        textLogoPrefix: selected.textLogoPrefix,
+        textLogoSuffix: selected.textLogoSuffix,
+        backgroundPrefix: selected.backgroundPrefix,
+        backgroundSuffix: selected.backgroundSuffix,
+      });
+    }
+  };
+
   const handleSave = () => {
     setPromptGuidanceConfig({
       textLogoPrefix: textPrefix,
@@ -45,11 +64,7 @@ export function PromptGuidanceModal() {
   };
 
   const handleResetDefaults = () => {
-    setTextPrefix(DEFAULT_PROMPT_GUIDANCE.textLogoPrefix);
-    setTextSuffix(DEFAULT_PROMPT_GUIDANCE.textLogoSuffix);
-    setBgPrefix(DEFAULT_PROMPT_GUIDANCE.backgroundPrefix);
-    setBgSuffix(DEFAULT_PROMPT_GUIDANCE.backgroundSuffix);
-    setPromptGuidanceConfig(DEFAULT_PROMPT_GUIDANCE);
+    handleSelectPreset("bse_photobooth_master");
   };
 
   // Compiled Test Prompt output
@@ -68,7 +83,7 @@ export function PromptGuidanceModal() {
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 font-sans select-none animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 font-sans select-none animate-in fade-in duration-200">
       <div className="bg-white border border-vow-border w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
         {/* Header */}
         <div className="p-5 border-b border-vow-border bg-vow-paper flex items-center justify-between">
@@ -92,14 +107,41 @@ export function PromptGuidanceModal() {
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="p-1.5 text-vow-muted hover:text-vow-dark rounded-lg hover:bg-slate-100 transition-colors"
+            className="p-1.5 text-vow-muted hover:text-vow-dark rounded-lg hover:bg-stone-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Guardrail Presets Bar */}
+        <div className="px-5 py-3 bg-amber-50/60 border-b border-amber-200/80 flex items-center justify-between font-sans">
+          <div className="flex items-center space-x-2">
+            <Bookmark className="w-4 h-4 text-vow-accent flex-shrink-0" />
+            <div>
+              <span className="text-xs font-bold text-vow-dark uppercase tracking-wider block">
+                Active Guardrail Preset:
+              </span>
+              <span className="text-[11px] text-vow-muted">
+                {GUARDRAIL_PRESETS.find((p) => p.id === activeGuardrailPresetId)?.description}
+              </span>
+            </div>
+          </div>
+
+          <select
+            value={activeGuardrailPresetId}
+            onChange={(e) => handleSelectPreset(e.target.value)}
+            className="bg-white border border-vow-border text-vow-dark text-xs font-bold font-sans rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-vow-dark focus:outline-none cursor-pointer shadow-2xs"
+          >
+            {GUARDRAIL_PRESETS.map((preset) => (
+              <option key={preset.id} value={preset.id}>
+                {preset.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Master Generation Switch Banner */}
-        <div className="p-4 bg-slate-50 border-b border-vow-border flex items-center justify-between">
+        <div className="p-4 bg-stone-50 border-b border-vow-border flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-vow-dark uppercase tracking-wider block">
               Active Generation Mentality:
@@ -111,14 +153,14 @@ export function PromptGuidanceModal() {
             </span>
           </div>
 
-          <div className="flex bg-slate-200 p-1 rounded-xl space-x-1">
+          <div className="flex bg-stone-200 p-1 rounded-xl space-x-1">
             <button
               type="button"
               onClick={() => setAiGenerationType("text_logo")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                 aiGenerationType === "text_logo"
                   ? "bg-vow-dark text-white shadow-sm"
-                  : "text-slate-700 hover:text-slate-900"
+                  : "text-stone-700 hover:text-stone-900"
               }`}
             >
               <Type className="w-3.5 h-3.5 text-vow-accent" />
@@ -131,7 +173,7 @@ export function PromptGuidanceModal() {
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                 aiGenerationType === "background_pattern"
                   ? "bg-vow-dark text-white shadow-sm"
-                  : "text-slate-700 hover:text-slate-900"
+                  : "text-stone-700 hover:text-stone-900"
               }`}
             >
               <ImageIcon className="w-3.5 h-3.5 text-vow-accent" />
@@ -141,7 +183,7 @@ export function PromptGuidanceModal() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-vow-border bg-slate-100/50 px-5 pt-2 text-xs font-bold">
+        <div className="flex border-b border-vow-border bg-stone-100/50 px-5 pt-2 text-xs font-bold">
           <button
             type="button"
             onClick={() => setActiveTab("text")}
@@ -198,7 +240,7 @@ export function PromptGuidanceModal() {
                   rows={3}
                   value={textPrefix}
                   onChange={(e) => setTextPrefix(e.target.value)}
-                  className="w-full bg-slate-50 border border-vow-border rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  className="w-full bg-stone-50 border border-vow-border rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-vow-dark focus:outline-none"
                 />
               </div>
 
@@ -210,7 +252,7 @@ export function PromptGuidanceModal() {
                   rows={3}
                   value={textSuffix}
                   onChange={(e) => setTextSuffix(e.target.value)}
-                  className="w-full bg-slate-50 border border-vow-border rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  className="w-full bg-stone-50 border border-vow-border rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-vow-dark focus:outline-none"
                 />
               </div>
             </div>
@@ -230,7 +272,7 @@ export function PromptGuidanceModal() {
                   rows={3}
                   value={bgPrefix}
                   onChange={(e) => setBgPrefix(e.target.value)}
-                  className="w-full bg-slate-50 border border-vow-border rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  className="w-full bg-stone-50 border border-vow-border rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-vow-dark focus:outline-none"
                 />
               </div>
 
@@ -242,7 +284,7 @@ export function PromptGuidanceModal() {
                   rows={3}
                   value={bgSuffix}
                   onChange={(e) => setBgSuffix(e.target.value)}
-                  className="w-full bg-slate-50 border border-vow-border rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  className="w-full bg-stone-50 border border-vow-border rounded-lg p-3 text-xs font-mono focus:ring-1 focus:ring-vow-dark focus:outline-none"
                 />
               </div>
             </div>
@@ -258,12 +300,12 @@ export function PromptGuidanceModal() {
                   type="text"
                   value={testUserPrompt}
                   onChange={(e) => setTestUserPrompt(e.target.value)}
-                  className="w-full bg-slate-50 border border-vow-border rounded-lg px-3 py-2 text-xs font-medium focus:ring-1 focus:ring-vow-dark focus:outline-none"
+                  className="w-full bg-stone-50 border border-vow-border rounded-lg px-3 py-2 text-xs font-medium focus:ring-1 focus:ring-vow-dark focus:outline-none"
                   placeholder="Type a sample user prompt to test compilation..."
                 />
               </div>
 
-              <div className="p-4 bg-slate-900 text-slate-100 rounded-xl space-y-2 select-text font-mono text-[11px]">
+              <div className="p-4 bg-stone-900 text-stone-100 rounded-xl space-y-2 select-text font-mono text-[11px]">
                 <div className="flex items-center justify-between text-vow-champagne font-bold uppercase tracking-wider text-[10px]">
                   <span>Compiled OpenAI Image AI Final Prompt ({aiGenerationType})</span>
                   <Sparkles className="w-3.5 h-3.5" />
@@ -271,13 +313,13 @@ export function PromptGuidanceModal() {
                 <p className="whitespace-pre-wrap leading-relaxed">{compiledTest.prompt}</p>
               </div>
 
-              <div className="p-3 bg-slate-100 rounded-lg space-y-1">
-                <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider block">
+              <div className="p-3 bg-stone-100 rounded-lg space-y-1">
+                <span className="text-[10px] font-bold text-stone-700 uppercase tracking-wider block">
                   Compiled Negative Keywords Array:
                 </span>
                 <div className="flex flex-wrap gap-1">
                   {compiledTest.negativePrompt.map((kw) => (
-                    <span key={kw} className="px-1.5 py-0.5 bg-white text-slate-800 rounded border text-[10px] font-mono">
+                    <span key={kw} className="px-1.5 py-0.5 bg-white text-stone-800 rounded border text-[10px] font-mono">
                       {kw}
                     </span>
                   ))}
@@ -304,7 +346,7 @@ export function PromptGuidanceModal() {
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="px-3.5 py-2 bg-white border border-vow-border hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-white border border-vow-border hover:bg-stone-100 text-stone-700 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset to Factory Defaults</span>
@@ -314,7 +356,7 @@ export function PromptGuidanceModal() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="px-4 py-2 bg-white border border-vow-border text-vow-dark rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 bg-white border border-vow-border text-vow-dark rounded-lg text-xs font-bold hover:bg-stone-50 transition-colors"
             >
               Cancel
             </button>

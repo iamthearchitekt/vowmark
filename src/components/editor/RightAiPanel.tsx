@@ -74,6 +74,7 @@ export function RightAiPanel() {
   const canvasFormat = useEditorStore((state) => state.canvasFormat);
   const setAiGenerationType = useEditorStore((state) => state.setAiGenerationType);
   const promptGuidanceConfig = useEditorStore((state) => state.promptGuidanceConfig);
+  const activeGuardrailPresetId = useEditorStore((state) => state.activeGuardrailPresetId);
   const setIsPromptGuidanceModalOpen = useEditorStore((state) => state.setIsPromptGuidanceModalOpen);
 
   const referenceImages = useEditorStore((state) => state.referenceImages);
@@ -343,10 +344,13 @@ export function RightAiPanel() {
             <button
               type="button"
               onClick={() => setIsPromptGuidanceModalOpen(true)}
-              className="p-1.5 bg-slate-100 hover:bg-vow-dark hover:text-white rounded border border-slate-300 text-slate-700 transition-all cursor-pointer"
-              title="Open Developer Prompt Guidance & Steering System"
+              className="px-2 py-1 bg-stone-100 hover:bg-vow-dark hover:text-white rounded border border-stone-300 text-stone-700 transition-all cursor-pointer flex items-center gap-1.5 text-[10px] font-bold"
+              title="Open Guardrail Presets & Steering Settings"
             >
-              <Sliders className="w-4 h-4 text-vow-accent" />
+              <Sliders className="w-3.5 h-3.5 text-vow-accent" />
+              <span className="truncate max-w-[120px]">
+                {activeGuardrailPresetId === "bse_photobooth_master" ? "BSE Preset" : "Guardrails"}
+              </span>
             </button>
           </div>
         </div>
@@ -363,7 +367,7 @@ export function RightAiPanel() {
               className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
                 !isBackgroundMode
                   ? "bg-vow-accent text-vow-dark font-extrabold shadow-sm"
-                  : "text-slate-300 hover:text-white"
+                  : "text-stone-300 hover:text-white"
               }`}
             >
               <Type className="w-3 h-3" />
@@ -376,7 +380,7 @@ export function RightAiPanel() {
               className={`px-2.5 py-1 rounded text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
                 isBackgroundMode
                   ? "bg-vow-accent text-vow-dark font-extrabold shadow-sm"
-                  : "text-slate-300 hover:text-white"
+                  : "text-stone-300 hover:text-white"
               }`}
             >
               <ImageIcon className="w-3 h-3" />
@@ -386,7 +390,7 @@ export function RightAiPanel() {
         </div>
 
         {/* 2-LAYER INDEPENDENT COMPOSITION WIDGET WITH BLENDING MODES & OPACITY SLIDERS */}
-        <div className="p-3.5 bg-slate-100/90 border-b border-vow-border space-y-3 font-sans">
+        <div className="p-3.5 bg-stone-100/90 border-b border-vow-border space-y-3 font-sans">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-vow-dark uppercase tracking-wider flex items-center gap-1">
               <Layers className="w-3.5 h-3.5 text-vow-accent" />
@@ -397,26 +401,26 @@ export function RightAiPanel() {
           <div className="grid grid-cols-2 gap-2">
             {/* Layer 1: Background */}
             <div className={`p-2 rounded border transition-all ${
-              backgroundPatternAssetUrl ? "bg-white border-slate-300 shadow-2xs" : "bg-slate-50 border-dashed border-slate-300"
+              backgroundPatternAssetUrl ? "bg-white border-stone-300 shadow-2xs" : "bg-stone-50 border-dashed border-stone-300"
             } ${!layer1Visible ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-600">Layer 1: Background</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider text-stone-600">Layer 1: Background</span>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setLayer1Visible(!layer1Visible)}
                     className={`p-0.5 transition-colors cursor-pointer ${
-                      layer1Visible ? "text-slate-600 hover:text-vow-dark" : "text-slate-400 hover:text-slate-600"
+                      layer1Visible ? "text-stone-600 hover:text-vow-dark" : "text-stone-400 hover:text-stone-600"
                     }`}
                     title={layer1Visible ? "Hide Layer 1 Background" : "Show Layer 1 Background"}
                   >
-                    {layer1Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-slate-400" />}
+                    {layer1Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-stone-400" />}
                   </button>
                   {backgroundPatternAssetUrl && (
                     <button
                       type="button"
                       onClick={() => setBackgroundPatternAssetUrl(null)}
-                      className="text-slate-400 hover:text-rose-600 p-0.5 cursor-pointer"
+                      className="text-stone-400 hover:text-rose-600 p-0.5 cursor-pointer"
                       title="Clear Background Layer"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -424,41 +428,41 @@ export function RightAiPanel() {
                   )}
                 </div>
               </div>
-              <div className="h-10 rounded overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 relative">
+              <div className="h-10 rounded overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200 relative">
                 {backgroundPatternAssetUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={backgroundPatternAssetUrl} alt="Background Layer" className={`w-full h-full object-cover ${!layer1Visible ? "opacity-30 grayscale" : ""}`} />
                 ) : (
-                  <span className="text-[9px] text-slate-400 italic">Pure White</span>
+                  <span className="text-[9px] text-stone-400 italic">Pure White</span>
                 )}
                 {!layer1Visible && (
-                  <span className="absolute text-[9px] font-bold text-slate-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
+                  <span className="absolute text-[9px] font-bold text-stone-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
                 )}
               </div>
             </div>
 
             {/* Layer 2: Text / Logo */}
             <div className={`p-2 rounded border transition-all ${
-              textLogoAssetUrl ? "bg-white border-slate-300 shadow-2xs" : "bg-slate-50 border-dashed border-slate-300"
+              textLogoAssetUrl ? "bg-white border-stone-300 shadow-2xs" : "bg-stone-50 border-dashed border-stone-300"
             } ${!layer2Visible ? "opacity-60" : ""}`}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-600">Layer 2: Text &amp; Logo</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider text-stone-600">Layer 2: Text &amp; Logo</span>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setLayer2Visible(!layer2Visible)}
                     className={`p-0.5 transition-colors cursor-pointer ${
-                      layer2Visible ? "text-slate-600 hover:text-vow-dark" : "text-slate-400 hover:text-slate-600"
+                      layer2Visible ? "text-stone-600 hover:text-vow-dark" : "text-stone-400 hover:text-stone-600"
                     }`}
                     title={layer2Visible ? "Hide Layer 2 Text & Monogram" : "Show Layer 2 Text & Monogram"}
                   >
-                    {layer2Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-slate-400" />}
+                    {layer2Visible ? <Eye className="w-3 h-3 text-vow-accent" /> : <EyeOff className="w-3 h-3 text-stone-400" />}
                   </button>
                   {textLogoAssetUrl && (
                     <button
                       type="button"
                       onClick={() => setTextLogoAssetUrl(null)}
-                      className="text-slate-400 hover:text-rose-600 p-0.5 cursor-pointer"
+                      className="text-stone-400 hover:text-rose-600 p-0.5 cursor-pointer"
                       title="Clear Text & Monogram Layer"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -466,15 +470,15 @@ export function RightAiPanel() {
                   )}
                 </div>
               </div>
-              <div className="h-10 rounded overflow-hidden bg-slate-100 flex items-center justify-center border border-slate-200 relative">
+              <div className="h-10 rounded overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200 relative">
                 {textLogoAssetUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={textLogoAssetUrl} alt="Text Logo Layer" className={`w-full h-full object-contain p-0.5 ${!layer2Visible ? "opacity-30 grayscale" : ""}`} />
                 ) : (
-                  <span className={`text-[9px] text-slate-400 italic ${!layer2Visible ? "opacity-50" : ""}`}>Vector Engine Overlay</span>
+                  <span className={`text-[9px] text-stone-400 italic ${!layer2Visible ? "opacity-50" : ""}`}>Vector Engine Overlay</span>
                 )}
                 {!layer2Visible && (
-                  <span className="absolute text-[9px] font-bold text-slate-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
+                  <span className="absolute text-[9px] font-bold text-stone-500 bg-white/80 px-1 rounded uppercase">Hidden</span>
                 )}
               </div>
             </div>
@@ -484,11 +488,11 @@ export function RightAiPanel() {
           <div className="space-y-2 pt-1 font-sans text-[10px]">
             {/* Layer 1 Background Opacity Slider */}
             <div className="flex items-center justify-between">
-              <span className="font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1">
+              <span className="font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1">
                 <ImageIcon className="w-3 h-3 text-vow-accent" />
                 Layer 1 Opacity:
               </span>
-              <div className="flex items-center space-x-1.5 bg-slate-200/60 px-2 py-0.5 rounded-md border border-slate-300/70">
+              <div className="flex items-center space-x-1.5 bg-stone-200/60 px-2 py-0.5 rounded-md border border-stone-300/70">
                 <input
                   type="range"
                   min="0"
@@ -496,7 +500,7 @@ export function RightAiPanel() {
                   step="1"
                   value={backgroundLayerOpacity}
                   onChange={(e) => setBackgroundLayerOpacity(Number(e.target.value))}
-                  className="w-20 accent-vow-dark cursor-pointer h-1 bg-slate-300 rounded"
+                  className="w-20 accent-vow-dark cursor-pointer h-1 bg-stone-300 rounded"
                   title="Adjust Layer 1 Background Opacity"
                 />
                 <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[28px] text-right">
@@ -508,11 +512,11 @@ export function RightAiPanel() {
             {/* Layer 2 Blend Mode Selector & Opacity */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-1">
-                <span className="font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1">
+                <span className="font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1">
                   <Blend className="w-3 h-3 text-vow-accent" />
                   L2 Blend:
                 </span>
-                <div className="flex space-x-0.5 bg-slate-200/80 p-0.5 rounded-md border border-slate-300">
+                <div className="flex space-x-0.5 bg-stone-200/80 p-0.5 rounded-md border border-stone-300">
                   {(["normal", "multiply", "overlay"] as const).map((mode) => (
                     <button
                       key={mode}
@@ -521,7 +525,7 @@ export function RightAiPanel() {
                       className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all cursor-pointer ${
                         textLayerBlendMode === mode
                           ? "bg-vow-dark text-white shadow-2xs font-extrabold"
-                          : "text-slate-600 hover:text-slate-900"
+                          : "text-stone-600 hover:text-stone-900"
                       }`}
                     >
                       {mode}
@@ -530,8 +534,8 @@ export function RightAiPanel() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-1.5 bg-slate-200/60 px-2 py-0.5 rounded-md border border-slate-300/70">
-                <span className="text-[9px] font-mono text-slate-500 font-bold uppercase">L2 Op:</span>
+              <div className="flex items-center space-x-1.5 bg-stone-200/60 px-2 py-0.5 rounded-md border border-stone-300/70">
+                <span className="text-[9px] font-mono text-stone-500 font-bold uppercase">L2 Op:</span>
                 <input
                   type="range"
                   min="0"
@@ -539,7 +543,7 @@ export function RightAiPanel() {
                   step="1"
                   value={textLayerOpacity}
                   onChange={(e) => setTextLayerOpacity(Number(e.target.value))}
-                  className="w-14 accent-vow-dark cursor-pointer h-1 bg-slate-300 rounded"
+                  className="w-14 accent-vow-dark cursor-pointer h-1 bg-stone-300 rounded"
                   title="Adjust Layer 2 Text Opacity"
                 />
                 <span className="font-mono text-[9px] font-bold text-vow-dark min-w-[24px] text-right">
@@ -551,7 +555,7 @@ export function RightAiPanel() {
         </div>
 
         {/* Chat Messages Container */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 select-text selection:bg-amber-200 selection:text-slate-900 font-sans">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 select-text selection:bg-amber-200 selection:text-stone-900 font-sans">
           {messages.map((m, idx) => (
             <div
               key={idx}
@@ -565,7 +569,7 @@ export function RightAiPanel() {
                 type="button"
                 onClick={() => handleCopyMessage(m.content, idx)}
                 title="Copy message text"
-                className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-700 rounded opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur cursor-pointer"
+                className="absolute top-2 right-2 p-1 text-stone-400 hover:text-stone-700 rounded opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur cursor-pointer"
               >
                 {copiedIdx === idx ? (
                   <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -591,14 +595,14 @@ export function RightAiPanel() {
 
         {/* Attached Reference Images Thumbnails Bar (Compact) */}
         {referenceImages.length > 0 && (
-          <div className="px-3 py-1.5 bg-slate-100 border-t border-vow-border flex items-center space-x-2 overflow-x-auto">
+          <div className="px-3 py-1.5 bg-stone-100 border-t border-vow-border flex items-center space-x-2 overflow-x-auto">
             <span className="text-[9px] font-mono text-vow-muted uppercase font-bold flex-shrink-0">
               Refs ({referenceImages.length}):
             </span>
             {referenceImages.map((img) => (
               <div
                 key={img.id}
-                className="relative group flex-shrink-0 w-8 h-8 rounded border border-slate-300 bg-white overflow-hidden"
+                className="relative group flex-shrink-0 w-8 h-8 rounded border border-stone-300 bg-white overflow-hidden"
               >
                 <button
                   type="button"
@@ -654,7 +658,7 @@ export function RightAiPanel() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="p-2.5 bg-white hover:bg-slate-100 text-slate-600 rounded-md border border-vow-border transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
+              className="p-2.5 bg-white hover:bg-stone-100 text-stone-600 rounded-md border border-vow-border transition-colors flex items-center justify-center cursor-pointer shadow-2xs"
               title="Attach Client Reference Images"
             >
               <Paperclip className="w-4 h-4 text-vow-dark" />

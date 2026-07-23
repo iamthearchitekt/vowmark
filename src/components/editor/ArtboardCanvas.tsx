@@ -257,9 +257,10 @@ export function ArtboardCanvas() {
   }
 
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-start pt-16 pb-24 bg-stone-100/90 overflow-y-auto overflow-x-hidden select-none font-sans">
-      {/* Sleek Floating Glassmorphism Transform & Frame Control Pill (Top of Work Window) */}
-      <div className="sticky top-3 z-40 bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-xl rounded-full px-4 py-1.5 flex items-center space-x-3 text-xs font-sans max-w-[95%] overflow-x-auto shrink-0 animate-fadeIn">
+    <div className="relative flex-1 flex flex-col w-full h-full overflow-hidden select-none font-sans bg-stone-100/90">
+      {/* Pinned Top Control Bar Header (Fixed at top of Work Area, completely above canvas) */}
+      <div className="w-full bg-white/95 backdrop-blur-md border-b border-stone-200/90 py-2.5 px-6 flex items-center justify-center shrink-0 z-30 shadow-2xs">
+        <div className="flex items-center space-x-3.5 text-xs font-sans max-w-full overflow-x-auto">
           {/* 6x4 Mode Selector — mode1 = 3 Boxes, mode2 = 1 Box */}
           {is6x4Format && photoboothMode && (
             <>
@@ -462,18 +463,21 @@ export function ArtboardCanvas() {
             </>
           )}
         </div>
+      </div>
 
-      {/* Visual Canvas Container */}
-      <div
-        className={`relative rounded transition-all duration-200 overflow-hidden ${bgClass}`}
-        style={{
-          width: `${widthPx}px`,
-          height: `${heightPx}px`,
-          transform: `scale(${zoomLevel / 100})`,
-          transformOrigin: "top center",
-          flexShrink: 0,
-        }}
-      >
+      {/* Scrollable Canvas Viewport Window */}
+      <div className="flex-1 w-full overflow-auto flex items-center justify-center p-8 relative">
+        {/* Visual Canvas Container */}
+        <div
+          className={`relative rounded transition-all duration-200 overflow-hidden ${bgClass}`}
+          style={{
+            width: `${widthPx}px`,
+            height: `${heightPx}px`,
+            transform: `scale(${zoomLevel / 100})`,
+            transformOrigin: "center center",
+            flexShrink: 0,
+          }}
+        >
         {/* ======================================================== */}
         {/* LAYER 1 (BOTTOM): BACKGROUND & PATTERN LAYER WITH OPACITY */}
         {/* ======================================================== */}
@@ -555,6 +559,7 @@ export function ArtboardCanvas() {
         {/* Safe Area Guide */}
         <div className="absolute inset-3 border border-dashed border-stone-300/40 pointer-events-none z-30" />
       </div>
+    </div>
     </div>
   );
 }

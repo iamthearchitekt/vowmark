@@ -306,7 +306,7 @@ export const useEditorStore = create<EditorState>((set) => ({
         photoboothOffsetX: 0,
         photoboothOffsetY: 0,
         photoboothScale: 100,
-        zoomLevel: 100,
+        zoomLevel: format === "6_x_4" ? 150 : 100,
         brief: {
           ...state.brief,
           canvasFormat: format,

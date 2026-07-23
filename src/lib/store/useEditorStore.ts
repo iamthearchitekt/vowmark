@@ -10,7 +10,7 @@ export interface ReferenceImage {
   id: string;
   url: string;
   name: string;
-  tag: "Invitation" | "Layout" | "Typography" | "Ornament" | "General";
+  tag: string;
 }
 
 import { AiGenerationType, PromptGuidanceConfig, DEFAULT_PROMPT_GUIDANCE } from "../ai/prompt-compiler";

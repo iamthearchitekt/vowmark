@@ -45,7 +45,6 @@ export function RightAiPanel() {
 
   const [inputMsg, setInputMsg] = useState("");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
-  const [selectedTag, setSelectedTag] = useState<ReferenceImage["tag"]>("Invitation");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCopyMessage = (text: string, idx: number) => {
@@ -65,7 +64,7 @@ export function RightAiPanel() {
         id: `ref_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
         url: objectUrl,
         name: file.name,
-        tag: selectedTag,
+        tag: "Reference",
       });
     });
 
@@ -242,20 +241,6 @@ export function RightAiPanel() {
               <FileImage className="w-3.5 h-3.5 text-vow-accent" />
               <span>Client Reference &amp; Invitations ({referenceImages.length})</span>
             </p>
-
-            <div className="flex items-center space-x-1">
-              <Tag className="w-3 h-3 text-vow-muted" />
-              <select
-                value={selectedTag}
-                onChange={(e) => setSelectedTag(e.target.value as any)}
-                className="bg-white border border-vow-border rounded px-1.5 py-0.5 text-[10px] font-bold focus:ring-1 focus:ring-vow-dark focus:outline-none"
-              >
-                <option value="Invitation">Invitation</option>
-                <option value="Layout">Layout</option>
-                <option value="Typography">Typography</option>
-                <option value="Ornament">Ornament</option>
-              </select>
-            </div>
           </div>
 
           {/* Drop / Upload Button */}
@@ -302,12 +287,9 @@ export function RightAiPanel() {
                     <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
                   </div>
 
-                  <div className="w-full flex items-center justify-between">
-                    <span className="text-[9px] font-mono text-slate-600 truncate max-w-[60px]" title={img.name}>
+                  <div className="w-full text-center">
+                    <span className="text-[9px] font-mono text-slate-600 truncate block max-w-full" title={img.name}>
                       {img.name}
-                    </span>
-                    <span className="text-[8px] font-mono font-bold bg-amber-50 text-amber-900 px-1 py-0.5 rounded border border-amber-200 uppercase">
-                      {img.tag}
                     </span>
                   </div>
                 </div>

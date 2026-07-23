@@ -207,18 +207,18 @@ export function RightAiPanel() {
 
   return (
     <>
-      <aside className="w-96 bg-vow-paper border-l border-vow-border flex flex-col h-full overflow-hidden text-xs font-sans select-none">
+      <aside className="w-[480px] bg-vow-paper border-l border-vow-border flex flex-col h-full overflow-hidden text-sm font-sans select-none">
         {/* Assistant Header */}
         <div className="p-4 border-b border-vow-border bg-vow-surface flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-7 h-7 rounded-md bg-vow-dark text-vow-accent flex items-center justify-center font-bold">
-              <Sparkles className="w-4 h-4 text-vow-accent" />
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-md bg-vow-dark text-vow-accent flex items-center justify-center font-bold">
+              <Sparkles className="w-4.5 h-4.5 text-vow-accent" />
             </div>
             <div>
-              <h3 className="font-bold text-vow-dark uppercase tracking-wider text-xs">
+              <h3 className="font-bold text-vow-dark uppercase tracking-wider text-sm">
                 AI Design Assistant
               </h3>
-              <p className="text-[10px] text-vow-muted">OpenAI Image AI (gpt-image-2)</p>
+              <p className="text-xs text-vow-muted">OpenAI Image AI (gpt-image-2)</p>
             </div>
           </div>
 
@@ -229,21 +229,21 @@ export function RightAiPanel() {
               className="p-1.5 bg-slate-100 hover:bg-vow-dark hover:text-white rounded border border-slate-300 text-slate-700 transition-all"
               title="Open Developer Prompt Guidance & Steering System"
             >
-              <Sliders className="w-3.5 h-3.5 text-vow-accent" />
+              <Sliders className="w-4 h-4 text-vow-accent" />
             </button>
           </div>
         </div>
 
         {/* MASTER GENERATION MENTALITY SWITCHER */}
-        <div className="p-2.5 bg-vow-dark text-white flex items-center justify-between">
-          <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-vow-champagne">
+        <div className="p-3 bg-vow-dark text-white flex items-center justify-between">
+          <span className="text-xs font-mono uppercase font-bold tracking-wider text-vow-champagne">
             Generation Mode:
           </span>
           <div className="flex space-x-1 bg-black/40 p-1 rounded-lg">
             <button
               type="button"
               onClick={() => setAiGenerationType("text_logo")}
-              className={`px-2.5 py-1 rounded text-[10px] font-bold flex items-center gap-1 transition-all ${
+              className={`px-3 py-1 rounded text-xs font-bold flex items-center gap-1 transition-all ${
                 !isBackgroundMode
                   ? "bg-vow-accent text-vow-dark font-extrabold shadow-sm"
                   : "text-slate-300 hover:text-white"
@@ -333,14 +333,14 @@ export function RightAiPanel() {
         </div>
 
         {/* Chat Messages Container */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3.5 select-text selection:bg-amber-200 selection:text-slate-900">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 select-text selection:bg-amber-200 selection:text-slate-900">
           {messages.map((m, idx) => (
             <div
               key={idx}
-              className={`relative group p-3.5 rounded-lg text-xs leading-relaxed ${
+              className={`relative group p-4 rounded-lg text-sm leading-relaxed ${
                 m.role === "user"
-                  ? "bg-vow-dark text-vow-paper ml-6 rounded-tr-none font-medium"
-                  : "bg-white border border-vow-border text-vow-charcoal mr-4 rounded-tl-none shadow-2xs"
+                  ? "bg-vow-dark text-vow-paper ml-8 rounded-tr-none font-medium"
+                  : "bg-white border border-vow-border text-vow-charcoal mr-6 rounded-tl-none shadow-2xs"
               }`}
             >
               {/* Copy Button */}
@@ -351,17 +351,17 @@ export function RightAiPanel() {
                 className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-700 rounded opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 backdrop-blur"
               >
                 {copiedIdx === idx ? (
-                  <Check className="w-3 h-3 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                 ) : (
-                  <Copy className="w-3 h-3" />
+                  <Copy className="w-3.5 h-3.5" />
                 )}
               </button>
 
               <p className="whitespace-pre-wrap pr-4">{m.content}</p>
 
               {m.role === "assistant" && idx === messages.length - 1 && aiGeneratedAssetUrl && (
-                <div className="mt-2.5 p-2 bg-slate-50 border border-slate-200 rounded-md flex items-center space-x-2 select-none">
-                  <div className="w-12 h-12 bg-white rounded border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
+                <div className="mt-3 p-2.5 bg-slate-50 border border-slate-200 rounded-md flex items-center space-x-3 select-none">
+                  <div className="w-14 h-14 bg-white rounded border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={aiGeneratedAssetUrl}
@@ -370,10 +370,10 @@ export function RightAiPanel() {
                     />
                   </div>
                   <div className="flex-1">
-                    <p className="font-bold text-[10px] text-vow-dark flex items-center gap-1">
-                      <ImageIcon className="w-3 h-3 text-vow-accent" /> OpenAI Asset Generated
+                    <p className="font-bold text-xs text-vow-dark flex items-center gap-1">
+                      <ImageIcon className="w-3.5 h-3.5 text-vow-accent" /> OpenAI Asset Generated
                     </p>
-                    <p className="text-[9px] text-vow-muted">
+                    <p className="text-[10px] text-vow-muted">
                       {isBackgroundMode ? "Seamless Background Loaded" : "Loaded on Artboard Canvas"}
                     </p>
                   </div>
@@ -382,7 +382,7 @@ export function RightAiPanel() {
             </div>
           ))}
           {isAiGenerating && (
-            <div className="p-3.5 bg-amber-50/80 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-center space-x-2.5 select-none">
+            <div className="p-4 bg-amber-50/80 border border-amber-200 rounded-lg text-sm text-amber-900 flex items-center space-x-3 select-none">
               <RefreshCw className="w-4 h-4 animate-spin text-vow-accent" />
               <span className="font-semibold">
                 {isBackgroundMode
@@ -394,7 +394,7 @@ export function RightAiPanel() {
         </div>
 
         {/* Chat Prompt Input */}
-        <div className="p-3 border-t border-vow-border bg-vow-surface">
+        <div className="p-3.5 border-t border-vow-border bg-vow-surface">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -411,14 +411,14 @@ export function RightAiPanel() {
                   ? "Type background prompt (e.g. Vintage floral watercolor border, gold filigree frame)..."
                   : "Type prompt (e.g. Create logo for Jack & Jill)..."
               }
-              className="flex-1 bg-white border border-vow-border rounded-md px-3 py-2 text-xs focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium select-text"
+              className="flex-1 bg-white border border-vow-border rounded-md px-3.5 py-2.5 text-sm focus:ring-1 focus:ring-vow-dark focus:outline-none font-medium select-text"
             />
             <button
               type="submit"
               disabled={isAiGenerating}
-              className="bg-vow-dark text-vow-paper p-2.5 rounded-md hover:bg-black transition-colors font-bold flex items-center justify-center cursor-pointer"
+              className="bg-vow-dark text-vow-paper p-3 rounded-md hover:bg-black transition-colors font-bold flex items-center justify-center cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5 text-vow-champagne" />
+              <Send className="w-4 h-4 text-vow-champagne" />
             </button>
           </form>
         </div>

@@ -62,23 +62,20 @@ export default function FontsDiscoveryPage() {
       .catch((err) => console.warn("Failed to load dynamic fonts for discovery page:", err));
   }, []);
 
-  // Preload Google Fonts for all registered fonts
+  // Preload Google Fonts for all registered fonts that have a googleFontUrl
   useEffect(() => {
-    const googleFontNames = allFontsList
-      .filter((f) => f.provider === "google")
-      .map((f) => f.familyName);
-
-    if (googleFontNames.length > 0) {
-      const linkId = "global-fonts-discovery-preload";
-      if (!document.getElementById(linkId)) {
-        const link = document.createElement("link");
-        link.id = linkId;
-        link.rel = "stylesheet";
-        link.href =
-          "https://fonts.googleapis.com/css2?family=Alex+Brush&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cinzel:wght@400..900&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Inter:wght@300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap";
-        document.head.appendChild(link);
-      }
-    }
+    allFontsList
+      .filter((f) => f.provider === "google" && f.googleFontUrl)
+      .forEach((f) => {
+        const linkId = `font-preload-${f.id}`;
+        if (!document.getElementById(linkId)) {
+          const link = document.createElement("link");
+          link.id = linkId;
+          link.rel = "stylesheet";
+          link.href = f.googleFontUrl!;
+          document.head.appendChild(link);
+        }
+      });
   }, [allFontsList]);
 
   // Remove font from library

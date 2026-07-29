@@ -1,5 +1,4 @@
-import { CURATED_FONTS } from "./fonts-db";
-import { loadPersistentCustomFonts } from "./custom-fonts-storage";
+import { CURATED_FONTS, FontRecord } from "./fonts-db";
 
 export interface FontStyleConfig {
   familyName: string;
@@ -8,12 +7,24 @@ export interface FontStyleConfig {
   webFontName: string;
 }
 
+// Dynamic in-memory registry for user-uploaded custom fonts fetched via /api/fonts
+const dynamicFontsMap = new Map<string, FontRecord>();
+
+export function registerDynamicFonts(fonts: FontRecord[]): void {
+  if (!Array.isArray(fonts)) return;
+  fonts.forEach((f) => {
+    if (f && f.familyName) {
+      dynamicFontsMap.set(f.familyName.toLowerCase(), f);
+    }
+  });
+}
+
 /**
  * Resolves a font name to its full config including Google Fonts URL.
  *
  * Resolution order:
  *  1. Exact match in CURATED_FONTS by familyName (case-insensitive)
- *  2. Exact match in persisted custom fonts by familyName (case-insensitive)
+ *  2. Exact match in dynamically registered custom fonts by familyName (case-insensitive)
  *  3. Partial keyword fallback for legacy font name aliases
  *  4. Default to Cormorant Garamond
  */
@@ -34,22 +45,15 @@ export function resolveFontConfig(rawFamilyName: string, classification?: string
     };
   }
 
-  // ── 2. Exact DB lookup in persisted custom fonts ─────────────────────────
-  try {
-    const customFonts = loadPersistentCustomFonts();
-    const customMatch = customFonts.find(
-      (f) => f.familyName.toLowerCase() === lower
-    );
-    if (customMatch) {
-      return {
-        familyName: customMatch.familyName,
-        webFontName: customMatch.familyName,
-        googleFontUrl: customMatch.googleFontUrl,
-        cssFontFamily: buildCssFontFamily(customMatch.familyName, customMatch.classification),
-      };
-    }
-  } catch (e) {
-    // Running client-side or storage unavailable — skip
+  // ── 2. Exact DB lookup in dynamically registered custom fonts ────────────
+  const dynamicMatch = dynamicFontsMap.get(lower);
+  if (dynamicMatch) {
+    return {
+      familyName: dynamicMatch.familyName,
+      webFontName: dynamicMatch.familyName,
+      googleFontUrl: dynamicMatch.googleFontUrl,
+      cssFontFamily: buildCssFontFamily(dynamicMatch.familyName, dynamicMatch.classification),
+    };
   }
 
   // ── 3. Legacy keyword fallbacks (for old font names & aliases) ───────────

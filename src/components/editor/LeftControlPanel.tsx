@@ -4,6 +4,8 @@ import { useEditorStore } from "@/lib/store/useEditorStore";
 import { Layout, Type, Sliders, ChevronLeft, ChevronRight, Pipette } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
+import { registerDynamicFonts } from "@/lib/typography/font-resolver";
+
 export function LeftControlPanel() {
   const [mounted, setMounted] = useState(false);
   const [fontsList, setFontsList] = useState<any[]>([]);
@@ -16,6 +18,7 @@ export function LeftControlPanel() {
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           setFontsList(data);
+          registerDynamicFonts(data);
         }
       })
       .catch((err) => console.warn("Failed to load fonts for left panel:", err));

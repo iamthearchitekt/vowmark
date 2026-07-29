@@ -54,8 +54,8 @@ export const CURATED_FONTS: FontRecord[] = [
     licensing: OFL,
   },
   {
-    id: "bodoni_moda",
-    familyName: "Bodoni Moda",
+    id: "bodoni",
+    familyName: "Bodoni",
     provider: "google",
     classification: "serif",
     subclassification: "didone_serif",

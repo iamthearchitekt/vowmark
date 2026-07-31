@@ -95,6 +95,7 @@ export interface EditorState {
   setLayer2Visible: (visible: boolean) => void;
   setVectorOverlayEnabled: (enabled: boolean) => void;
   setTextColor: (color: string) => void;
+  setAiPrompt: (prompt: string) => void;
   setAiGenerationType: (type: AiGenerationType) => void;
   setPromptGuidanceConfig: (config: Partial<PromptGuidanceConfig>) => void;
   setActiveGuardrailPresetId: (presetId: string) => void;
@@ -276,6 +277,8 @@ export const useEditorStore = create<EditorState>((set) => ({
       textColor: color,
       typographyOptions: { ...state.typographyOptions, textColor: color },
     })),
+
+  setAiPrompt: (prompt) => set({ aiPrompt: prompt }),
 
   setAiGenerationType: (type) => set({ aiGenerationType: type }),
   setPromptGuidanceConfig: (config) =>

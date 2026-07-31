@@ -3,7 +3,7 @@
 import { useEditorStore, CanvasFormat } from "@/lib/store/useEditorStore";
 import { parseChatIntent } from "@/lib/ai/chat-parser";
 import { PromptGuidanceModal } from "./PromptGuidanceModal";
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Sparkles,
   Send,
@@ -55,6 +55,17 @@ export function RightAiPanel() {
   const isAiGenerating = useEditorStore((state) => state.isAiGenerating);
   const studioMode = useEditorStore((state) => state.studioMode);
   const brief = useEditorStore((state) => state.brief);
+  const aiPrompt = useEditorStore((state) => state.aiPrompt);
+
+  // Sync aiPrompt from store (e.g. passed from Smart Palette page)
+  useEffect(() => {
+    if (aiPrompt) {
+      setInputMsg(aiPrompt);
+      if (promptInputRef.current) {
+        promptInputRef.current.focus();
+      }
+    }
+  }, [aiPrompt]);
 
   // 2-Layer Composition State
   const backgroundPatternAssetUrl = useEditorStore((state) => state.backgroundPatternAssetUrl);

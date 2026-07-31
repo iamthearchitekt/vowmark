@@ -1,19 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/layout/Header";
-import { CURATED_PALETTES } from "@/lib/color/palettes-db";
+import { CURATED_PALETTES, WeddingPaletteRecord } from "@/lib/color/palettes-db";
 import { extractPaletteFromImage, ExtractedColor } from "@/lib/color/palette-extractor";
 import { useEditorStore } from "@/lib/store/useEditorStore";
 import { useState, useRef } from "react";
-import { Upload, Copy, Check, Palette, Sparkles, ArrowRight, RefreshCw } from "lucide-react";
+import { Upload, Copy, Check, Palette, Sparkles, ArrowRight, RefreshCw, MessageSquare } from "lucide-react";
 
 export default function SmartPalettePage() {
+  const router = useRouter();
   const setTextColor = useEditorStore((state) => state.setTextColor);
+  const setAiPrompt = useEditorStore((state) => state.setAiPrompt);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
-  const [appliedHex, setAppliedHex] = useState<string | null>(null);
 
   // Image analysis state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -29,10 +31,17 @@ export default function SmartPalettePage() {
     setTimeout(() => setCopiedHex(null), 2000);
   };
 
-  const handleApplyToStudio = (hex: string) => {
+  const handleSendColorToChat = (hex: string, label: string = "Color") => {
     setTextColor(hex);
-    setAppliedHex(hex);
-    setTimeout(() => setAppliedHex(null), 2500);
+    setAiPrompt(`Apply hex color ${hex} (${label}) to typography and design`);
+    router.push("/");
+  };
+
+  const handleSendPaletteToChat = (palette: WeddingPaletteRecord) => {
+    const swatchesText = palette.swatches.map((s) => `${s.name} (${s.hex})`).join(", ");
+    setTextColor(palette.swatches[0].hex);
+    setAiPrompt(`Apply ${palette.name} palette to design: ${swatchesText}`);
+    router.push("/");
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +118,7 @@ export default function SmartPalettePage() {
               <button
                 type="button"
                 onClick={handleClearImage}
-                className="text-xs text-stone-500 hover:text-stone-800 flex items-center space-x-1.5 px-3 py-1 rounded-lg border border-stone-200 hover:bg-stone-50 transition-colors"
+                className="text-xs text-stone-500 hover:text-stone-800 flex items-center space-x-1.5 px-3 py-1 rounded-lg border border-stone-200 hover:bg-stone-50 transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-3 h-3" />
                 <span>Clear Image</span>
@@ -173,7 +182,7 @@ export default function SmartPalettePage() {
                       key={idx}
                       className="h-full flex-1 transition-all hover:opacity-90 cursor-pointer"
                       style={{ backgroundColor: c.hex }}
-                      title={`${c.label}: ${c.hex}`}
+                      title={`${c.label}: ${c.hex} — Click to copy`}
                       onClick={() => handleCopyHex(c.hex)}
                     />
                   ))}
@@ -200,8 +209,8 @@ export default function SmartPalettePage() {
                         <button
                           type="button"
                           onClick={() => handleCopyHex(c.hex)}
-                          className="flex-1 text-[10px] font-semibold py-1 px-1 rounded border border-stone-200 hover:bg-stone-50 text-stone-600 flex items-center justify-center space-x-1 transition-colors"
-                          title="Copy Hex Code"
+                          className="flex-1 text-[10px] font-semibold py-1 px-1 rounded border border-stone-200 hover:bg-stone-50 text-stone-600 flex items-center justify-center space-x-1 transition-colors cursor-pointer"
+                          title="Copy Hex Code to Clipboard for Photoshop"
                         >
                           {copiedHex === c.hex ? (
                             <Check className="w-3 h-3 text-emerald-600" />
@@ -213,11 +222,11 @@ export default function SmartPalettePage() {
 
                         <button
                           type="button"
-                          onClick={() => handleApplyToStudio(c.hex)}
-                          className="text-[10px] font-bold py-1 px-2 rounded bg-vow-dark text-vow-paper hover:bg-black transition-colors"
-                          title="Apply this color to Studio Workbench"
+                          onClick={() => handleSendColorToChat(c.hex, c.label)}
+                          className="text-[10px] font-bold py-1 px-2 rounded bg-vow-dark text-vow-paper hover:bg-black transition-colors cursor-pointer flex items-center space-x-0.5"
+                          title="Send Hex info directly to Studio AI Chat prompt"
                         >
-                          {appliedHex === c.hex ? "✓" : "Use"}
+                          <MessageSquare className="w-3 h-3 text-vow-accent" />
                         </button>
                       </div>
                     </div>
@@ -336,11 +345,13 @@ export default function SmartPalettePage() {
 
                   <button
                     type="button"
-                    onClick={() => handleApplyToStudio(palette.swatches[0].hex)}
-                    className="text-xs font-bold text-vow-dark hover:text-vow-accent flex items-center space-x-1 transition-colors shrink-0"
+                    onClick={() => handleSendPaletteToChat(palette)}
+                    className="text-xs font-bold bg-vow-dark text-vow-paper hover:bg-black px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 shadow-2xs"
+                    title="Pass full palette hex info to Studio AI Chat prompt"
                   >
-                    <span>Use ({palette.swatches[0].hex})</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-vow-accent" />
+                    <MessageSquare className="w-3.5 h-3.5 text-vow-accent" />
+                    <span>Send Palette to Studio AI</span>
+                    <ArrowRight className="w-3 h-3 text-stone-300" />
                   </button>
                 </div>
               </div>

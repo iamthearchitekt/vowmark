@@ -95,6 +95,9 @@ export function Header() {
           <Link href="/fonts" className="hover:text-vow-accent transition-colors">
             Fonts Library
           </Link>
+          <Link href="/palettes" className="hover:text-vow-accent transition-colors">
+            Smart Palette
+          </Link>
         </nav>
       </div>
 

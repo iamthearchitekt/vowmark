@@ -9,6 +9,18 @@ import { useEditorStore } from "@/lib/store/useEditorStore";
 import { useState, useRef } from "react";
 import { Upload, Copy, Check, Palette, Sparkles, ArrowRight, RefreshCw, MessageSquare } from "lucide-react";
 
+// In-memory session cache that persists across tab navigation within the app,
+// but resets automatically when the user refreshes the page (F5/reload) or clicks Clear.
+let sessionExtractedImageCache: {
+  previewImageUrl: string | null;
+  extractedColors: ExtractedColor[];
+  extractedFileName: string | null;
+} = {
+  previewImageUrl: null,
+  extractedColors: [],
+  extractedFileName: null,
+};
+
 export default function SmartPalettePage() {
   const router = useRouter();
   const setTextColor = useEditorStore((state) => state.setTextColor);
@@ -17,11 +29,17 @@ export default function SmartPalettePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
 
-  // Image analysis state
+  // Image analysis state pre-hydrated from in-memory session cache
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
-  const [extractedColors, setExtractedColors] = useState<ExtractedColor[]>([]);
-  const [extractedFileName, setExtractedFileName] = useState<string | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(
+    sessionExtractedImageCache.previewImageUrl
+  );
+  const [extractedColors, setExtractedColors] = useState<ExtractedColor[]>(
+    sessionExtractedImageCache.extractedColors
+  );
+  const [extractedFileName, setExtractedFileName] = useState<string | null>(
+    sessionExtractedImageCache.extractedFileName
+  );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -65,6 +83,13 @@ export default function SmartPalettePage() {
     try {
       const colors = await extractPaletteFromImage(file, 5);
       setExtractedColors(colors);
+
+      // Cache image reference in session memory for tab navigation
+      sessionExtractedImageCache = {
+        previewImageUrl: objectUrl,
+        extractedColors: colors,
+        extractedFileName: file.name,
+      };
     } catch (err) {
       console.warn("Failed to extract color palette from image:", err);
     } finally {
@@ -76,6 +101,14 @@ export default function SmartPalettePage() {
     setPreviewImageUrl(null);
     setExtractedColors([]);
     setExtractedFileName(null);
+
+    // Clear session cache
+    sessionExtractedImageCache = {
+      previewImageUrl: null,
+      extractedColors: [],
+      extractedFileName: null,
+    };
+
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }

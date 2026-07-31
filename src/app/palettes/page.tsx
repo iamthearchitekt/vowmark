@@ -44,6 +44,14 @@ export default function SmartPalettePage() {
     router.push("/");
   };
 
+  const handleSendExtractedPaletteToChat = () => {
+    if (extractedColors.length === 0) return;
+    const colorsText = extractedColors.map((c) => `${c.label} (${c.hex})`).join(", ");
+    setTextColor(extractedColors[0].hex);
+    setAiPrompt(`Apply extracted image palette to design: ${colorsText}`);
+    router.push("/");
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -168,11 +176,26 @@ export default function SmartPalettePage() {
                   <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500">
                     Extracted Hex Palette
                   </h3>
-                  {isAnalyzing && (
-                    <span className="text-xs text-vow-accent font-semibold animate-pulse">
-                      Analyzing...
-                    </span>
-                  )}
+
+                  <div className="flex items-center space-x-2">
+                    {isAnalyzing && (
+                      <span className="text-xs text-vow-accent font-semibold animate-pulse">
+                        Analyzing...
+                      </span>
+                    )}
+                    {extractedColors.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleSendExtractedPaletteToChat}
+                        className="text-xs font-bold bg-vow-dark text-vow-paper hover:bg-black px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-colors cursor-pointer shadow-2xs"
+                        title="Send full extracted image palette to Studio AI Chat prompt"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5 text-vow-accent" />
+                        <span>Send Extracted Palette to Studio AI</span>
+                        <ArrowRight className="w-3 h-3 text-stone-300" />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Combined Color Bar */}

@@ -1,9 +1,8 @@
 export const SITE_CONFIG = {
   name: "VOWMARK",
   domain: "vowmark.studio",
-  tagline: "AI-Powered Wedding Identity & Stationery Asset Studio",
-  description:
-    "Refined, high-end wedding identity design combining conversational AI, deterministic vector typography, and bespoke wedding stationery design.",
+  tagline: "Bespoke Wedding Identity & Stationery Studio",
+  description: "Custom wedding identity, luxury monograms, and stationery design.",
   url: process.env.NEXT_PUBLIC_APP_URL || "https://vowmark.studio",
   ogImage: "https://vowmark.studio/og.png",
   links: {

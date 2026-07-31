@@ -5,7 +5,7 @@ import { SITE_CONFIG } from "@/config/site";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
   title: {
-    default: `${SITE_CONFIG.name} Studio — AI Wedding Identity & Vector Typography`,
+    default: `${SITE_CONFIG.name} Studio — Custom Wedding Identity`,
     template: `%s | ${SITE_CONFIG.name} Studio`,
   },
   description: SITE_CONFIG.description,
@@ -13,9 +13,7 @@ export const metadata: Metadata = {
     "wedding logo",
     "wedding monogram",
     "wedding identity design",
-    "vector typography",
     "wedding stationery",
-    "AI logo generator",
     "wedding crest",
     "vowmark studio",
   ],
@@ -40,7 +38,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: SITE_CONFIG.url,
-    title: `${SITE_CONFIG.name} Studio — AI Wedding Identity & Vector Typography`,
+    title: `${SITE_CONFIG.name} Studio — Custom Wedding Identity`,
     description: SITE_CONFIG.description,
     siteName: `${SITE_CONFIG.name} Studio`,
     images: [
@@ -54,7 +52,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_CONFIG.name} Studio — AI Wedding Identity & Vector Typography`,
+    title: `${SITE_CONFIG.name} Studio — Custom Wedding Identity`,
     description: SITE_CONFIG.description,
     images: [SITE_CONFIG.ogImage],
   },

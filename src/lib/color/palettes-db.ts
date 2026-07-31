@@ -31,6 +31,20 @@ export const CURATED_PALETTES: WeddingPaletteRecord[] = [
     ],
   },
   {
+    id: "maryland_flag_heritage",
+    name: "Maryland Flag & Calvert Heritage",
+    category: "traditional",
+    categoryLabel: "Traditional & Black Tie",
+    description: "Historic Maryland heraldic identity featuring Calvert gold, obsidian black, Crossland crimson red, and linen white.",
+    weddingTags: ["maryland", "baltimore", "calvert", "crossland", "heritage", "heraldic"],
+    swatches: [
+      { name: "Calvert Black", hex: "#111111", role: "primary" },
+      { name: "Calvert Gold", hex: "#EAAA00", role: "accent" },
+      { name: "Crossland Red", hex: "#9E1B32", role: "neutral" },
+      { name: "Crossland White", hex: "#FFFFFF", role: "background" },
+    ],
+  },
+  {
     id: "ivory_champagne_antique_gold",
     name: "Ivory, Champagne & Antique Gold",
     category: "traditional",

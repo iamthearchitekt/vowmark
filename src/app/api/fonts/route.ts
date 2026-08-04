@@ -12,7 +12,11 @@ export async function GET() {
   const uniqueFontsMap = new Map<string, FontRecord>();
   allFonts.forEach((f) => uniqueFontsMap.set(f.familyName.toLowerCase(), f));
 
-  return NextResponse.json(Array.from(uniqueFontsMap.values()));
+  const sortedFonts = Array.from(uniqueFontsMap.values()).sort((a, b) =>
+    a.familyName.localeCompare(b.familyName)
+  );
+
+  return NextResponse.json(sortedFonts);
 }
 
 export async function POST(req: NextRequest) {

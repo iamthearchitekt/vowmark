@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { CURATED_FONTS, FontRecord } from "@/lib/typography/fonts-db";
 import { loadPersistentCustomFonts, savePersistentCustomFontsBulk, removePersistentCustomFont } from "@/lib/typography/custom-fonts-storage";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const customFonts = loadPersistentCustomFonts();
   const allFonts = [...CURATED_FONTS, ...customFonts];

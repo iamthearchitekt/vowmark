@@ -16,17 +16,20 @@ export async function POST(req: NextRequest) {
       guidanceConfig: brief.guidanceConfig,
       canvasFormat: brief.canvasFormat || body.canvasFormat,
     });
-    const userPrompt = compiled.prompt;
+    const userPrompt = compiled.negativePrompt.length
+      ? [compiled.prompt, "Exclude these elements and treatments:", ...compiled.negativePrompt.map((item) => `- ${item}`)].join("\n")
+      : compiled.prompt;
 
     // Trigger OpenAI Image Generation with Aspect Ratio Size Matching
     const result = await openAIImageProvider.generateImage({
       prompt: userPrompt,
+      compiled: true,
       quality: "medium",
       size: compiled.recommendedSize || "1024x1024",
     });
 
     return NextResponse.json({
-      compiledPrompt: compiled.prompt,
+      compiledPrompt: userPrompt,
       negativePrompt: compiled.negativePrompt,
       recommendedSize: compiled.recommendedSize,
       aspectRatioInstruction: compiled.aspectRatioInstruction,

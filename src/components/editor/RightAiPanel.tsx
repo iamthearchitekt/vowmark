@@ -185,7 +185,10 @@ export function RightAiPanel() {
         });
 
         const genData = await genRes.json();
-        const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
+        const generatedUrl = genData.result?.imageUrl;
+        if (!genRes.ok || !generatedUrl) {
+          throw new Error(genData.error || "The image service returned no artwork.");
+        }
 
         if (aiGenerationType === "background_pattern") {
           setBackgroundPatternAssetUrl(generatedUrl);
@@ -206,7 +209,7 @@ export function RightAiPanel() {
                   }),
                 });
                 const sData = await sRes.json();
-                if (sData.result?.imageUrl) {
+                if (sRes.ok && sData.result?.imageUrl) {
                   suiteResults[fmt] = sData.result.imageUrl;
                 }
               } catch (e) {
@@ -219,7 +222,7 @@ export function RightAiPanel() {
 
             addMessage({
               role: "assistant",
-              content: "✨ Multi-Format Aspect Ratio Suite generated for 2x6, 4x6, 6x4 & Square! Switch aspect ratios anytime to preview fitted artwork.",
+              content: `Generated ${Object.keys(suiteResults).length} of ${formats.length} backdrop formats.`,
             });
           } else {
             addMessage({
@@ -237,7 +240,7 @@ export function RightAiPanel() {
       } catch (err) {
         addMessage({
           role: "assistant",
-          content: "Generation failed. Please try again.",
+          content: err instanceof Error ? err.message : "Image generation failed.",
         });
       } finally {
         setIsAiGenerating(false);
@@ -336,6 +339,7 @@ export function RightAiPanel() {
       generationType: aiGenerationType,
       canvasFormat: canvasFormat,
       guidanceConfig: promptGuidanceConfig,
+      hasActiveBackground: !!backgroundPatternAssetUrl,
       referenceImages: referenceImages.map((img) => ({ url: img.url, tag: img.tag })),
     };
 
@@ -350,7 +354,10 @@ export function RightAiPanel() {
       });
 
       const genData = await genRes.json();
-      const generatedUrl = genData.result?.imageUrl || "/samples/generated-wedding-logo.svg";
+      const generatedUrl = genData.result?.imageUrl;
+      if (!genRes.ok || !generatedUrl) {
+        throw new Error(genData.error || "The image service returned no artwork.");
+      }
 
       if (aiGenerationType === "background_pattern") {
         setBackgroundPatternAssetUrl(generatedUrl);
@@ -368,7 +375,7 @@ export function RightAiPanel() {
     } catch (err) {
         addMessage({
           role: "assistant",
-          content: "Generation failed. Please try again.",
+          content: err instanceof Error ? err.message : "Image generation failed.",
         });
     } finally {
       setIsAiGenerating(false);
